@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="PreCompiledHeader">
+      <UniqueIdentifier>{f5768e63-0405-487a-b6dc-56e5cee52f0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork">
+      <UniqueIdentifier>{25ea9230-ebff-41cf-9fe3-267f91093bb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\SceneGraph">
+      <UniqueIdentifier>{233ca2b7-7104-40fa-b009-3ff2182ac593}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\Object">
+      <UniqueIdentifier>{b4cdfbeb-3c42-4b92-83fc-95af4d1b8fa9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\Transform">
+      <UniqueIdentifier>{73c1352b-e5c0-402e-85b6-dcf7c8455d9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\Renderer">
+      <UniqueIdentifier>{919285bf-85d5-4d7c-a988-6aef779d04fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\RenderObj">
+      <UniqueIdentifier>{0c1a3220-0835-40ea-8bef-a672b471db27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\Object\Component">
+      <UniqueIdentifier>{61fa38fa-c981-46e1-8e84-465185692410}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\RenderObj\RenderElements">
+      <UniqueIdentifier>{7560fe8d-eab1-4707-8025-82a4e31227eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\Object\Component\RenderObject">
+      <UniqueIdentifier>{51d0d59c-9fdb-4269-a89c-2541a613bc87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\GameObject">
+      <UniqueIdentifier>{7758d5ae-a796-444d-a9a4-65d39db8b053}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="리소스 파일\Shader">
+      <UniqueIdentifier>{8b618986-35bb-4c22-9365-df62d1dc9c8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\Physics">
+      <UniqueIdentifier>{00387a6d-9112-465c-8b96-3dd57d8ffb05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\Physics\Octree">
+      <UniqueIdentifier>{68a9563b-6d92-4aaf-b15f-5ee2bfec9a67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{35198ad9-f37c-465a-b2f4-e1630c8c0cf6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="preCompile.cpp">
+      <Filter>PreCompiledHeader</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>FrameWork\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>FrameWork\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGraph.cpp">
+      <Filter>FrameWork\SceneGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>FrameWork\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>FrameWork\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>FrameWork\Object\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderObject.cpp">
+      <Filter>FrameWork\Object\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="AttributeBase.cpp">
+      <Filter>FrameWork\RenderObj\RenderElements</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>FrameWork\RenderObj\RenderElements</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>FrameWork\RenderObj\RenderElements</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>FrameWork\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshRenderObject.cpp">
+      <Filter>FrameWork\Object\Component\RenderObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>FrameWork\Object\Component\RenderObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainSystem.cpp">
+      <Filter>FrameWork\Object\Component\RenderObject</Filter>
+    </ClCompile>
+    <ClCompile Include="PracticalRenderObject.cpp">
+      <Filter>FrameWork\Object\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Octree.cpp">
+      <Filter>FrameWork\Physics\Octree</Filter>
+    </ClCompile>
+    <ClCompile Include="MyGLUtil.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>FrameWork\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="math.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>FrameWork</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>PreCompiledHeader</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>FrameWork\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>FrameWork\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGraph.h">
+      <Filter>FrameWork\SceneGraph</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>FrameWork\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>FrameWork\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>FrameWork\Object\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderObject.h">
+      <Filter>FrameWork\Object\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="AttributeBase.h">
+      <Filter>FrameWork\RenderObj\RenderElements</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>FrameWork\RenderObj\RenderElements</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>FrameWork\RenderObj\RenderElements</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>FrameWork\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshRenderObject.h">
+      <Filter>FrameWork\Object\Component\RenderObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>FrameWork\Object\Component\RenderObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainSystem.h">
+      <Filter>FrameWork\Object\Component\RenderObject</Filter>
+    </ClInclude>
+    <ClInclude Include="PracticalRenderObject.h">
+      <Filter>FrameWork\Object\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Octree.h">
+      <Filter>FrameWork\Physics\Octree</Filter>
+    </ClInclude>
+    <ClInclude Include="MyGLUtil.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="SingletonBase.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>FrameWork\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="math.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>FrameWork</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="Shaders\FragmentShader.glsl">
+      <Filter>리소스 파일\Shader</Filter>
+    </None>
+    <None Include="Shaders\VetexShader.glsl">
+      <Filter>리소스 파일\Shader</Filter>
+    </None>
+    <None Include="Shaders\TessCtrlShader.glsl">
+      <Filter>리소스 파일\Shader</Filter>
+    </None>
+    <None Include="Shaders\TessEvelShader.glsl">
+      <Filter>리소스 파일\Shader</Filter>
+    </None>
+  </ItemGroup>
+</Project>
