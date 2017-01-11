@@ -37,8 +37,21 @@
 #include "SingletonBase.h"
 
 #include "MyGLUtil.h"
+#include "Delegate.h"
+#include "FBXHelper.h"
 #include "math.h"
 #include "Renderer.h"
+
+template <class Output, class Input>
+inline Output horrible_cast(const Input input) {
+	union { Output output; Input input; }u;
+
+	typedef int ERROR_CantHorrible_cast[sizeof(Input) == sizeof(u) &&
+		sizeof(Input) == sizeof(Output) ? 1 : -1];
+
+	u.input = input;
+	return u.output;
+}
 
 //#pragma comment( lib, "winmm.lib" )
 #pragma comment(lib, "opengl32.lib")

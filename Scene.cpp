@@ -50,7 +50,7 @@ void Scene::Initialize()
 {
 	//Shader* shader = new Shader("./Shaders/VetexShader.glsl", "./Shaders/FragmentShader.glsl");
 	//Material* material = new Material(shader, 1);
-	//std::vector<Mesh*> meshes = Mesh::LoadFBX("Blackburn.fbx");
+	//std::vector<Mesh*> meshes = Mesh::LoadMeshes("Blackburn.fbx");
 	
 	//int xNum = 10;
 	//int zNum = 10;

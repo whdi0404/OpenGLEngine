@@ -4,6 +4,7 @@
 #include "Texture.h"
 #include "GameObject.h"
 #include "RenderObject.h"
+#include "FBXHelper.h"
 
 unsigned short Mesh::totalResourceID = 0;
 
@@ -21,7 +22,7 @@ void Mesh::SetVertices(std::vector<DefaultVertex>& vertices, std::vector<int>& i
 	this->indices.clear();
 
 	this->vertices = vertices;
-	this->indices = indices;	
+	this->indices = indices;
 
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
@@ -98,104 +99,77 @@ void Mesh::DrawInstance(mat4x4* pMat, int count, GLenum drawMode)
 	glBindVertexArray(0);
 }
 
-std::vector<Mesh*> Mesh::LoadFBX(std::string filePath)
+std::vector<Object*> Mesh::LoadMeshes(std::string filePath)
 {
-	if (g_FbxSdkManager == nullptr)
-	{
-		g_FbxSdkManager = FbxManager::Create();
+	FBXHelper::FBXCreateAction action;
+	action.bind(&Mesh::GetMeshes);
 
-		FbxIOSettings* pIOsettings = FbxIOSettings::Create(g_FbxSdkManager, IOSROOT);
-		g_FbxSdkManager->SetIOSettings(pIOsettings);
-	}
+	return FBXHelper::GetResourcesFromFile(filePath, action);
+}
 
-	FbxImporter* pImporter = FbxImporter::Create(g_FbxSdkManager, "");
-	FbxScene* pFbxScene = FbxScene::Create(g_FbxSdkManager, "");
-
-	bool bSuccess = pImporter->Initialize(filePath.c_str(), -1, g_FbxSdkManager->GetIOSettings());
-	if (!bSuccess) return std::vector<Mesh*>();
-
-	bSuccess = pImporter->Import(pFbxScene);
-	if (!bSuccess) return std::vector<Mesh*>();
-
-	pImporter->Destroy();
-
-	FbxNode* pFbxRootNode = pFbxScene->GetRootNode();
+Object* Mesh::GetMeshes(FbxNode * fbxNode)
+{
 	std::vector<vec3> position;
 	std::vector<int> indices;
 	std::vector<vec2> uvs;
 
-	std::vector<Mesh*> Meshes;
+	Mesh* mesh = new Mesh();
 
-	if (pFbxRootNode)
+	if (fbxNode->GetNodeAttribute() == NULL)
+		return nullptr;
+
+	FbxNodeAttribute::EType AttributeType = fbxNode->GetNodeAttribute()->GetAttributeType();
+
+	if (AttributeType != FbxNodeAttribute::eMesh)
+		return nullptr;
+
+	FbxMesh* pMesh = (FbxMesh*)fbxNode->GetNodeAttribute();
+
+	FbxVector4* pVertices = pMesh->GetControlPoints();
+	FbxLayerElementArrayTemplate<FbxVector2>* pTexUvs;
+	pMesh->GetTextureUV(&pTexUvs);
+	int vertexCount = pMesh->GetControlPointsCount();
+	int count = pTexUvs->GetCount();
+	//pOutPosition->resize(vertexCount);
+	for (int j = 0; j < vertexCount; ++j)
 	{
-		for (int i = 0; i < pFbxRootNode->GetChildCount(); i++)
+		vec3 vertex;
+		vertex.x = (float)pVertices[j].mData[0];
+		vertex.y = (float)pVertices[j].mData[1];
+		vertex.z = (float)pVertices[j].mData[2];
+		position.push_back(vertex);
+		//(*pOutPosition)[j] = vertex;
+
+		vec2 uv;
+		uv.x = (*pTexUvs)[j].mData[0];
+		uv.y = (*pTexUvs)[j].mData[1];
+		uvs.push_back(uv);
+	}
+
+	int polygonCount = pMesh->GetPolygonCount();
+
+	//pOutindices->resize(polygonCount * 3);
+	for (int j = 0; j < polygonCount; j++)
+	{
+		int iNumVertices = pMesh->GetPolygonSize(j);
+		assert(iNumVertices == 3);
+
+		for (int k = 0; k < iNumVertices; k++)
 		{
-			position.clear();
-			indices.clear();
-			uvs.clear();
-
-			Mesh* mesh = new Mesh();
-			FbxNode* pFbxChildNode = pFbxRootNode->GetChild(i);
-
-			if (pFbxChildNode->GetNodeAttribute() == NULL)
-				continue;
-
-			FbxNodeAttribute::EType AttributeType = pFbxChildNode->GetNodeAttribute()->GetAttributeType();
-
-			if (AttributeType != FbxNodeAttribute::eMesh)
-				continue;
-
-			FbxMesh* pMesh = (FbxMesh*)pFbxChildNode->GetNodeAttribute();
-
-			FbxVector4* pVertices = pMesh->GetControlPoints();
-			FbxLayerElementArrayTemplate<FbxVector2>* pTexUvs;
-			pMesh->GetTextureUV(&pTexUvs);
-			int vertexCount = pMesh->GetControlPointsCount();
-			int count = pTexUvs->GetCount();
-			//pOutPosition->resize(vertexCount);
-			for (int j = 0; j < vertexCount; ++j)
-			{
-				vec3 vertex;
-				vertex.x = (float)pVertices[j].mData[0];
-				vertex.y = (float)pVertices[j].mData[1];
-				vertex.z = (float)pVertices[j].mData[2];
-				position.push_back(vertex);
-				//(*pOutPosition)[j] = vertex;
-
-				vec2 uv;
-				uv.x = (*pTexUvs)[j].mData[0];
-				uv.y = (*pTexUvs)[j].mData[1];
-				uvs.push_back(uv);
-			}
-
-			int polygonCount = pMesh->GetPolygonCount();
-
-			//pOutindices->resize(polygonCount * 3);
-			for (int j = 0; j < polygonCount; j++)
-			{
-				int iNumVertices = pMesh->GetPolygonSize(j);
-				assert(iNumVertices == 3);
-
-				for (int k = 0; k < iNumVertices; k++)
-				{
-					int iControlPointIndex = pMesh->GetPolygonVertex(j, k);
-					indices.push_back(iControlPointIndex);
-					//(*pOutindices)[(j * 3) + k] = iControlPointIndex;
-				}
-			}
-
-			std::vector<DefaultVertex> vertices;
-			int size = position.size();
-			for (int i = 0; i < size; ++i)
-			{
-				DefaultVertex vertex(position[i],uvs[i]);
-				vertices.push_back(vertex);
-			}
-
-			mesh->SetVertices(vertices, indices);
-			Meshes.push_back(mesh);
+			int iControlPointIndex = pMesh->GetPolygonVertex(j, k);
+			indices.push_back(iControlPointIndex);
+			//(*pOutindices)[(j * 3) + k] = iControlPointIndex;
 		}
 	}
 
-	return Meshes;
+	std::vector<DefaultVertex> vertices;
+	int size = position.size();
+	for (int i = 0; i < size; ++i)
+	{
+		DefaultVertex vertex(position[i], uvs[i]);
+		vertices.push_back(vertex);
+	}
+
+	mesh->SetVertices(vertices, indices);
+	return mesh;
 }

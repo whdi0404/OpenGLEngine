@@ -130,6 +130,8 @@
     <ClCompile Include="AttributeBase.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="Delegate.cpp" />
+    <ClCompile Include="FBXHelper.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -147,6 +149,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SkinnedMeshRenderObject.cpp" />
     <ClCompile Include="TerrainSystem.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -156,6 +159,7 @@
     <ClInclude Include="AttributeBase.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="FBXHelper.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="math.h" />
@@ -172,11 +176,13 @@
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SingletonBase.h" />
+    <ClInclude Include="SkinnedMeshRenderObject.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TerrainSystem.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="Delegate.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
