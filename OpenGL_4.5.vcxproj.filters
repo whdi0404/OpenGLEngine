@@ -227,16 +227,22 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="Shaders\FragmentShader.glsl">
-      <Filter>리소스 파일\Shader</Filter>
-    </None>
-    <None Include="Shaders\VetexShader.glsl">
-      <Filter>리소스 파일\Shader</Filter>
-    </None>
     <None Include="Shaders\TessCtrlShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
     <None Include="Shaders\TessEvelShader.glsl">
+      <Filter>리소스 파일\Shader</Filter>
+    </None>
+    <None Include="Shaders\TestFragmentShader.glsl">
+      <Filter>리소스 파일\Shader</Filter>
+    </None>
+    <None Include="Shaders\TestVertexShader.glsl">
+      <Filter>리소스 파일\Shader</Filter>
+    </None>
+    <None Include="Shaders\TessFragmentShader.glsl">
+      <Filter>리소스 파일\Shader</Filter>
+    </None>
+    <None Include="Shaders\TessVetexShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
   </ItemGroup>

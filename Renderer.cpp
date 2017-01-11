@@ -26,7 +26,7 @@ void Renderer::Initialize()
 	glClearColor(0.6f, 0.8f, 0.85f, 0);
 
 	glFrontFace(GL_CCW);
-	glPolygonMode(GL_FRONT, GL_LINE);
+	//glPolygonMode(GL_FRONT, GL_LINE);
 	//glPolygonMode(GL_BACK, GL_LINE);
 	//glDisable(GL_CULL_FACE);
 	glEnable(GL_CULL_FACE);

@@ -48,24 +48,24 @@ GameObject* TestTessellation(Texture2D* tex, Material* material, vec3 offset, fl
 
 void Scene::Initialize()
 {
-	//Shader* shader = new Shader("./Shaders/VetexShader.glsl", "./Shaders/FragmentShader.glsl");
-	//Material* material = new Material(shader, 1);
-	//std::vector<Mesh*> meshes = Mesh::LoadMeshes("Blackburn.fbx");
+	Shader* shader = new Shader("./Shaders/TestVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
+	Material* material = new Material(shader, 1);
+	std::vector<Object*> meshes = Mesh::LoadMeshes("Blackburn.fbx");
 	
-	//int xNum = 10;
-	//int zNum = 10;
-	//int yNum = 2;
-	//float offset = 10;
-	//for (int i = 0; i < meshes.size(); ++i)
-	//{
-	//	float subOffset = (float)i / (float)meshes.size() * offset;
-	//	for (int x = 0; x < xNum; ++x)
-	//		for (int y = 0; y < yNum; ++y)
-	//			for (int z = 0; z < zNum; ++z)
-	//				TestObject(meshes[i], material, vec3((-xNum / 2 + x) * offset + subOffset, (-yNum / 2 + y) * offset, (-zNum / 2 + z) * offset + subOffset), 0.01f);
-	//}
+	int xNum = 10;
+	int zNum = 10;
+	int yNum = 2;
+	float offset = 10;
+	for (int i = 0; i < meshes.size(); ++i)
+	{
+		float subOffset = (float)i / (float)meshes.size() * offset;
+		for (int x = 0; x < xNum; ++x)
+			for (int y = 0; y < yNum; ++y)
+				for (int z = 0; z < zNum; ++z)
+					TestObject(dynamic_cast<Mesh*>(meshes[i]), material, vec3((-xNum / 2 + x) * offset + subOffset, (-yNum / 2 + y) * offset, (-zNum / 2 + z) * offset + subOffset), 0.01f);
+	}
 	
-	Shader* tessellationShader = new Shader("./Shaders/VetexShader.glsl", "./Shaders/FragmentShader.glsl", "./Shaders/TessCtrlShader.glsl", "./Shaders/TessEvelShader.glsl");
+	Shader* tessellationShader = new Shader("./Shaders/TessVetexShader.glsl", "./Shaders/TessFragmentShader.glsl", "./Shaders/TessCtrlShader.glsl", "./Shaders/TessEvelShader.glsl");
 	
 	terrainMaterial = new Material(tessellationShader, 1);
 

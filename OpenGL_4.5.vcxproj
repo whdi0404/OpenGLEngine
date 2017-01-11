@@ -186,10 +186,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="Shaders\FragmentShader.glsl" />
     <None Include="Shaders\TessCtrlShader.glsl" />
     <None Include="Shaders\TessEvelShader.glsl" />
-    <None Include="Shaders\VetexShader.glsl" />
+    <None Include="Shaders\TessFragmentShader.glsl" />
+    <None Include="Shaders\TessVetexShader.glsl" />
+    <None Include="Shaders\TestFragmentShader.glsl" />
+    <None Include="Shaders\TestVertexShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
