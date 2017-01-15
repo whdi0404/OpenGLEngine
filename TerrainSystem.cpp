@@ -51,7 +51,7 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileSize, float maxHei
 
 		}
 	}
-	terrainMesh->SetVertices(vertices, indices);
+	terrainMesh->SetVertexBuffer(vertices, indices);
 
 	SetMesh(terrainMesh);
 }

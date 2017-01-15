@@ -11,8 +11,8 @@ private:
 	float FOVDeg;
 	float fNear, fFar;
 	ProjectionType projectionType;
-	Get(mat4x4, MatProj, matProj);
-	Get(mat4x4, MatView, matView);
+	GetMacro(mat4x4, MatProj, matProj);
+	GetMacro(mat4x4, MatView, matView);
 
 	FrustumG frustum;
 public:

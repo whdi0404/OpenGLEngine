@@ -9,5 +9,5 @@ public:
 	~Shader();
 
 	void AttachShader(GLuint shaderID);
-	Get(GLuint, ShaderID, shaderID);
+	GetMacro(GLuint, ShaderID, shaderID);
 };

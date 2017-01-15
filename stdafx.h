@@ -16,6 +16,7 @@
 
 #define GLFW_INCLUDE_GLU
 #define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
+#define KEYVALUE(keyType, valueType) std::unordered_map<keyType, valueType>::value_type
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -30,6 +31,8 @@
 
 #include <vector>
 #include <map>
+#include <queue>
+#include <stack>
 #include <unordered_map>
 #include <unordered_set>
 

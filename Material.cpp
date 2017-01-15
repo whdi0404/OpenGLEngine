@@ -19,7 +19,7 @@ Material::Material(Shader* shader, unsigned short renderOrder) : shader(shader),
 Material::~Material()
 {
 }
-#define KEYVALUE(keyType, valueType) std::unordered_map<keyType, valueType>::value_type
+
 void Material::SetTexture(std::string& paramName, Texture2D * texture)
 {
 	auto iter = hashMap_paramData.find(paramName);

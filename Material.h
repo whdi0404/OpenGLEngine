@@ -29,7 +29,7 @@ private:
 
 	private:
 		int TextureValue;
-		Get(Type, Type, type);
+		GetMacro(Type, Type, type);
 		GLuint uniformLocation;
 		void* pData;
 	};
@@ -57,6 +57,6 @@ private:
 	GLuint matView;
 	Shader* shader;
 
-	Get(unsigned short, ResourceID, resourceID);
-	Get(unsigned short, RenderOrder, renderOrder);
+	GetMacro(unsigned short, ResourceID, resourceID);
+	GetMacro(unsigned short, RenderOrder, renderOrder);
 };

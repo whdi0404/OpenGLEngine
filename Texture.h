@@ -47,14 +47,14 @@ public:
 		Half = IL_HALF
 	};
 
-	Get(GLuint, TextureID, textureID)
-	Get(unsigned int, Width, width)
-	Get(unsigned int, Height, height)
-	Get(size_t, BytePerPixel, bytePerPixel)
-	Get(Format, Format, format)
-	Get(DataType, DataType, dataType)
-	Get(GLuint, SamplerID, samplerID)
-	Get(ILuint, ILTextureID, ilTextureID)
+	GetMacro(GLuint, TextureID, textureID)
+	GetMacro(unsigned int, Width, width)
+	GetMacro(unsigned int, Height, height)
+	GetMacro(size_t, BytePerPixel, bytePerPixel)
+	GetMacro(Format, Format, format)
+	GetMacro(DataType, DataType, dataType)
+	GetMacro(GLuint, SamplerID, samplerID)
+	GetMacro(ILuint, ILTextureID, ilTextureID)
 
 	Color GetPixel(int x, int y);
 

@@ -11,9 +11,9 @@ public:
 	PracticalRenderObject();
 	virtual ~PracticalRenderObject();
 
-	Get(Material*, Material, material);
-	Get(Mesh*, Mesh, mesh);
-	Get(uint32_t, HashCode, hashCode);
+	GetMacro(Material*, Material, material);
+	GetMacro(Mesh*, Mesh, mesh);
+	GetMacro(uint32_t, HashCode, hashCode);
 
 public:
 	void SetMaterial(Material* material);

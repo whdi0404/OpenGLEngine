@@ -6,7 +6,7 @@ public:
 	Object(std::string name);
 	virtual ~Object();
 
-	std::string ToString();
+	virtual std::string ToString();
 	
-	GetSet(std::string, Name, name)
+	GetSetMacro(std::string, Name, name)
 };

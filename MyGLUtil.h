@@ -1,6 +1,6 @@
 #pragma once
 
-#define Get(type, fnName, varName)\
+#define GetMacro(type, fnName, varName)\
 private: \
 	type varName; \
 public: \
@@ -9,7 +9,7 @@ public: \
 		return varName;\
 	}
 
-#define Set(type, fnName, varName)\
+#define SetMacro(type, fnName, varName)\
 private: \
 	type varName; \
 public: \
@@ -18,14 +18,14 @@ public: \
 		varName = value;\
 	}
 
-#define GetSet(type, fnName, varName)\
-Get(type, fnName, varName)\
+#define GetSetMacro(type, fnName, varName)\
+GetMacro(type, fnName, varName)\
 	void Set##fnName(type value)\
 	{\
 		varName = value;\
 	}
 
-#define Get_NonRef(type, fnName, varName)\
+#define Get_NonRefMacro(type, fnName, varName)\
 private: \
 	type varName; \
 public: \

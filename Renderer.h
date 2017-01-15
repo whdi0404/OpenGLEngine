@@ -35,8 +35,8 @@ private:
 	int keyID;
 	std::unordered_map<int, int> renderObjectKey;
 
-	Get(std::vector<Camera*>, CameraList, v_Camera);
-	Get(std::vector<RendererVector>, RenderObjects, renderObjects);
+	GetMacro(std::vector<Camera*>, CameraList, v_Camera);
+	GetMacro(std::vector<RendererVector>, RenderObjects, renderObjects);
 
 public:
 	RendererObjectCollector();
@@ -61,7 +61,7 @@ public:
 	void Render(Octree* octree);
 	void Release();
 
-	Get(RendererObjectCollector*, Collector, renderObjectCollecdtor);
+	GetMacro(RendererObjectCollector*, Collector, renderObjectCollecdtor);
 	std::vector<mat4x4> matrixBuffer;
 	Material* prevMtrl = nullptr;
 };

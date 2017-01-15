@@ -22,7 +22,7 @@ private:
 private:
 	std::vector<Transform*> v_Children;
 	Transform* parent;
-	Get(GameObject*, GameObject, gameObject);
+	GetMacro(GameObject*, GameObject, gameObject);
 
 private:
 	vec3 worldRightAxis;

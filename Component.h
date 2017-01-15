@@ -13,7 +13,7 @@ protected:
 	virtual void Update() {}
 	virtual void Release() {}
 
-	Get(GameObject*, GameObject, gameObject)
-	Get(Transform*, Transform, transform)
-	GetSet(bool, Enable, enable);
+	GetMacro(GameObject*, GameObject, gameObject)
+	GetMacro(Transform*, Transform, transform)
+	GetSetMacro(bool, Enable, enable);
 };

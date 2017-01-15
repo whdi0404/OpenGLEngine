@@ -30,12 +30,12 @@ private:
 	//Todo : Collider 추가, Collider와 renderObject있으면 둘중 큰 halfSize
 	//를 가지고 옥트리에 추가.
 
-	Get(Transform*, Transform, transform);
-	GetSet(bool, Active, active);
-	GetSet(bool, Static, isStatic);
-	GetSet(Math::Sphere, CullSphere, cullSphere);
+	GetMacro(Transform*, Transform, transform);
+	GetSetMacro(bool, Active, active);
+	GetSetMacro(bool, Static, isStatic);
+	GetSetMacro(Math::Sphere, CullSphere, cullSphere);
 
-	GetSet(uint32_t, OctreeLocCode, octreeLocationCode);
+	GetSetMacro(uint32_t, OctreeLocCode, octreeLocationCode);
 };
 
 template<typename TComponent>

@@ -9,8 +9,8 @@ public:
 public:
 	//프로그램 시작시간으로부터 흐른 시간(초)
 	double GetNowTimeSinceStart();
-	Get(double, DeltaTime, deltaTime);
-	Get(double, TimeScale, timeScale);
+	GetMacro(double, DeltaTime, deltaTime);
+	GetMacro(double, TimeScale, timeScale);
 private:
 	void Update();
 

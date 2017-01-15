@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "VertexBuffer.h"
 #include "Scene.h"
 #include "GameObject.h"
 #include "MeshRenderObject.h"
@@ -48,9 +49,14 @@ GameObject* TestTessellation(Texture2D* tex, Material* material, vec3 offset, fl
 
 void Scene::Initialize()
 {
+	MeshVertexAttribute attt
+
 	Shader* shader = new Shader("./Shaders/TestVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
 	Material* material = new Material(shader, 1);
-	std::vector<Object*> meshes = Mesh::LoadMeshes("Blackburn.fbx");
+
+	Texture2D* modelTex = new Texture2D("./Tex/Tex_0049_1.jpg");
+	material->SetTexture(std::string("tex"), modelTex);
+	std::vector<Object*> meshes = Mesh::LodeNodes("./Models/Blackburn.FBX");
 	
 	int xNum = 10;
 	int zNum = 10;
@@ -84,7 +90,7 @@ void Scene::Initialize()
 	//indices.push_back(3);
 
 	//Mesh* terrainMesh = new Mesh();
-	//terrainMesh->SetVertices(vertices, indices);
+	//terrainMesh->SetVertexBuffer(vertices, indices);
 	
 
 	/*for (int x = 0; x < 10; ++x)
