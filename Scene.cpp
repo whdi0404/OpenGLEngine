@@ -11,6 +11,7 @@
 #include "Time.h"
 #include "Octree.h"
 #include "Texture.h"
+#include "SkinnedMesh.h"
 
 Scene::Scene()
 {
@@ -49,26 +50,23 @@ GameObject* TestTessellation(Texture2D* tex, Material* material, vec3 offset, fl
 
 void Scene::Initialize()
 {
-	MeshVertexAttribute attt
-
 	Shader* shader = new Shader("./Shaders/TestVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
 	Material* material = new Material(shader, 1);
 
 	Texture2D* modelTex = new Texture2D("./Tex/Tex_0049_1.jpg");
 	material->SetTexture(std::string("tex"), modelTex);
-	std::vector<Object*> meshes = Mesh::LodeNodes("./Models/Blackburn.FBX");
+	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/Blackburn.FBX");
 	
-	int xNum = 10;
-	int zNum = 10;
-	int yNum = 2;
-	float offset = 10;
+	float offset = 5;
 	for (int i = 0; i < meshes.size(); ++i)
 	{
-		float subOffset = (float)i / (float)meshes.size() * offset;
-		for (int x = 0; x < xNum; ++x)
-			for (int y = 0; y < yNum; ++y)
-				for (int z = 0; z < zNum; ++z)
-					TestObject(dynamic_cast<Mesh*>(meshes[i]), material, vec3((-xNum / 2 + x) * offset + subOffset, (-yNum / 2 + y) * offset, (-zNum / 2 + z) * offset + subOffset), 0.01f);
+		SkinnedMesh* skinnedMesh = dynamic_cast<SkinnedMesh*>(meshes[i]);
+		if (skinnedMesh != nullptr)
+			continue;
+		Mesh* mesh = dynamic_cast<Mesh*>(meshes[i]);
+		if (mesh == nullptr)
+			continue;
+		TestObject(mesh, material, vec3(0, 0, 0), 0.01f);
 	}
 	
 	Shader* tessellationShader = new Shader("./Shaders/TessVetexShader.glsl", "./Shaders/TessFragmentShader.glsl", "./Shaders/TessCtrlShader.glsl", "./Shaders/TessEvelShader.glsl");
@@ -90,7 +88,7 @@ void Scene::Initialize()
 	//indices.push_back(3);
 
 	//Mesh* terrainMesh = new Mesh();
-	//terrainMesh->SetVertexBuffer(vertices, indices);
+	//terrainMesh->SetMeshData(vertices, indices);
 	
 
 	/*for (int x = 0; x < 10; ++x)

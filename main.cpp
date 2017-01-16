@@ -20,6 +20,7 @@ void WindowSizeChangeCallback(GLFWwindow* g_Window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
+
 int main() {
 	// 에러 핸들러 등록
 	glfwSetErrorCallback(ErrorCallback);

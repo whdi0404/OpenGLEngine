@@ -3,13 +3,15 @@
 class Mesh;
 class SkinnedMesh;
 class Object;
-namespace FBXHelper
+class FBXHelper
 {
-	std::vector<Object*> GetResourcesFromFile(std::string filePath);
+public:
+	static std::vector<Object*> GetResourcesFromFile(std::string filePath);
 
-	Object* LoadNode(FbxScene* scene, FbxNode* fbxNode);
+private:
+	static void LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, FbxNode* fbxNode);
 
-	Mesh* LoadMesh(FbxMesh *fbxMesh);
-	SkinnedMesh* LoadSkinnedMesh(FbxMesh* fbxMesh);
-	void LoadNodeKeyframeAnimation(FbxScene* scene, FbxNode* anim);
-}
+	static Mesh* LoadMesh(FbxMesh *fbxMesh);
+	static SkinnedMesh* LoadSkinnedMesh(FbxMesh* fbxMesh);
+	static void LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* anim);
+};

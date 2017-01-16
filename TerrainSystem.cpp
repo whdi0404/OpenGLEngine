@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "TerrainSystem.h"
 #include "Texture.h"
-
+#include "VertexBuffer.h"
+#include "MeshVertexAttribute.h"
 
 TerrainSystem::TerrainSystem()
 {
@@ -25,17 +26,19 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileSize, float maxHei
 
 	float mapHalfSize = width * 0.5f * tileSize;
 
-	std::vector<DefaultVertex> vertices;
+	VertexBuffer* newVertexBuffer = new VertexBuffer(new MeshVertexAttribute(Element::Position | Element::Texcoord0));
+	newVertexBuffer->SetVertexCount(width * height);
 	std::vector<int> indices;
-	vertices.reserve(width * height);
 
 	for (int y = 0; y < height; ++y)
 	{
 		for (int x = 0; x < width; ++x)
 		{
+			int arrayIdx = y * width + x;
 			vec3 pos = vec3(x * tileSize - mapHalfSize, texture->GetPixel(min((float)x, (float)width), min((float)y, (float)height)).r * maxHeight /*- maxHeight * 0.5f*/, y * tileSize - mapHalfSize);
-			//pos.y = 0;
-			vertices.push_back(DefaultVertex(pos, vec2(float(y) / height, float(x) / width)));
+
+			newVertexBuffer->SetVector(Element::Position, arrayIdx, glm::vec4(pos.x, pos.y, pos.z, 0));
+			newVertexBuffer->SetVector(Element::Texcoord0, arrayIdx, glm::vec4(float(y) / height, float(x) / width, 0, 0));
 		}
 	}
 
@@ -51,7 +54,7 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileSize, float maxHei
 
 		}
 	}
-	terrainMesh->SetVertexBuffer(vertices, indices);
+	terrainMesh->SetMeshData(newVertexBuffer, indices);
 
 	SetMesh(terrainMesh);
 }

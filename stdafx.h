@@ -44,6 +44,7 @@
 #include "FBXHelper.h"
 #include "math.h"
 #include "Renderer.h"
+#include "VertexAttributeDeclarative.h"
 
 template <class Output, class Input>
 inline Output horrible_cast(const Input input) {

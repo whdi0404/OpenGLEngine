@@ -58,9 +58,6 @@
     <Filter Include="Util">
       <UniqueIdentifier>{35198ad9-f37c-465a-b2f4-e1630c8c0cf6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FrameWork\ModelData">
-      <UniqueIdentifier>{ac716d6e-91d0-4e46-81cc-4a20e8efc6c6}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -144,20 +141,14 @@
     <ClCompile Include="Delegate.cpp">
       <Filter>Util</Filter>
     </ClCompile>
-    <ClCompile Include="SkinnedMesh.cpp">
-      <Filter>FrameWork\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Avatar.cpp">
-      <Filter>FrameWork\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationClip.cpp">
-      <Filter>FrameWork\Object</Filter>
-    </ClCompile>
     <ClCompile Include="MeshVertexAttribute.cpp">
-      <Filter>FrameWork\ModelData</Filter>
+      <Filter>FrameWork\Object</Filter>
     </ClCompile>
     <ClCompile Include="VertexBuffer.cpp">
-      <Filter>FrameWork\ModelData</Filter>
+      <Filter>FrameWork\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexAttributeDeclarative.cpp">
+      <Filter>FrameWork</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -242,20 +233,14 @@
     <ClInclude Include="Delegate.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="SkinnedMesh.h">
-      <Filter>FrameWork\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Avatar.h">
-      <Filter>FrameWork\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationClip.h">
-      <Filter>FrameWork\Object</Filter>
-    </ClInclude>
     <ClInclude Include="MeshVertexAttribute.h">
-      <Filter>FrameWork\ModelData</Filter>
+      <Filter>FrameWork\Object</Filter>
     </ClInclude>
     <ClInclude Include="VertexBuffer.h">
-      <Filter>FrameWork\ModelData</Filter>
+      <Filter>FrameWork\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexAttributeDeclarative.h">
+      <Filter>FrameWork</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

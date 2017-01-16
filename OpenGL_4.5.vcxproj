@@ -127,9 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AnimationClip.cpp" />
     <ClCompile Include="AttributeBase.cpp" />
-    <ClCompile Include="Avatar.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Delegate.cpp" />
@@ -152,18 +150,16 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="SkinnedMesh.cpp" />
     <ClCompile Include="SkinnedMeshRenderObject.cpp" />
     <ClCompile Include="TerrainSystem.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="VertexAttributeDeclarative.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimationClip.h" />
     <ClInclude Include="AttributeBase.h" />
-    <ClInclude Include="Avatar.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="FBXHelper.h" />
@@ -184,7 +180,6 @@
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SingletonBase.h" />
-    <ClInclude Include="SkinnedMesh.h" />
     <ClInclude Include="SkinnedMeshRenderObject.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TerrainSystem.h" />
@@ -192,6 +187,7 @@
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Delegate.h" />
+    <ClInclude Include="VertexAttributeDeclarative.h" />
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@
 
 unsigned short Mesh::totalResourceID = 0;
 
-Mesh::Mesh() : vertexBuffer(nullptr)/* : attr(VertexAttrib::GetInstancePtr()), texture(new Texture2D("./Tex/Tex_0049_7.jpg"))*/
+Mesh::Mesh() : vertexBuffer(nullptr)
 {
 	resourceID = totalResourceID++;
 }
@@ -17,12 +17,15 @@ Mesh::~Mesh()
 {
 	glDeleteVertexArrays(1, &vertexArrayID);
 }
-void Mesh::SetVertexBuffer(VertexBuffer* vertexBuffer)
+void Mesh::SetMeshData(VertexBuffer* vertexBuffer, std::vector<int>& indices)
 {
-	if(vertexBuffer != nullptr)
-		delete vertexBuffer;
-	this->vertexBuffer = vertexBuffer;
+	if (this->vertexBuffer != nullptr)
+		delete this->vertexBuffer;
+	this->indices.clear();
 	this->indices = indices;
+	glBindVertexArray(0);
+
+	this->vertexBuffer = vertexBuffer;
 
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
@@ -30,8 +33,13 @@ void Mesh::SetVertexBuffer(VertexBuffer* vertexBuffer)
 	GLuint vertices;
 	glGenBuffers(1, &vertices);
 	glBindBuffer(GL_ARRAY_BUFFER, vertices);
-	glBufferData(GL_ARRAY_BUFFER, this->vertexBuffer->GetBufferSize(), this->vertexBuffer->GetBufferPointer(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexBuffer->GetBufferSize(), vertexBuffer->GetBufferPointer(), GL_STATIC_DRAW);
 	vertexBuffer->GetAttribute()->EnableGLVertexAttributePointer();
+
+	GLuint elementbuffer;
+	glGenBuffers(1, &elementbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->indices.data()) * this->indices.size(), this->indices.data(), GL_STATIC_DRAW);
 
 	int matrixStartAttributePointer = vertexBuffer->GetAttribute()->GetElementCount();
 
@@ -50,18 +58,9 @@ void Mesh::SetVertexBuffer(VertexBuffer* vertexBuffer)
 	glVertexAttribDivisor(matrixStartAttributePointer + 2, 1);
 	glVertexAttribDivisor(matrixStartAttributePointer + 3, 1);
 
-	GLuint elementbuffer;
-	glGenBuffers(1, &elementbuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(*this->indices.data()) * this->indices.size(), this->indices.data(), GL_STATIC_DRAW);
-
 	glBindVertexArray(0);
 }
-void Mesh::SetIndices(std::vector<int>& indices)
-{
-	this->indices.clear();
 
-}
 void Mesh::DrawInstance(mat4x4* pMat, int count, GLenum drawMode)
 {
 	//glm::mat4 Proj = glm::perspective(glm::radians(45.0f), (float)1024.0f / (float)768.0f, 0.1f, 5000.0f);
@@ -102,4 +101,3 @@ void Mesh::DrawInstance(mat4x4* pMat, int count, GLenum drawMode)
 
 	glBindVertexArray(0);
 }
-

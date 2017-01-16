@@ -1,12 +1,13 @@
 #pragma once
 #include "Object.h"
-struct DefaultVertex
-{
-	DefaultVertex(vec3 pos, vec2 uv) : position(pos), uv(uv)
-	{}
-	vec3 position;
-	vec2 uv;
-};
+#include "MeshVertexAttribute.h"
+//struct DefaultVertex
+//{
+//	DefaultVertex(vec3 pos, vec2 uv) : position(pos), uv(uv)
+//	{}
+//	vec3 position;
+//	vec2 uv;
+//};
 
 class VertexBuffer;
 class Mesh :
@@ -21,8 +22,7 @@ public:
 
 public:
 	//Type을 정하면 안됨. 그냥 메모리버퍼만 주고, 정점 갯수 혹은 스트라이드사이즈만 넘김
-	virtual void SetVertexBuffer(VertexBuffer* vertexBuffer);
-	virtual void SetIndices(std::vector<int>& indices);
+	virtual void SetMeshData(VertexBuffer* vertexBuffer, std::vector<int>& indices);
 	void DrawInstance(mat4x4* pMat, int count, GLenum drawMode = GL_TRIANGLES);
 
 private:

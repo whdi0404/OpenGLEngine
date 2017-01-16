@@ -2,6 +2,8 @@
 #include "FBXHelper.h"
 #include "Mesh.h"
 #include "SkinnedMesh.h"
+#include "VertexBuffer.h"
+#include "MeshVertexAttribute.h"
 
 std::stack<FbxNode*> stack;
 std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath)
@@ -23,7 +25,7 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath)
 		{
 			FbxNode* pFbxRootNode = pFbxScene->GetRootNode();
 			stack.push(pFbxRootNode);
-			while (stack.empty())
+			while (stack.empty() == false)
 			{
 				FbxNode* node = stack.top();
 				stack.pop();
@@ -31,10 +33,7 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath)
 				for (int i = 0; i < node->GetChildCount(); ++i)
 				{
 					FbxNode* childNode = node->GetChild(i);
-
-					Object* obj = LoadNode(pFbxScene, childNode);
-					if (obj != nullptr)
-						returnObject.push_back(obj);
+					LoadNode(returnObject, pFbxScene, childNode);
 
 					if (childNode->GetChildCount() != 0)
 						stack.push(childNode);
@@ -50,7 +49,7 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath)
 	return returnObject;
 }
 
-Object * FBXHelper::LoadNode(FbxScene* fbxScene, FbxNode* fbxNode)
+void FBXHelper::LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, FbxNode* fbxNode)
 {
 	int numAttributes = fbxNode->GetNodeAttributeCount();
 	for (int i = 0; i < numAttributes; i++)
@@ -62,9 +61,18 @@ Object * FBXHelper::LoadNode(FbxScene* fbxScene, FbxNode* fbxNode)
 		{
 		case FbxNodeAttribute::eMesh:
 		{
-			LoadMesh((FbxMesh*)nodeAttributeFbx);
-			LoadSkinnedMesh((FbxMesh*)nodeAttributeFbx);
-			LoadNodeKeyframeAnimation(fbxScene, fbxNode);
+			FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
+
+			int numDeformers = fbxMesh->GetDeformerCount();
+			FbxSkin* skin = (FbxSkin*)fbxMesh->GetDeformer(0, FbxDeformer::eSkin);
+
+			if (skin != nullptr)
+			{
+				refObject.push_back(LoadSkinnedMesh((FbxMesh*)nodeAttributeFbx));
+				LoadNodeKeyframeAnimation(fbxScene, fbxNode);
+			}
+			else
+				refObject.push_back(LoadMesh((FbxMesh*)nodeAttributeFbx));
 			break;
 		}
 		}
@@ -128,15 +136,16 @@ Mesh * FBXHelper::LoadMesh(FbxMesh * fbxMesh)
 		}
 	}
 
-	std::vector<DefaultVertex> vertices;
+	VertexBuffer* newVertexBuffer = new VertexBuffer(new MeshVertexAttribute(Element::Position | Element::Texcoord0));
 	int size = position.size();
+	newVertexBuffer->SetVertexCount(position.size());
 	for (int i = 0; i < size; ++i)
 	{
-		DefaultVertex vertex(position[i], uvs[i]);
-		vertices.push_back(vertex);
+		newVertexBuffer->SetVector(Element::Position, i, glm::vec4(position[i].x, position[i].y, position[i].z, 0));
+		newVertexBuffer->SetVector(Element::Texcoord0, i, glm::vec4(uvs[i].x, uvs[i].y, 0, 0));
 	}
 
-	mesh->SetVertexBuffer(vertices, indices);
+	mesh->SetMeshData(newVertexBuffer, indices);
 	return mesh;
 }
 
@@ -167,6 +176,8 @@ SkinnedMesh * FBXHelper::LoadSkinnedMesh(FbxMesh * fbxMesh)
 			}
 		}
 	}
+
+	return nullptr;
 }
 
 void FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* fbxNode)
@@ -174,48 +185,48 @@ void FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* fbxNode)
 	bool isAnimated = false;
 
 	// Iterate all animations (for example, walking, running, falling and etc.)
-	int numAnimations = fbxScene->GetSrcObjectCount(FbxAnimStack::ClassId);
-	for (int animationIndex = 0; animationIndex < numAnimations; animationIndex++)
-	{
-		FbxAnimStack *animStack = (FbxAnimStack*)fbxScene->GetSrcObject(FbxAnimStack::ClassId, animationIndex);
-		FbxAnimEvaluator *animEvaluator = fbxScene->GetAnimationEvaluator();
-		animStack->GetName(); // Get the name of the animation if needed
+	//int numAnimations = fbxScene->GetSrcObjectCount(FbxAnimStack::ClassId);
+	//for (int animationIndex = 0; animationIndex < numAnimations; animationIndex++)
+	//{
+	//	FbxAnimStack *animStack = (FbxAnimStack*)fbxScene->GetSrcObject(FbxAnimStack::ClassId, animationIndex);
+	//	FbxAnimEvaluator *animEvaluator = fbxScene->GetAnimationEvaluator();
+	//	animStack->GetName(); // Get the name of the animation if needed
 
-							  // Iterate all the transformation layers of the animation. You can have several layers, for example one for translation, one for rotation, one for scaling and each can have keys at different frame numbers.
-		int numLayers = animStack->GetMemberCount();
-		for (int layerIndex = 0; layerIndex < numLayers; layerIndex++)
-		{
-			FbxAnimLayer *animLayer = (FbxAnimLayer*)animStack->GetMember(layerIndex);
-			animLayer->GetName(); // Get the layer's name if needed
+	//						  // Iterate all the transformation layers of the animation. You can have several layers, for example one for translation, one for rotation, one for scaling and each can have keys at different frame numbers.
+	//	int numLayers = animStack->GetMemberCount();
+	//	for (int layerIndex = 0; layerIndex < numLayers; layerIndex++)
+	//	{
+	//		FbxAnimLayer *animLayer = (FbxAnimLayer*)animStack->GetMember(layerIndex);
+	//		animLayer->GetName(); // Get the layer's name if needed
 
-			FbxAnimCurve *translationCurve = fbxNode->LclTranslation.GetCurve(animLayer);
-			FbxAnimCurve *rotationCurve = fbxNode->LclRotation.GetCurve(animLayer);
-			FbxAnimCurve *scalingCurve = fbxNode->LclScaling.GetCurve(animLayer);
+	//		FbxAnimCurve *translationCurve = fbxNode->LclTranslation.GetCurve(animLayer);
+	//		FbxAnimCurve *rotationCurve = fbxNode->LclRotation.GetCurve(animLayer);
+	//		FbxAnimCurve *scalingCurve = fbxNode->LclScaling.GetCurve(animLayer);
 
-			if (scalingCurve != 0)
-			{
-				int numKeys = scalingCurve->KeyGetCount();
-				for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
-				{
-					FbxTime frameTime = scalingCurve->KeyGetTime(keyIndex);
-					FbxDouble3 scalingVector = fbxNode->EvaluateLocalScaling(frameTime);
-					float x = (float)scalingVector[0];
-					float y = (float)scalingVector[1];
-					float z = (float)scalingVector[2];
+	//		if (scalingCurve != 0)
+	//		{
+	//			int numKeys = scalingCurve->KeyGetCount();
+	//			for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
+	//			{
+	//				FbxTime frameTime = scalingCurve->KeyGetTime(keyIndex);
+	//				FbxDouble3 scalingVector = fbxNode->EvaluateLocalScaling(frameTime);
+	//				float x = (float)scalingVector[0];
+	//				float y = (float)scalingVector[1];
+	//				float z = (float)scalingVector[2];
 
-					float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
-				}
-			}
-			else
-			{
-				// If this animation layer has no scaling curve, then use the default one, if needed
-				FbxDouble3 scalingVector = fbxNode->LclScaling.Get();
-				float x = (float)scalingVector[0];
-				float y = (float)scalingVector[1];
-				float z = (float)scalingVector[2];
-			}
+	//				float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
+	//			}
+	//		}
+	//		else
+	//		{
+	//			// If this animation layer has no scaling curve, then use the default one, if needed
+	//			FbxDouble3 scalingVector = fbxNode->LclScaling.Get();
+	//			float x = (float)scalingVector[0];
+	//			float y = (float)scalingVector[1];
+	//			float z = (float)scalingVector[2];
+	//		}
 
-			// Analogically, process rotationa and translation
-		}
-	}
+	//		// Analogically, process rotationa and translation
+	//	}
+	//}
 }
