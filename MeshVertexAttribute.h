@@ -14,7 +14,8 @@ enum Element {
 	Color1 = 1 << 10,//Single4
 	Color2 = 1 << 11,//Single4
 	Color3 = 1 << 12,//Single4
-	BoneWeightIndex = 1 << 13,//Single4 x,y,z = weight, w = index
+	BoneWeights = 1 << 13,//Single4
+	BoneIndices = 1 << 14,//Single4
 	End
 };
 

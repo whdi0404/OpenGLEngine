@@ -21,12 +21,12 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileSize, float maxHei
 	int width = texW / 32;
 	int height = texH / 32;
 
-	float widthDivTexW = (float)texW / (float)width;
-	float heightDivTexH = (float)texH / (float)height;
+	//float widthDivTexW = (float)texW / (float)width;
+	//float heightDivTexH = (float)texH / (float)height;
 
 	float mapHalfSize = width * 0.5f * tileSize;
 
-	VertexBuffer* newVertexBuffer = new VertexBuffer(new MeshVertexAttribute(Element::Position | Element::Texcoord0));
+	VertexBuffer* newVertexBuffer = new VertexBuffer(TestVertexAttribute);
 	newVertexBuffer->SetVertexCount(width * height);
 	std::vector<int> indices;
 

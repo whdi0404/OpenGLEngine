@@ -55,7 +55,7 @@ void Scene::Initialize()
 
 	Texture2D* modelTex = new Texture2D("./Tex/Tex_0049_1.jpg");
 	material->SetTexture(std::string("tex"), modelTex);
-	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/Blackburn.FBX");
+	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/Dragon 2.5.FBX");
 	
 	float offset = 5;
 	for (int i = 0; i < meshes.size(); ++i)
@@ -69,7 +69,8 @@ void Scene::Initialize()
 		TestObject(mesh, material, vec3(0, 0, 0), 0.01f);
 	}
 	
-	Shader* tessellationShader = new Shader("./Shaders/TessVetexShader.glsl", "./Shaders/TessFragmentShader.glsl", "./Shaders/TessCtrlShader.glsl", "./Shaders/TessEvelShader.glsl");
+	Shader* tessellationShader = new Shader("./Shaders/TessVetexShader.glsl", "./Shaders/TessFragmentShader.glsl", 
+		"./Shaders/TessCtrlShader.glsl", "./Shaders/TessEvelShader.glsl");
 	
 	terrainMaterial = new Material(tessellationShader, 1);
 

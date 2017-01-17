@@ -150,6 +150,9 @@
     <ClCompile Include="VertexAttributeDeclarative.cpp">
       <Filter>FrameWork</Filter>
     </ClCompile>
+    <ClCompile Include="SkinnedMesh.cpp">
+      <Filter>FrameWork\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -241,6 +244,9 @@
     </ClInclude>
     <ClInclude Include="VertexAttributeDeclarative.h">
       <Filter>FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinnedMesh.h">
+      <Filter>FrameWork\Object</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

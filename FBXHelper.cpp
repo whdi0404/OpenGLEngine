@@ -62,35 +62,43 @@ void FBXHelper::LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, Fb
 		case FbxNodeAttribute::eMesh:
 		{
 			FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
+			VertexBuffer* vertexBuffer = nullptr;
+			std::vector<int> indices;
 
-			int numDeformers = fbxMesh->GetDeformerCount();
+			if (LoadMeshData((FbxMesh*)nodeAttributeFbx, vertexBuffer, indices) == false)
+				continue;
+
 			FbxSkin* skin = (FbxSkin*)fbxMesh->GetDeformer(0, FbxDeformer::eSkin);
-
 			if (skin != nullptr)
 			{
-				refObject.push_back(LoadSkinnedMesh((FbxMesh*)nodeAttributeFbx));
+				SkinnedMesh* skinnedMesh = new SkinnedMesh();
+				skinnedMesh->SetMeshData(vertexBuffer, indices);
+
 				LoadNodeKeyframeAnimation(fbxScene, fbxNode);
+				refObject.push_back(skinnedMesh);
 			}
 			else
-				refObject.push_back(LoadMesh((FbxMesh*)nodeAttributeFbx));
+			{
+				Mesh* mesh = new Mesh();
+				mesh->SetMeshData(vertexBuffer, indices);
+				refObject.push_back(mesh);
+			}
 			break;
 		}
 		}
 	}
 }
 
-Mesh * FBXHelper::LoadMesh(FbxMesh * fbxMesh)
+bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, std::vector<int>& outIndices)
 {
-	Mesh* mesh = new Mesh();
 	std::vector<vec3> position;
-	std::vector<int> indices;
 	std::vector<vec2> uvs;
 
 	FbxVector4* pVertices = fbxMesh->GetControlPoints();
 	FbxLayerElementArrayTemplate<FbxVector2>* pTexUvs;
 	fbxMesh->GetTextureUV(&pTexUvs);
 	if (pTexUvs == nullptr)
-		return nullptr;
+		return false;
 	int vertexCount = fbxMesh->GetControlPointsCount();
 	int count = pTexUvs->GetCount();
 	//pOutPosition->resize(vertexCount);
@@ -120,64 +128,125 @@ Mesh * FBXHelper::LoadMesh(FbxMesh * fbxMesh)
 			for (int k = 0; k < 3; k++)
 			{
 				int iControlPointIndex = fbxMesh->GetPolygonVertex(j, k);
-				indices.push_back(iControlPointIndex);
+				outIndices.push_back(iControlPointIndex);
 				//(*pOutindices)[(j * 3) + k] = iControlPointIndex;
 			}
 		}
 		if (iNumVertices == 4)
 		{
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 0));
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 1));
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 2));
+			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 0));
+			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 1));
+			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 2));
 
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 0));
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 2));
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 3));
+			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 0));
+			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 2));
+			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 3));
 		}
 	}
 
-	VertexBuffer* newVertexBuffer = new VertexBuffer(new MeshVertexAttribute(Element::Position | Element::Texcoord0));
-	int size = position.size();
-	newVertexBuffer->SetVertexCount(position.size());
-	for (int i = 0; i < size; ++i)
-	{
-		newVertexBuffer->SetVector(Element::Position, i, glm::vec4(position[i].x, position[i].y, position[i].z, 0));
-		newVertexBuffer->SetVector(Element::Texcoord0, i, glm::vec4(uvs[i].x, uvs[i].y, 0, 0));
-	}
-
-	mesh->SetMeshData(newVertexBuffer, indices);
-	return mesh;
-}
-
-SkinnedMesh * FBXHelper::LoadSkinnedMesh(FbxMesh * fbxMesh)
-{//Bones
 	int numDeformers = fbxMesh->GetDeformerCount();
 	FbxSkin* skin = (FbxSkin*)fbxMesh->GetDeformer(0, FbxDeformer::eSkin);
-	if (skin != 0)
+	if (skin != nullptr)
 	{
+		std::vector<vec4> boneWeights;
+		std::vector<vec4> boneIndices;
+		boneWeights.resize(position.size(), vec4(-1,-1,-1,-1));
+		boneIndices.resize(position.size(), vec4(-1,-1,-1,-1));
+
 		int boneCount = skin->GetClusterCount();
+
+		//TODO: FBX씬에있는 모든 하이어라키를 가져와서 넣자.
+		//쉐이더에 들어갈 행렬은 bone들만.
+		//에니메이션하는 행렬들은 bone들 뿐일것임.
+
+		FbxNode* rootBone = skin->GetCluster(0)->GetLink();
+		while (rootBone->GetParent() != nullptr)
+			rootBone = rootBone->GetParent();
+		DrawHierarchy(rootBone);
+
 		for (int boneIndex = 0; boneIndex < boneCount; boneIndex++)
 		{
 			FbxCluster* cluster = skin->GetCluster(boneIndex);
 			FbxNode* bone = cluster->GetLink(); // Get a reference to the bone's node
 												// Get the bind pose
+
+			std::cout << "boneIndex: " << boneIndex << " name: " << bone->GetName() << std::endl;
 			FbxAMatrix bindPoseMatrix;
+
 			cluster->GetTransformLinkMatrix(bindPoseMatrix);
 
+			//Blending Infos
 			int *boneVertexIndices = cluster->GetControlPointIndices();
 			double *boneVertexWeights = cluster->GetControlPointWeights();
-
 			// Iterate through all the vertices, which are affected by the bone
 			int numBoneVertexIndices = cluster->GetControlPointIndicesCount();
+
 			for (int i = 0; i < numBoneVertexIndices; i++)
 			{
+				float weight = (float)boneVertexWeights[i];
+				
 				int boneVertexIndex = boneVertexIndices[i];
-				float boneWeight = (float)boneVertexWeights[boneVertexIndex];
+				if (boneIndices[boneVertexIndex].x == -1)
+				{
+					boneIndices[boneVertexIndex].x = boneIndex;
+					boneWeights[boneVertexIndex].x = weight;
+				}
+				else if (boneIndices[boneVertexIndex].y == -1)
+				{
+					boneIndices[boneVertexIndex].y = boneIndex;
+					boneWeights[boneVertexIndex].y = weight;
+				}
+				else if (boneIndices[boneVertexIndex].z == -1)
+				{
+					boneIndices[boneVertexIndex].z = boneIndex;
+					boneWeights[boneVertexIndex].z = weight;
+				}
+				else if (boneIndices[boneVertexIndex].w == -1)
+				{
+					boneIndices[boneVertexIndex].w = boneIndex;
+					boneWeights[boneVertexIndex].w = weight;
+				}
+				else 
+					continue;
 			}
+		}
+		std::for_each(boneWeights.begin(), boneWeights.end(), [](vec4& v)
+		{
+			if (v.x == -1) v.x = 0;
+			if (v.y == -1) v.y = 0;
+			if (v.z == -1) v.z = 0;
+			if (v.w == -1) v.w = 0;
+		});
+		std::for_each(boneIndices.begin(), boneIndices.end(), [](vec4& v)
+		{
+			if (v.x == -1) v.x = 0;
+			if (v.y == -1) v.y = 0;
+			if (v.z == -1) v.z = 0;
+			if (v.w == -1) v.w = 0;
+		});
+
+		outVertexBuffer = new VertexBuffer(SkinningVertexAttribute);
+		outVertexBuffer->SetVertexCount(position.size());
+		for (int i = 0; i < position.size(); ++i)
+		{
+			outVertexBuffer->SetVector(Element::Position, i, glm::vec4(position[i].x, position[i].y, position[i].z, 0));
+			outVertexBuffer->SetVector(Element::Texcoord0, i, glm::vec4(uvs[i].x, uvs[i].y, 0, 0));
+			outVertexBuffer->SetVector(Element::BoneWeights, i, boneWeights[i]);
+			outVertexBuffer->SetVector(Element::BoneIndices , i, boneIndices[i]);
+		}
+	}
+	else
+	{
+		outVertexBuffer = new VertexBuffer(TestVertexAttribute);
+		outVertexBuffer->SetVertexCount(position.size());
+		for (int i = 0; i < position.size(); ++i)
+		{
+			outVertexBuffer->SetVector(Element::Position, i, glm::vec4(position[i].x, position[i].y, position[i].z, 0));
+			outVertexBuffer->SetVector(Element::Texcoord0, i, glm::vec4(uvs[i].x, uvs[i].y, 0, 0));
 		}
 	}
 
-	return nullptr;
+	return true;
 }
 
 void FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* fbxNode)
@@ -229,4 +298,23 @@ void FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* fbxNode)
 	//		// Analogically, process rotationa and translation
 	//	}
 	//}
+}
+int cnt;
+void FBXHelper::DrawHierarchy(FbxNode * node, int depth)
+{
+	if(depth == 0)
+		cnt = 0;
+	cnt++;
+	std::string tap = "";
+	for (int i = 0; i < depth; ++i)
+		tap += "  ";
+	std::cout << tap << node->GetName() << std::endl;
+	int childCount = node->GetChildCount();
+	for (int i = 0; i < childCount; ++i)
+	{
+		DrawHierarchy(node->GetChild(i), depth + 1);
+	}
+
+	if (depth == 0)
+		std::cout << "total: " << cnt << std::endl;
 }
