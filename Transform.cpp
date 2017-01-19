@@ -237,6 +237,8 @@ Transform & Transform::UpdateTransform()
 		worldPosition = localPosition;
 		lossyScale = localScale;
 	}
+	if (gameObject == nullptr)
+		return *this;
 
 	this->gameObject->GetCullSphere().center = worldPosition;
 	Octree* octree = SceneGraph::GetInstance().octree;

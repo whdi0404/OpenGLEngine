@@ -37,7 +37,7 @@ private:
 
 	mat4x4 worldMatrix;
 	mat4x4 localMatrix;
-protected:
+public:
 	Transform();
 	virtual ~Transform();
 

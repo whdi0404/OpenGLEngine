@@ -55,7 +55,7 @@ void Scene::Initialize()
 
 	Texture2D* modelTex = new Texture2D("./Tex/Tex_0049_1.jpg");
 	material->SetTexture(std::string("tex"), modelTex);
-	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/Dragon 2.5.FBX");
+	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/Chibi_Character_Up.FBX");
 	
 	float offset = 5;
 	for (int i = 0; i < meshes.size(); ++i)

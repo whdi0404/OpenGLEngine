@@ -63,9 +63,6 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="preCompile.cpp">
-      <Filter>PreCompiledHeader</Filter>
-    </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>FrameWork\Transform</Filter>
     </ClCompile>
@@ -152,6 +149,12 @@
     </ClCompile>
     <ClCompile Include="SkinnedMesh.cpp">
       <Filter>FrameWork\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Avatar.cpp">
+      <Filter>FrameWork\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>PreCompiledHeader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -246,6 +249,9 @@
       <Filter>FrameWork</Filter>
     </ClInclude>
     <ClInclude Include="SkinnedMesh.h">
+      <Filter>FrameWork\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Avatar.h">
       <Filter>FrameWork\Object</Filter>
     </ClInclude>
   </ItemGroup>

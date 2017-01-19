@@ -17,6 +17,9 @@
 #define GLFW_INCLUDE_GLU
 #define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
 #define KEYVALUE(keyType, valueType) std::unordered_map<keyType, valueType>::value_type
+#define KFBX_DLLINFO
+#define FBXSDK_NEW_API
+#define FBXSDK_SHARED
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 

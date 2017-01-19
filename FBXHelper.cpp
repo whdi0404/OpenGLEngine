@@ -150,8 +150,8 @@ bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, s
 	{
 		std::vector<vec4> boneWeights;
 		std::vector<vec4> boneIndices;
-		boneWeights.resize(position.size(), vec4(-1,-1,-1,-1));
-		boneIndices.resize(position.size(), vec4(-1,-1,-1,-1));
+		boneWeights.resize(position.size(), vec4(-1, -1, -1, -1));
+		boneIndices.resize(position.size(), vec4(-1, -1, -1, -1));
 
 		int boneCount = skin->GetClusterCount();
 
@@ -184,7 +184,7 @@ bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, s
 			for (int i = 0; i < numBoneVertexIndices; i++)
 			{
 				float weight = (float)boneVertexWeights[i];
-				
+
 				int boneVertexIndex = boneVertexIndices[i];
 				if (boneIndices[boneVertexIndex].x == -1)
 				{
@@ -206,7 +206,7 @@ bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, s
 					boneIndices[boneVertexIndex].w = boneIndex;
 					boneWeights[boneVertexIndex].w = weight;
 				}
-				else 
+				else
 					continue;
 			}
 		}
@@ -232,7 +232,7 @@ bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, s
 			outVertexBuffer->SetVector(Element::Position, i, glm::vec4(position[i].x, position[i].y, position[i].z, 0));
 			outVertexBuffer->SetVector(Element::Texcoord0, i, glm::vec4(uvs[i].x, uvs[i].y, 0, 0));
 			outVertexBuffer->SetVector(Element::BoneWeights, i, boneWeights[i]);
-			outVertexBuffer->SetVector(Element::BoneIndices , i, boneIndices[i]);
+			outVertexBuffer->SetVector(Element::BoneIndices, i, boneIndices[i]);
 		}
 	}
 	else
@@ -252,6 +252,98 @@ bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, s
 void FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* fbxNode)
 {
 	bool isAnimated = false;
+
+	int srcObjectCount = fbxScene->GetSrcObjectCount<FbxAnimStack>();
+	for (int i = 0; i < srcObjectCount; ++i)
+	{
+		FbxAnimStack* lAnimStack = fbxScene->GetSrcObject<FbxAnimStack>(i);
+
+		FbxString stackName = "Animation Stack Name: ";
+		stackName += lAnimStack->GetName();
+		std::string sStackName = stackName;
+
+		int numLayers = lAnimStack->GetMemberCount<FbxAnimLayer>();
+		for (int j = 0; j < numLayers; ++j)
+		{
+			FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(j);
+
+			FbxString layerName = "  Animation Layer Name: ";
+			layerName += lAnimLayer->GetName();
+			std::string sLayerName = layerName;
+
+			struct BoneInfo
+			{
+				FbxNode* fbxNode;
+				Transform* boneTransform;
+			private:
+				BoneInfo();
+			public:
+				BoneInfo(FbxNode* fbxNode, Transform* parent = nullptr) : fbxNode(fbxNode)
+				{
+					boneTransform = new Transform();
+					if(parent != nullptr)
+						boneTransform->SetParent(parent, false);
+				}
+			};
+			std::queue<BoneInfo> queueNodes;
+			queueNodes.push(BoneInfo(fbxScene->GetRootNode()));
+
+			Transform* root = new Transform();
+
+			while (queueNodes.empty() == false)
+			{
+				BoneInfo node = queueNodes.front();
+				queueNodes.pop();
+
+				int childNode = node.fbxNode->GetChildCount();
+				for (int k = 0; k < childNode; ++k)
+				{
+					FbxNode* childNode = node.fbxNode->GetChild(k);
+					queueNodes.push(BoneInfo(childNode, node.boneTransform));
+				}
+				FbxAnimCurve *translateCurve = node.fbxNode->LclTranslation.GetCurve(lAnimLayer);
+				if (translateCurve == nullptr)
+					continue;
+				FbxAnimCurve *rotationCurve = node.fbxNode->LclRotation.GetCurve(lAnimLayer);
+				FbxAnimCurve *scalingCurve = node.fbxNode->LclScaling.GetCurve(lAnimLayer);
+
+				int numKeys = translateCurve->KeyGetCount();
+				for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
+				{
+					//Todo: 각 행렬마다 프레임별로 저장해둬야함.
+					FbxTime frameTime = translateCurve->KeyGetTime(keyIndex);
+					FbxAMatrix fbxMatrix = node.fbxNode->EvaluateLocalTransform(frameTime);
+					glm::mat4x4 mat;
+					auto double44 = fbxMatrix.Double44();
+					for (int col = 0; col < 4; ++col)
+						for(int row = 0; row < 4 ; ++row)
+							mat[col][row] = double44[col][row];
+					node.boneTransform->SetLocalMatrix(mat);
+					//FbxVector4 rotation = node.fbxNode->EvaluateLocalRotation(frameTime);
+					//glm::quat quaternion = glm::quat((float)rotation[0], (float)rotation[1], (float)rotation[2], (float)rotation[3]);
+					//
+					//FbxVector4 position = node.fbxNode->EvaluateLocalTransform(lAnimLayer);
+					//glm::vec3 translate = glm::vec3((float)position[0], (float)position[1], (float)position[2]);
+					//node.boneTransform->SetRotateLocal(quaternion);
+					//node.boneTransform->SetLocalPosition(translate);
+					//
+					//float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
+				}
+				if (scalingCurve != nullptr)
+				{
+					
+				}
+				else
+				{
+					// If this animation layer has no scaling curve, then use the default one, if needed
+					FbxDouble3 scalingVector = fbxNode->LclScaling.Get();
+					float x = (float)scalingVector[0];
+					float y = (float)scalingVector[1];
+					float z = (float)scalingVector[2];
+				}
+			}
+		}
+	}
 
 	// Iterate all animations (for example, walking, running, falling and etc.)
 	//int numAnimations = fbxScene->GetSrcObjectCount(FbxAnimStack::ClassId);
@@ -299,10 +391,10 @@ void FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* fbxNode)
 	//	}
 	//}
 }
-int cnt;
+static int cnt;
 void FBXHelper::DrawHierarchy(FbxNode * node, int depth)
 {
-	if(depth == 0)
+	if (depth == 0)
 		cnt = 0;
 	cnt++;
 	std::string tap = "";
