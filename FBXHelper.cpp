@@ -5,9 +5,38 @@
 #include "VertexBuffer.h"
 #include "MeshVertexAttribute.h"
 
-std::stack<FbxNode*> stack;
+float maxScale = 0;
+struct BoneInfo
+{
+	FbxNode* fbxNode;
+	Transform* boneTransform;
+private:
+	BoneInfo();
+public:
+	BoneInfo(FbxNode* fbxNode, Transform* parent = nullptr) : fbxNode(fbxNode)
+	{
+		boneTransform = new Transform();
+
+		auto fbxMatrix = fbxNode->EvaluateLocalTransform(0.1f);
+		glm::mat4x4 mat;
+		auto double44 = fbxMatrix.Double44();
+		for (int col = 0; col < 4; ++col)
+			for (int row = 0; row < 4; ++row)
+			{
+				float val = double44[col][row];
+				mat[col][row] = val;
+			}
+		boneTransform->SetWorldMatrix(mat);
+		if (parent != nullptr)
+			boneTransform->SetParent(parent);
+		//(float)fbxNode->EvaluateLocalScaling().Length()
+		maxScale = glm::max(maxScale, (float)boneTransform->GetLossyScale().length());
+	}
+};
+
 std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath)
 {
+	std::stack<FbxNode*> stack;
 	if (g_FbxSdkManager == nullptr)
 	{
 		g_FbxSdkManager = FbxManager::Create();
@@ -62,35 +91,26 @@ void FBXHelper::LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, Fb
 		case FbxNodeAttribute::eMesh:
 		{
 			FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
-			VertexBuffer* vertexBuffer = nullptr;
-			std::vector<int> indices;
 
-			if (LoadMeshData((FbxMesh*)nodeAttributeFbx, vertexBuffer, indices) == false)
+			Mesh* mesh = LoadMeshData(fbxScene, (FbxMesh*)nodeAttributeFbx);
+			if (mesh == nullptr)
 				continue;
 
-			FbxSkin* skin = (FbxSkin*)fbxMesh->GetDeformer(0, FbxDeformer::eSkin);
-			if (skin != nullptr)
-			{
-				SkinnedMesh* skinnedMesh = new SkinnedMesh();
-				skinnedMesh->SetMeshData(vertexBuffer, indices);
-
+			if (dynamic_cast<SkinnedMesh*>(mesh) == nullptr)
 				LoadNodeKeyframeAnimation(fbxScene, fbxNode);
-				refObject.push_back(skinnedMesh);
-			}
-			else
-			{
-				Mesh* mesh = new Mesh();
-				mesh->SetMeshData(vertexBuffer, indices);
-				refObject.push_back(mesh);
-			}
+
+			refObject.push_back(mesh);
 			break;
 		}
 		}
 	}
 }
 
-bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, std::vector<int>& outIndices)
+Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh)
 {
+	VertexBuffer* vertexBuffer;
+	std::vector<int> indices;
+
 	std::vector<vec3> position;
 	std::vector<vec2> uvs;
 
@@ -118,7 +138,6 @@ bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, s
 	}
 
 	int polygonCount = fbxMesh->GetPolygonCount();
-
 	//pOutindices->resize(polygonCount * 3);
 	for (int j = 0; j < polygonCount; j++)
 	{
@@ -128,19 +147,19 @@ bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, s
 			for (int k = 0; k < 3; k++)
 			{
 				int iControlPointIndex = fbxMesh->GetPolygonVertex(j, k);
-				outIndices.push_back(iControlPointIndex);
+				indices.push_back(iControlPointIndex);
 				//(*pOutindices)[(j * 3) + k] = iControlPointIndex;
 			}
 		}
 		if (iNumVertices == 4)
 		{
-			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 0));
-			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 1));
-			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 2));
+			indices.push_back(fbxMesh->GetPolygonVertex(j, 0));
+			indices.push_back(fbxMesh->GetPolygonVertex(j, 1));
+			indices.push_back(fbxMesh->GetPolygonVertex(j, 2));
 
-			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 0));
-			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 2));
-			outIndices.push_back(fbxMesh->GetPolygonVertex(j, 3));
+			indices.push_back(fbxMesh->GetPolygonVertex(j, 0));
+			indices.push_back(fbxMesh->GetPolygonVertex(j, 2));
+			indices.push_back(fbxMesh->GetPolygonVertex(j, 3));
 		}
 	}
 
@@ -158,11 +177,13 @@ bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, s
 		//TODO: FBX씬에있는 모든 하이어라키를 가져와서 넣자.
 		//쉐이더에 들어갈 행렬은 bone들만.
 		//에니메이션하는 행렬들은 bone들 뿐일것임.
+		
 
-		FbxNode* rootBone = skin->GetCluster(0)->GetLink();
+		FbxNode* rootBone = fbxMesh->GetNode(0);// skin->GetCluster(0)->GetLink();
 		while (rootBone->GetParent() != nullptr)
 			rootBone = rootBone->GetParent();
-		DrawHierarchy(rootBone);
+		Transform* boneRoot = GetBones(rootBone);
+		//DrawHierarchy(/*(FbxNode*)fbxScene*/rootBone);
 
 		for (int boneIndex = 0; boneIndex < boneCount; boneIndex++)
 		{
@@ -171,15 +192,28 @@ bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, s
 												// Get the bind pose
 
 			std::cout << "boneIndex: " << boneIndex << " name: " << bone->GetName() << std::endl;
-			FbxAMatrix bindPoseMatrix;
-
-			cluster->GetTransformLinkMatrix(bindPoseMatrix);
+			//FbxAMatrix bindPoseMatrix;
+			//
+			//cluster->GetTransformLinkMatrix(bindPoseMatrix);
 
 			//Blending Infos
 			int *boneVertexIndices = cluster->GetControlPointIndices();
 			double *boneVertexWeights = cluster->GetControlPointWeights();
 			// Iterate through all the vertices, which are affected by the bone
 			int numBoneVertexIndices = cluster->GetControlPointIndicesCount();
+			
+			/*Transform* newTrans = new Transform();
+			auto fbxMatrix = bone->EvaluateLocalTransform(0.1f);
+			glm::mat4x4 mat;
+			auto double44 = fbxMatrix.Double44();
+			for (int col = 0; col < 4; ++col)
+				for (int row = 0; row < 4; ++row)
+				{
+					float val = double44[col][row];
+					mat[col][row] = val;
+				}
+			newTrans->SetWorldMatrix(mat);
+			boneRoot->AddChild(newTrans);*/
 
 			for (int i = 0; i < numBoneVertexIndices; i++)
 			{
@@ -225,28 +259,35 @@ bool FBXHelper::LoadMeshData(FbxMesh *fbxMesh, VertexBuffer*& outVertexBuffer, s
 			if (v.w == -1) v.w = 0;
 		});
 
-		outVertexBuffer = new VertexBuffer(SkinningVertexAttribute);
-		outVertexBuffer->SetVertexCount(position.size());
+		vertexBuffer = new VertexBuffer(SkinningVertexAttribute);
+		vertexBuffer->SetVertexCount(position.size());
 		for (int i = 0; i < position.size(); ++i)
 		{
-			outVertexBuffer->SetVector(Element::Position, i, glm::vec4(position[i].x, position[i].y, position[i].z, 0));
-			outVertexBuffer->SetVector(Element::Texcoord0, i, glm::vec4(uvs[i].x, uvs[i].y, 0, 0));
-			outVertexBuffer->SetVector(Element::BoneWeights, i, boneWeights[i]);
-			outVertexBuffer->SetVector(Element::BoneIndices, i, boneIndices[i]);
+			vertexBuffer->SetVector(Element::Position, i, glm::vec4(position[i].x, position[i].y, position[i].z, 0));
+			vertexBuffer->SetVector(Element::Texcoord0, i, glm::vec4(uvs[i].x, uvs[i].y, 0, 0));
+			vertexBuffer->SetVector(Element::BoneWeights, i, boneWeights[i]);
+			vertexBuffer->SetVector(Element::BoneIndices, i, boneIndices[i]);
 		}
+		SkinnedMesh* newMesh = new SkinnedMesh();
+		newMesh->SetBone(boneRoot);
+		newMesh->SetMeshData(vertexBuffer, indices);
+		return newMesh;
 	}
 	else
 	{
-		outVertexBuffer = new VertexBuffer(TestVertexAttribute);
-		outVertexBuffer->SetVertexCount(position.size());
+		vertexBuffer = new VertexBuffer(TestVertexAttribute);
+		vertexBuffer->SetVertexCount(position.size());
 		for (int i = 0; i < position.size(); ++i)
 		{
-			outVertexBuffer->SetVector(Element::Position, i, glm::vec4(position[i].x, position[i].y, position[i].z, 0));
-			outVertexBuffer->SetVector(Element::Texcoord0, i, glm::vec4(uvs[i].x, uvs[i].y, 0, 0));
+			vertexBuffer->SetVector(Element::Position, i, glm::vec4(position[i].x, position[i].y, position[i].z, 0));
+			vertexBuffer->SetVector(Element::Texcoord0, i, glm::vec4(uvs[i].x, uvs[i].y, 0, 0));
 		}
+		Mesh* newMesh = new Mesh();
+		newMesh->SetMeshData(vertexBuffer, indices);
+		return newMesh;
 	}
 
-	return true;
+	return nullptr;
 }
 
 void FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* fbxNode)
@@ -271,24 +312,8 @@ void FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* fbxNode)
 			layerName += lAnimLayer->GetName();
 			std::string sLayerName = layerName;
 
-			struct BoneInfo
-			{
-				FbxNode* fbxNode;
-				Transform* boneTransform;
-			private:
-				BoneInfo();
-			public:
-				BoneInfo(FbxNode* fbxNode, Transform* parent = nullptr) : fbxNode(fbxNode)
-				{
-					boneTransform = new Transform();
-					if(parent != nullptr)
-						boneTransform->SetParent(parent, false);
-				}
-			};
 			std::queue<BoneInfo> queueNodes;
 			queueNodes.push(BoneInfo(fbxScene->GetRootNode()));
-
-			Transform* root = new Transform();
 
 			while (queueNodes.empty() == false)
 			{
@@ -391,22 +416,25 @@ void FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* fbxNode)
 	//	}
 	//}
 }
-static int cnt;
-void FBXHelper::DrawHierarchy(FbxNode * node, int depth)
+Transform* FBXHelper::GetBones(FbxNode* rootNode)
 {
-	if (depth == 0)
-		cnt = 0;
-	cnt++;
-	std::string tap = "";
-	for (int i = 0; i < depth; ++i)
-		tap += "  ";
-	std::cout << tap << node->GetName() << std::endl;
-	int childCount = node->GetChildCount();
-	for (int i = 0; i < childCount; ++i)
+	std::queue<BoneInfo> nodeQueue;
+	BoneInfo rootInfo = BoneInfo(rootNode);
+	nodeQueue.push(rootInfo);
+	Transform* rootTransform = rootInfo.boneTransform;
+	
+	while (nodeQueue.empty() == false)
 	{
-		DrawHierarchy(node->GetChild(i), depth + 1);
+		BoneInfo parentNode = nodeQueue.front();
+		nodeQueue.pop();
+
+		int childCount = parentNode.fbxNode->GetChildCount();
+		for (int i = 0; i < childCount; ++i)
+		{
+			FbxNode* childNode = parentNode.fbxNode->GetChild(i);
+			nodeQueue.push(BoneInfo(childNode, parentNode.boneTransform));
+		}
 	}
 
-	if (depth == 0)
-		std::cout << "total: " << cnt << std::endl;
+	return rootTransform;
 }

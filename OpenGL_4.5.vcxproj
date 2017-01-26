@@ -205,6 +205,7 @@
     <None Include="Shaders\TessFragmentShader.glsl" />
     <None Include="Shaders\TessVetexShader.glsl" />
     <None Include="Shaders\TestFragmentShader.glsl" />
+    <None Include="Shaders\TestSkinnedVertexShader.glsl" />
     <None Include="Shaders\TestVertexShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

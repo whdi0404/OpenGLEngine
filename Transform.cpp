@@ -216,7 +216,7 @@ Transform & Transform::UpdateTransform()
 
 	if (parent != nullptr)
 	{
-		worldMatrix = localMatrix * parent->GetWorldMatrix();
+		worldMatrix = parent->GetWorldMatrix() * localMatrix;
 		worldPosition = vec3(worldMatrix[3][0], worldMatrix[3][1], worldMatrix[3][2]);
 		
 		worldRightAxis = vec3(worldMatrix[0][0], worldMatrix[0][1], worldMatrix[0][2]);
@@ -258,6 +258,21 @@ vec3 Transform::GetWorldPosition() const
 	return worldPosition;
 }
 
+vec3 Transform::GetLocalPosition() const
+{
+	return localPosition;
+}
+
+vec3 Transform::GetLocalScale() const
+{
+	return localScale;
+}
+
+vec3 Transform::GetLossyScale() const
+{
+	return lossyScale;
+}
+
 mat4x4 Transform::GetWorldMatrix() const
 {
 	return worldMatrix;
@@ -271,8 +286,8 @@ mat4x4 Transform::GetLocalMatrix() const
 Transform & Transform::SetWorldMatrix(mat4x4 mat)
 {
 	mat4x4 newLocalMat;
-	if(parent == nullptr)
-		newLocalMat = inverse(parent->GetWorldMatrix()) * mat;
+	if(parent != nullptr)
+		newLocalMat = mat * inverse(parent->GetWorldMatrix());
 	else
 		newLocalMat = mat;
 
@@ -333,7 +348,7 @@ Transform & Transform::AddChild(Transform * child, bool attachWorld)
 	v_Children.push_back(child);
 
 	if (attachWorld)
-		SetWorldMatrix(child->GetWorldMatrix());
+		child->SetWorldMatrix(child->GetWorldMatrix());
 	else
 		child->UpdateTransform();
 

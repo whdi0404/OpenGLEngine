@@ -51,10 +51,10 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileSize, float maxHei
 
 			indices.push_back(y * width + x + 1);
 			indices.push_back((y + 1) * width + x + 1);
-
 		}
 	}
 	terrainMesh->SetMeshData(newVertexBuffer, indices);
+	terrainMesh->SetDrawMode(GL_PATCHES);
 
 	SetMesh(terrainMesh);
 }
@@ -78,5 +78,5 @@ void TerrainSystem::Render(std::vector<PracticalRenderObject*>& renderObjects, C
 	//glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
 	//printf("Max supported patch vertices %d\n", MaxPatchVertices);
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
-	GetMesh()->DrawInstance(g_Renderer->matrixBuffer.data(), g_Renderer->matrixBuffer.size(), GL_PATCHES);
+	GetMesh()->DrawInstance(g_Renderer->matrixBuffer.data(), g_Renderer->matrixBuffer.size());
 }

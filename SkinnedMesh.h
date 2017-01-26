@@ -10,6 +10,7 @@ public:
 	~SkinnedMesh();
 
 	void SetAvatar(Avatar* avatar);
+	void SetBone(Transform* root);
 	void AddBone(Transform* boneTransform);
 	Transform* GetBone(std::string boneName);
 
@@ -17,4 +18,5 @@ private:
 	Avatar* avatar;
 	std::unordered_map<std::string, Transform*> bones;
 	std::vector<Transform*> boneArray;
+	GetMacro(Transform*, Root, root);
 };

@@ -17,4 +17,7 @@ public:
 private:
 	Camera* camera;
 	Material* terrainMaterial;
+
+	Transform* boneRoot;
+	Mesh* gizmo;
 };

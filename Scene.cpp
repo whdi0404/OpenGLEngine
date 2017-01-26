@@ -33,7 +33,7 @@ GameObject* TestObject(Mesh* mesh, Material* material, vec3 offset, float scale)
 
 	return obj;
 }
-
+extern float maxScale;
 GameObject* TestTessellation(Texture2D* tex, Material* material, vec3 offset, float scale)
 {
 	GameObject* obj = new GameObject();
@@ -51,23 +51,71 @@ GameObject* TestTessellation(Texture2D* tex, Material* material, vec3 offset, fl
 void Scene::Initialize()
 {
 	Shader* shader = new Shader("./Shaders/TestVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
+	Shader* skinnedShader = new Shader("./Shaders/TestSkinnedVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
 	Material* material = new Material(shader, 1);
+	Material* skinnedMaterial = new Material(skinnedShader, 1);
 
 	Texture2D* modelTex = new Texture2D("./Tex/Tex_0049_1.jpg");
 	material->SetTexture(std::string("tex"), modelTex);
-	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/Chibi_Character_Up.FBX");
+	skinnedMaterial->SetTexture(std::string("tex"), modelTex);
+	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/SIG.FBX");
+
+	std::vector<Object*> bones = FBXHelper::GetResourcesFromFile("./Models/Chibi_Character_Up.FBX");
+	SkinnedMesh* skinnedMesh = dynamic_cast<SkinnedMesh*>(bones[0]);
+	//float offset = 5;
+	gizmo = new Mesh();
+	gizmo->SetDrawMode(GL_LINES);
+	VertexBuffer* vb = new VertexBuffer(TestVertexAttribute);
+	std::vector<int> indices;
+
+	struct TestStructure { Transform* trans; GameObject* obj; };
+	TestStructure root;
+	root.trans = skinnedMesh->GetRoot();
+	root.obj = TestObject((Mesh*)meshes[0], material, vec3(), 1.f);
+	root.obj->GetTransform()->SetLocalMatrix(root.trans->GetLocalMatrix());
 	
-	float offset = 5;
-	for (int i = 0; i < meshes.size(); ++i)
+	boneRoot = root.obj->GetTransform();
+	boneRoot->SetLocalScale(0.01f, 0.01f, 0.01f);
+	boneRoot->SetName("root");
+	std::queue<TestStructure> traversalQueue;
+	traversalQueue.push(root);
+	int indexOrder = 0;
+	while (traversalQueue.empty() == false)
 	{
-		SkinnedMesh* skinnedMesh = dynamic_cast<SkinnedMesh*>(meshes[i]);
-		if (skinnedMesh != nullptr)
-			continue;
-		Mesh* mesh = dynamic_cast<Mesh*>(meshes[i]);
-		if (mesh == nullptr)
-			continue;
-		TestObject(mesh, material, vec3(0, 0, 0), 0.01f);
+		TestStructure parent = traversalQueue.front();
+		traversalQueue.pop();
+
+		int childCnt = parent.trans->GetChildCount();
+		vec3 parentPos = parent.obj->GetTransform()->GetWorldPosition(); 
+		for (int i = 0; i < childCnt; ++i)
+		{
+			Transform* childNode = parent.trans->GetChild(i);
+
+			TestStructure structure;
+			structure.trans = childNode;
+			structure.obj = TestObject((Mesh*)meshes[0], material, vec3(), 1.0f);
+			structure.obj->GetTransform()->SetParent(parent.obj->GetTransform(), false);
+			structure.obj->GetTransform()->SetLocalMatrix(childNode->GetLocalMatrix());
+			maxScale = max(maxScale, (float)structure.obj->GetTransform()->GetLossyScale().length());
+			traversalQueue.push(structure);
+
+			vec3 childPos = structure.obj->GetTransform()->GetWorldPosition();
+
+			vb->SetVertexCount(indexOrder + 2);
+			vb->SetVector(Element::Position, indexOrder, vec4(parentPos.x, parentPos.y, parentPos.z, 0));
+			vb->SetVector(Element::Position, indexOrder + 1, vec4(childPos.x, childPos.y, childPos.z, 0));
+			
+			indices.push_back(indexOrder);
+			indices.push_back(indexOrder + 1);
+			indexOrder += 2;
+		}
 	}
+	std::cout << maxScale << std::endl;
+
+	gizmo->SetMeshData(vb, indices);
+	TestObject(gizmo, material, glm::vec3(), 0.01f);
+	TestObject((Mesh*)bones[0], skinnedMaterial, vec3(0,0,0), 0.01f);
+
 	
 	Shader* tessellationShader = new Shader("./Shaders/TessVetexShader.glsl", "./Shaders/TessFragmentShader.glsl", 
 		"./Shaders/TessCtrlShader.glsl", "./Shaders/TessEvelShader.glsl");
@@ -96,10 +144,10 @@ void Scene::Initialize()
 		for (int y = 0; y < 10; ++y)*/
 	//for (int x = 0; x < 400; ++x)
 	//	for (int y = 0; y < 400; ++y)
-	//			TestTessellation(terrainMesh, terrainMaterial, vec3(x * 1 - 200, 0, y * 1 - 200), 1);
+	//		TestTessellation(terrainMesh, terrainMaterial, vec3(x * 1 - 200, 0, y * 1 - 200), 1);
 
 	Texture2D* heightMap = new Texture2D("./Tex/1024x1024heightmap.png"/*cDsYZ.jpg*/);
-	TestTessellation(heightMap, terrainMaterial, vec3(0, 0, 0), 1);
+	//TestTessellation(heightMap, terrainMaterial, vec3(0, 0, 0), 1);
 
 	//TestObject(terrainMesh, terrainMaterial, vec3(), 1);
 
@@ -107,7 +155,6 @@ void Scene::Initialize()
 	//{
 	//	TestObject(meshes[i], material, vec3(100,10,-100));
 	//}
-
 	camera = (new GameObject())->AddComponent<Camera>();
 	camera->GetTransform()->SetLocalPosition(0, 0, 10);
 	camera->RefreshProjection();
@@ -125,8 +172,13 @@ void Scene::Update()
 	int state = glfwGetKey(g_Window, GLFW_KEY_W);
 	if (state == GLFW_PRESS)
 	{
-		camera->GetTransform()->AddLocalPosition(0, 0, -speed *dt);
-		camChanged = true;
+		if (glfwGetKey(g_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			boneRoot->SetLocalScale(boneRoot->GetLocalScale() * 0.9f);
+		else
+		{
+			camera->GetTransform()->AddLocalPosition(0, 0, -speed *dt);
+			camChanged = true;
+		}
 	}
 
 	state = glfwGetKey(g_Window, GLFW_KEY_S);

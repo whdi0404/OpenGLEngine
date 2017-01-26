@@ -275,5 +275,8 @@
     <None Include="Shaders\TessVetexShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
+    <None Include="Shaders\TestSkinnedVertexShader.glsl">
+      <Filter>리소스 파일\Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

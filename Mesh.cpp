@@ -9,7 +9,7 @@
 
 unsigned short Mesh::totalResourceID = 0;
 
-Mesh::Mesh() : vertexBuffer(nullptr)
+Mesh::Mesh() : vertexBuffer(nullptr), drawMode(GL_TRIANGLES)
 {
 	resourceID = totalResourceID++;
 }
@@ -26,7 +26,6 @@ void Mesh::SetMeshData(VertexBuffer* vertexBuffer, std::vector<int>& indices)
 	glBindVertexArray(0);
 
 	this->vertexBuffer = vertexBuffer;
-
 	glGenVertexArrays(1, &vertexArrayID);
 	glBindVertexArray(vertexArrayID);
 
@@ -61,7 +60,7 @@ void Mesh::SetMeshData(VertexBuffer* vertexBuffer, std::vector<int>& indices)
 	glBindVertexArray(0);
 }
 
-void Mesh::DrawInstance(mat4x4* pMat, int count, GLenum drawMode)
+void Mesh::DrawInstance(mat4x4* pMat, int count)
 {
 	//glm::mat4 Proj = glm::perspective(glm::radians(45.0f), (float)1024.0f / (float)768.0f, 0.1f, 5000.0f);
 	//glm::mat4 View = glm::inverse(camTrans.GetWorldMatrix());

@@ -96,9 +96,11 @@ public:
 
 	//월드 위치를 얻는다.
 	vec3 GetWorldPosition() const;
+	vec3 GetLocalPosition() const;
 
 	//크기를 얻는다.
-	vec3 GetScale()const;
+	vec3 GetLocalScale()const;
+	vec3 GetLossyScale()const;
 
 	//최종행렬을 얻는다.
 	mat4x4 GetWorldMatrix() const;

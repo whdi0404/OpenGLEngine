@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SkinnedMesh.h"
 
-SkinnedMesh::SkinnedMesh()
+SkinnedMesh::SkinnedMesh() : root(nullptr)
 {
 }
 
@@ -13,6 +13,11 @@ SkinnedMesh::~SkinnedMesh()
 void SkinnedMesh::SetAvatar(Avatar * avatar)
 {
 	this->avatar = avatar;
+}
+
+void SkinnedMesh::SetBone(Transform* root)
+{
+	this->root = root; 
 }
 
 void SkinnedMesh::AddBone(Transform * boneTransform)
