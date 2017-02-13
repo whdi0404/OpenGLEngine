@@ -6,18 +6,19 @@ class Material;
 class Scene :
 	public Transform
 {
-	friend class Scene;
+//public:
+//	Scene();
+//	~Scene();
+
 public:
-	Scene();
-	~Scene();
-
-	void Initialize();
-	void Update();
-
+	virtual void Initialize() {}
+	virtual void Update() {}
+	virtual void OnDrawGizmos() {}
+/*
 private:
 	Camera* camera;
 	Material* terrainMaterial;
 
 	Transform* boneRoot;
-	Mesh* gizmo;
+	Mesh* gizmo;*/
 };

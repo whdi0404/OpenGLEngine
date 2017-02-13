@@ -16,19 +16,25 @@ public:
 	BoneInfo(FbxNode* fbxNode, Transform* parent = nullptr) : fbxNode(fbxNode)
 	{
 		boneTransform = new Transform();
+		boneTransform->SetName(fbxNode->GetName());
 
-		auto fbxMatrix = fbxNode->EvaluateLocalTransform(0.1f);
+		auto fbxMatrix = fbxNode->EvaluateLocalTransform(0.0f);
 		glm::mat4x4 mat;
 		auto double44 = fbxMatrix.Double44();
 		for (int col = 0; col < 4; ++col)
 			for (int row = 0; row < 4; ++row)
 			{
-				float val = double44[col][row];
+				float val = static_cast<float>(double44[col][row]);
 				mat[col][row] = val;
 			}
-		boneTransform->SetWorldMatrix(mat);
 		if (parent != nullptr)
+		{
 			boneTransform->SetParent(parent);
+			std::cout << parent->GetName() <<" - ";
+		}
+
+		boneTransform->SetLocalMatrix(mat);
+		std::cout << boneTransform->GetName() << std::endl;
 		//(float)fbxNode->EvaluateLocalScaling().Length()
 		maxScale = glm::max(maxScale, (float)boneTransform->GetLossyScale().length());
 	}
@@ -88,20 +94,20 @@ void FBXHelper::LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, Fb
 
 		switch (attributeType)
 		{
-		case FbxNodeAttribute::eMesh:
-		{
-			FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
+			case FbxNodeAttribute::eMesh:
+			{
+				FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
 
-			Mesh* mesh = LoadMeshData(fbxScene, (FbxMesh*)nodeAttributeFbx);
-			if (mesh == nullptr)
-				continue;
+				Mesh* mesh = LoadMeshData(fbxScene, (FbxMesh*)nodeAttributeFbx);
+				if (mesh == nullptr)
+					continue;
 
-			if (dynamic_cast<SkinnedMesh*>(mesh) == nullptr)
-				LoadNodeKeyframeAnimation(fbxScene, fbxNode);
+				//if (dynamic_cast<SkinnedMesh*>(mesh) != nullptr)
+				//	LoadNodeKeyframeAnimation(fbxScene, fbxNode);
 
-			refObject.push_back(mesh);
+				refObject.push_back(mesh);
+			}
 			break;
-		}
 		}
 	}
 }
@@ -178,10 +184,12 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh)
 		//쉐이더에 들어갈 행렬은 bone들만.
 		//에니메이션하는 행렬들은 bone들 뿐일것임.
 		
-
-		FbxNode* rootBone = fbxMesh->GetNode(0);// skin->GetCluster(0)->GetLink();
-		while (rootBone->GetParent() != nullptr)
+		FbxNode* rootBone = skin->GetCluster(0)->GetLink();
+		while(rootBone->GetParent() != nullptr && rootBone->GetParent()->GetParent() != nullptr)
+		{
 			rootBone = rootBone->GetParent();
+		}
+		std::cout << "ClusterName: " << rootBone->GetName() << std::endl;
 		Transform* boneRoot = GetBones(rootBone);
 		//DrawHierarchy(/*(FbxNode*)fbxScene*/rootBone);
 

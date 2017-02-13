@@ -14,6 +14,7 @@ Material::Material(Shader* shader, unsigned short renderOrder) : shader(shader),
 	glUseProgram(shaderID);
 	matProj = glGetUniformLocation(shaderID, "matProj");
 	matView = glGetUniformLocation(shaderID, "matView");
+	glUseProgram(0);
 }
 
 Material::~Material()

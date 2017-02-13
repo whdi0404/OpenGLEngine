@@ -37,9 +37,6 @@
     <Filter Include="FrameWork\Object\Component">
       <UniqueIdentifier>{61fa38fa-c981-46e1-8e84-465185692410}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FrameWork\RenderObj\RenderElements">
-      <UniqueIdentifier>{7560fe8d-eab1-4707-8025-82a4e31227eb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="FrameWork\Object\Component\RenderObject">
       <UniqueIdentifier>{51d0d59c-9fdb-4269-a89c-2541a613bc87}</UniqueIdentifier>
     </Filter>
@@ -57,6 +54,12 @@
     </Filter>
     <Filter Include="Util">
       <UniqueIdentifier>{35198ad9-f37c-465a-b2f4-e1630c8c0cf6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FrameWork\RenderAttribute">
+      <UniqueIdentifier>{7560fe8d-eab1-4707-8025-82a4e31227eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scenes">
+      <UniqueIdentifier>{c93b39bd-7f4a-4385-bd3c-d75a8c355440}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -83,15 +86,6 @@
     </ClCompile>
     <ClCompile Include="RenderObject.cpp">
       <Filter>FrameWork\Object\Component</Filter>
-    </ClCompile>
-    <ClCompile Include="AttributeBase.cpp">
-      <Filter>FrameWork\RenderObj\RenderElements</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>FrameWork\RenderObj\RenderElements</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>FrameWork\RenderObj\RenderElements</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>FrameWork\Object</Filter>
@@ -138,15 +132,6 @@
     <ClCompile Include="Delegate.cpp">
       <Filter>Util</Filter>
     </ClCompile>
-    <ClCompile Include="MeshVertexAttribute.cpp">
-      <Filter>FrameWork\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexBuffer.cpp">
-      <Filter>FrameWork\Object</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexAttributeDeclarative.cpp">
-      <Filter>FrameWork</Filter>
-    </ClCompile>
     <ClCompile Include="SkinnedMesh.cpp">
       <Filter>FrameWork\Object</Filter>
     </ClCompile>
@@ -155,6 +140,27 @@
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>PreCompiledHeader</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexAttributeDeclarative.cpp">
+      <Filter>FrameWork\RenderAttribute</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexBuffer.cpp">
+      <Filter>FrameWork\RenderAttribute</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshVertexAttribute.cpp">
+      <Filter>FrameWork\RenderAttribute</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>FrameWork\RenderObj</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>FrameWork\RenderObj</Filter>
+    </ClCompile>
+    <ClCompile Include="BoneScene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Gizmo.cpp">
+      <Filter>FrameWork\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,15 +187,6 @@
     </ClInclude>
     <ClInclude Include="RenderObject.h">
       <Filter>FrameWork\Object\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="AttributeBase.h">
-      <Filter>FrameWork\RenderObj\RenderElements</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>FrameWork\RenderObj\RenderElements</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>FrameWork\RenderObj\RenderElements</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>FrameWork\Object</Filter>
@@ -239,20 +236,32 @@
     <ClInclude Include="Delegate.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="MeshVertexAttribute.h">
-      <Filter>FrameWork\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexBuffer.h">
-      <Filter>FrameWork\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexAttributeDeclarative.h">
-      <Filter>FrameWork</Filter>
-    </ClInclude>
     <ClInclude Include="SkinnedMesh.h">
       <Filter>FrameWork\Object</Filter>
     </ClInclude>
     <ClInclude Include="Avatar.h">
       <Filter>FrameWork\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexAttributeDeclarative.h">
+      <Filter>FrameWork\RenderAttribute</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.h">
+      <Filter>FrameWork\RenderAttribute</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshVertexAttribute.h">
+      <Filter>FrameWork\RenderAttribute</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>FrameWork\RenderObj</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>FrameWork\RenderObj</Filter>
+    </ClInclude>
+    <ClInclude Include="BoneScene.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Gizmo.h">
+      <Filter>FrameWork\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Mesh.h"
-#include "AttributeBase.h"
 #include "Texture.h"
 #include "GameObject.h"
 #include "RenderObject.h"

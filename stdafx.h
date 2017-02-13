@@ -70,3 +70,5 @@ inline Output horrible_cast(const Input input) {
 extern Renderer* g_Renderer;
 extern GLFWwindow* g_Window;
 extern FbxManager* g_FbxSdkManager;
+
+#define STARTSCENE_CLASSNAME BoneScene

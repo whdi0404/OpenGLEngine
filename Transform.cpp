@@ -287,7 +287,7 @@ Transform & Transform::SetWorldMatrix(mat4x4 mat)
 {
 	mat4x4 newLocalMat;
 	if(parent != nullptr)
-		newLocalMat = mat * inverse(parent->GetWorldMatrix());
+		newLocalMat = inverse(parent->GetWorldMatrix()) * mat;
 	else
 		newLocalMat = mat;
 

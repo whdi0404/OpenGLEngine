@@ -19,6 +19,9 @@ public:
 	Camera();
 	~Camera();
 
+	void Initialize();
+	void Update();
+
 	void SetFOV(float degree)
 	{
 		FOVDeg = degree;

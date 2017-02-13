@@ -3,13 +3,25 @@
 
 using namespace Math;
 
-Camera::Camera() : RenderObject(), FOVDeg(45.0f), projectionType(ProjectionType::Perspective),
+Camera::Camera() : FOVDeg(45.0f), projectionType(ProjectionType::Perspective),
 fNear(0.1f), fFar(200.0f)
 {
 }
 
 Camera::~Camera()
 {
+}
+
+void Camera::Initialize()
+{
+	RenderObject::Initialize();
+	RefreshProjection();
+	RefreshViewMatrix();
+}
+
+void Camera::Update()
+{
+	RefreshViewMatrix();
 }
 
 void Camera::RefreshProjection()

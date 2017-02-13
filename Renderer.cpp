@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Renderer.h"
-#include "AttributeBase.h"
 #include "Texture.h"
 #include "GameObject.h"
 #include "RenderObject.h"
@@ -45,6 +44,7 @@ void Renderer::Render(Octree* octree)
 	for (int i = 0; i < cameraList.size(); ++i)
 	{
 		Camera* cam = cameraList[i];
+		cam->Update();
 
 		prevMtrl = nullptr;
 		renderObjectCollecdtor->ClearAllRenderObjects();
@@ -56,16 +56,14 @@ void Renderer::Render(Octree* octree)
 			auto& renderObjects = renderObjectsGroup[j];
 			if (renderObjects.renderobjects->size() == 0)
 				continue;
+
+			/*for (int k = 0; k < renderObjects.renderobjects->size(); ++k)
+				(*renderObjects.renderobjects)[k]->Update();*/
 			
 			matrixBuffer.clear();
 			(*renderObjects.renderobjects)[0]->Render(*renderObjects.renderobjects, cam);
 		}
 	}
-
-	// 렌더 버퍼 교체. (그린 결과를 디스플레이하는 명령)
-	glfwSwapBuffers(g_Window);
-	// 윈도우 이벤트 (키 스트로크 등) 폴링.
-	glfwPollEvents();
 }
 
 void Renderer::Release()

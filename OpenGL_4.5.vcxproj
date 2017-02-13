@@ -128,13 +128,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AttributeBase.cpp" />
     <ClCompile Include="Avatar.cpp" />
+    <ClCompile Include="BoneScene.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Delegate.cpp" />
     <ClCompile Include="FBXHelper.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Gizmo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="math.cpp" />
@@ -165,12 +166,13 @@
     <ClCompile Include="VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AttributeBase.h" />
     <ClInclude Include="Avatar.h" />
+    <ClInclude Include="BoneScene.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="FBXHelper.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Gizmo.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="math.h" />
     <ClInclude Include="Mesh.h" />

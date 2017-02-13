@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SceneGraph.h"
 #include "Time.h"
+#include "Gizmo.h"
 
 // GLFW 윈도우 핸들러
 GLFWwindow* g_Window = NULL;
@@ -53,6 +54,7 @@ int main() {
 
 	g_Renderer = new Renderer();
 	g_Renderer->Initialize();
+	Gizmo::Initialize();
 
 	// 주 렌더링 루프. 윈도우가 종료되기 전까지 반복한다.
 	SceneGraph::GetInstance().Initialize();

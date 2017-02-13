@@ -68,8 +68,6 @@ inline TComponent* GameObject::AddComponent()
 */
 	if (&Component::Update != &TComponent::Update)
 		SceneGraph::GetInstance().updates.insert(newComp);
-		
-	
 
 	return newComponent;
 }
