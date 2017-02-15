@@ -10,13 +10,23 @@ public:
 	~SkinnedMesh();
 
 	void SetAvatar(Avatar* avatar);
-	void SetBone(Transform* root);
+	void SetRoot(Transform* root);
 	void AddBone(Transform* boneTransform);
 	Transform* GetBone(std::string boneName);
 
+public:
+	virtual void DrawInstance(mat4x4* pMat, int count);
+
 private:
+
 	Avatar* avatar;
 	std::unordered_map<std::string, Transform*> bones;
-	std::vector<Transform*> boneArray;
+	std::vector<Transform*> boneTransforms;
+
+	GetMacro(mat4x4*, BoneMatrices, boneMatrices);
+	int GetBoneCount()
+	{
+		return boneTransforms.size();
+	}
 	GetMacro(Transform*, Root, root);
 };

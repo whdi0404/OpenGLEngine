@@ -23,11 +23,11 @@ public:
 		color.r = r;
 		color.g = g;
 		color.b = b;
+		glColor3f(Gizmo::color.r, Gizmo::color.g, Gizmo::color.b);
 	}
 	static void SetColor(glm::vec3 color)
 	{
-		Gizmo::color = color;
-		glColor3f(Gizmo::color.r, Gizmo::color.g, Gizmo::color.b);
+		SetColor(color.r, color.g, color.b);
 	}
 
 	static int GetThick() { return lineThick; }

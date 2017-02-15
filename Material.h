@@ -13,18 +13,21 @@ private:
 	struct ParamData
 	{
 		enum Type {TEX2D, FLOAT, VEC2, VEC3, VEC4, MAT2X2, MAT3X3, MAT4X4};
+
+		static void* GetBuffer(Type type, int count);
 		
-		ParamData(Material* mtrl, std::string& paramName, Texture2D*& texture2D);
-		ParamData(Material* mtrl, std::string& paramName, float& value);
-		ParamData(Material* mtrl, std::string& paramName, vec2& vector2);
-		ParamData(Material* mtrl, std::string& paramName, vec3& vector3);
-		ParamData(Material* mtrl, std::string& paramName, vec4& vector4);
-		ParamData(Material* mtrl, std::string& paramName, mat2x2& mat2);
-		ParamData(Material* mtrl, std::string& paramName, mat3x3& mat3);
-		ParamData(Material* mtrl, std::string& paramName, mat4x4& mat4);
+		ParamData(Material* mtrl, std::string& paramName, Texture2D* texture2D);
+		ParamData(Material* mtrl, std::string& paramName, float* value, int count);
+		ParamData(Material* mtrl, std::string& paramName, vec2* vector2, int count);
+		ParamData(Material* mtrl, std::string& paramName, vec3* vector3, int count);
+		ParamData(Material* mtrl, std::string& paramName, vec4* vector4, int count);
+		ParamData(Material* mtrl, std::string& paramName, mat2x2* mat2, int count);
+		ParamData(Material* mtrl, std::string& paramName, mat3x3* mat3, int count);
+		ParamData(Material* mtrl, std::string& paramName, mat4x4* mat4, int count);
 		
 		void ReleaseData();
-		void SetParam(int arg1);
+		void SetData(void* data, int dataSize);
+		void SetParam(int activeTexture);
 		void BindUniformValue(Material* mtrl, std::string& paramName);
 
 	private:
@@ -32,6 +35,7 @@ private:
 		GetMacro(Type, Type, type);
 		GLuint uniformLocation;
 		void* pData;
+		int count;
 	};
 
 public:
@@ -39,13 +43,13 @@ public:
 	~Material();
 
 	void SetTexture(std::string& paramName, Texture2D* texture);
-	void SetFloat(std::string& paramName, float value);
-	void SetVec2(std::string& paramName, vec2 vector);
-	void SetVec3(std::string& paramName, vec3 vector);
-	void SetVec4(std::string& paramName, vec4 vector);
-	void SetMatrix2x2(std::string& paramName, mat2x2 matrix);
-	void SetMatrix3x3(std::string& paramName, mat3x3 matrix);
-	void SetMatrix4x4(std::string& paramName, mat4x4 matrix);
+	void SetFloat(std::string& paramName, float* value, int count);
+	void SetVec2(std::string& paramName, vec2* vector, int count);
+	void SetVec3(std::string& paramName, vec3* vector, int count);
+	void SetVec4(std::string& paramName, vec4* vector, int count);
+	void SetMatrix2x2(std::string& paramName, mat2x2* matrix, int count);
+	void SetMatrix3x3(std::string& paramName, mat3x3* matrix, int count);
+	void SetMatrix4x4(std::string& paramName, mat4x4* matrix, int count);
 
 	void BindUniformValue();
 	void BindShader();

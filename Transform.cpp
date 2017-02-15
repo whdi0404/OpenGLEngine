@@ -126,9 +126,9 @@ Transform & Transform::SetRotateLocal(const mat4x4 & matRotation)
 		matRotation[1][2]));
 
 	forward = normalize(vec3(
-		matRotation[1][0],
-		matRotation[1][1],
-		matRotation[1][2]));
+		matRotation[2][0],
+		matRotation[2][1],
+		matRotation[2][2]));
 
 	UpdateTransform();
 	return *this;
@@ -237,6 +237,9 @@ Transform & Transform::UpdateTransform()
 		worldPosition = localPosition;
 		lossyScale = localScale;
 	}
+	for (int i = 0; i < v_Children.size(); ++i)
+		v_Children[i]->UpdateTransform();
+
 	if (gameObject == nullptr)
 		return *this;
 
@@ -246,9 +249,6 @@ Transform & Transform::UpdateTransform()
 	{
 		this->gameObject->RefreshOctreeNode();
 	}
-	
-	for (int i = 0; i < v_Children.size(); ++i)
-		v_Children[i]->UpdateTransform();
 
 	return *this;
 }
@@ -301,11 +301,9 @@ Transform & Transform::SetLocalMatrix(mat4x4 mat)
 	up = vec3(mat[1][0], mat[1][1], mat[1][2]);
 	right = vec3(mat[0][0], mat[0][1], mat[0][2]);
 	forward = vec3(mat[2][0], mat[2][1], mat[2][2]);
-
-	localScale = vec3(up.length(), right.length(), forward.length());
-
+	
+	localScale = vec3(glm::length(up), glm::length(right), glm::length(forward));
 	localPosition = vec3(mat[3][0], mat[3][1], mat[3][2]);
-
 	UpdateTransform();
 
 	return *this;

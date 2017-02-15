@@ -9,6 +9,15 @@ public: \
 		return varName;\
 	}
 
+#define GetMacroProtected(type, fnName, varName)\
+protected: \
+	type varName; \
+public: \
+	type& Get##fnName()\
+	{\
+		return varName;\
+	}
+
 #define SetMacro(type, fnName, varName)\
 private: \
 	type varName; \
@@ -18,8 +27,24 @@ public: \
 		varName = value;\
 	}
 
+#define SetMacroProtected(type, fnName, varName)\
+protected: \
+	type varName; \
+public: \
+	void Set##fnName(type value)\
+	{\
+		varName = value;\
+	}
+
 #define GetSetMacro(type, fnName, varName)\
 GetMacro(type, fnName, varName)\
+	void Set##fnName(type value)\
+	{\
+		varName = value;\
+	}
+
+#define GetSetMacroProtected(type, fnName, varName)\
+GetMacroProtected(type, fnName, varName)\
 	void Set##fnName(type value)\
 	{\
 		varName = value;\
@@ -58,6 +83,8 @@ public:
 Delegate<Component, void(Component::*)()> del(*this, &Component::Update);
 Execute(del)();
 */
+glm::mat4x4 GetGLMMatrixFromFBXMatrix(FbxAMatrix fbxMatrix);
+
 GLuint CreateShader(const char* file_path, GLenum shaderType);
 
 GLuint AttachShaderToProgram(GLuint programID, GLuint count, ...);

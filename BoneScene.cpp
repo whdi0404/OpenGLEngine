@@ -14,7 +14,6 @@ BoneScene::BoneScene()
 {
 }
 
-
 BoneScene::~BoneScene()
 {
 }
@@ -42,22 +41,30 @@ void BoneScene::Initialize()
 	Shader* skinnedShader = new Shader("./Shaders/TestSkinnedVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
 	Material* material = new Material(shader, 1);
 	Material* skinnedMaterial = new Material(skinnedShader, 1);
-	
-	Texture2D* modelTex = new Texture2D("./Tex/Tex_0049_1.jpg");
+
+	Texture2D* modelTex = new Texture2D("./Models/girl_1/girl1_d.tga");
 	material->SetTexture(std::string("tex"), modelTex);
 	skinnedMaterial->SetTexture(std::string("tex"), modelTex);
-	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/SIG.FBX");
+
+	glm::mat4x4 modelMatrix = glm::mat4x4();
+	modelMatrix = glm::rotate(modelMatrix, -glm::radians(90.0f), glm::vec3(1, 0, 0));
+
+	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/SIG.FBX", modelMatrix);
 	TestObject((Mesh*)meshes[0], material, vec3(), 1);
-	
-	std::vector<Object*> bones = FBXHelper::GetResourcesFromFile("./Models/1 (1).fbx"); 
+
+	std::vector<Object*> bones = FBXHelper::GetResourcesFromFile("./Models/1 (1).FBX", modelMatrix);
 	SkinnedMesh* skinnedMesh = dynamic_cast<SkinnedMesh*>(bones[0]);
-	TestObject((Mesh*)bones[0], skinnedMaterial, vec3(), 1);
+	GameObject* testModel = TestObject((Mesh*)bones[0], skinnedMaterial, vec3(), 1.0f);
+	testModel->GetTransform()->SetLocalScale(1.0f, 1.0f, 1.0f);
+
+	root = skinnedMesh->GetRoot();
+	root->SetLocalScale(1.0f , 1.0f, 1.0f);
 }
 
 void BoneScene::Update()
 {
 	bool camChanged = false;
-	
+
 	float dt = Time::GetInstance().GetDeltaTime();
 	int state = glfwGetKey(g_Window, GLFW_KEY_W);
 	if (state == GLFW_PRESS)
@@ -127,5 +134,26 @@ void BoneScene::Update()
 
 void BoneScene::OnDrawGizmos()
 {
-	Gizmo::DrawLine(camera, vec3(0, 0, 0), vec3(3, 3, 3));
+	/*Gizmo::DrawLine(camera, vec3(0, 0, 0), vec3(3, 3, 3));
+*/
+	std::stack<Transform*> transStack = std::stack<Transform*>();
+	transStack.push(root);
+	//transStack.push(trans->GetTransform());
+
+	while (transStack.empty() == false)
+	{
+		auto parent = transStack.top();
+		transStack.pop();
+
+		for (int i = 0; i < parent->GetChildCount(); ++i)
+		{
+			auto child = parent->GetChild(i);
+
+			Gizmo::SetColor(float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f);
+			Gizmo::DrawLine(camera, parent->GetWorldPosition(), child->GetWorldPosition());
+
+			if (child->GetChildCount() > 0)
+				transStack.push(child);
+		}
+	}
 }

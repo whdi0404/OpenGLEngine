@@ -4,43 +4,7 @@
 #include "SkinnedMesh.h"
 #include "VertexBuffer.h"
 #include "MeshVertexAttribute.h"
-
-float maxScale = 0;
-struct BoneInfo
-{
-	FbxNode* fbxNode;
-	Transform* boneTransform;
-private:
-	BoneInfo();
-public:
-	BoneInfo(FbxNode* fbxNode, Transform* parent = nullptr) : fbxNode(fbxNode)
-	{
-		boneTransform = new Transform();
-		boneTransform->SetName(fbxNode->GetName());
-
-		auto fbxMatrix = fbxNode->EvaluateLocalTransform(0.0f);
-		glm::mat4x4 mat;
-		auto double44 = fbxMatrix.Double44();
-		for (int col = 0; col < 4; ++col)
-			for (int row = 0; row < 4; ++row)
-			{
-				float val = static_cast<float>(double44[col][row]);
-				mat[col][row] = val;
-			}
-		if (parent != nullptr)
-		{
-			boneTransform->SetParent(parent);
-			std::cout << parent->GetName() <<" - ";
-		}
-
-		boneTransform->SetLocalMatrix(mat);
-		std::cout << boneTransform->GetName() << std::endl;
-		//(float)fbxNode->EvaluateLocalScaling().Length()
-		maxScale = glm::max(maxScale, (float)boneTransform->GetLossyScale().length());
-	}
-};
-
-std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath)
+std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::mat4x4 modelTransform)
 {
 	std::stack<FbxNode*> stack;
 	if (g_FbxSdkManager == nullptr)
@@ -68,7 +32,9 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath)
 				for (int i = 0; i < node->GetChildCount(); ++i)
 				{
 					FbxNode* childNode = node->GetChild(i);
-					LoadNode(returnObject, pFbxScene, childNode);
+
+					
+					LoadNode(returnObject, pFbxScene, childNode, modelTransform);
 
 					if (childNode->GetChildCount() != 0)
 						stack.push(childNode);
@@ -84,7 +50,7 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath)
 	return returnObject;
 }
 
-void FBXHelper::LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, FbxNode* fbxNode)
+void FBXHelper::LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, FbxNode* fbxNode, glm::mat4x4 modelTransform)
 {
 	int numAttributes = fbxNode->GetNodeAttributeCount();
 	for (int i = 0; i < numAttributes; i++)
@@ -98,7 +64,7 @@ void FBXHelper::LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, Fb
 			{
 				FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
 
-				Mesh* mesh = LoadMeshData(fbxScene, (FbxMesh*)nodeAttributeFbx);
+				Mesh* mesh = LoadMeshData(fbxScene, (FbxMesh*)nodeAttributeFbx, modelTransform);
 				if (mesh == nullptr)
 					continue;
 
@@ -112,7 +78,7 @@ void FBXHelper::LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, Fb
 	}
 }
 
-Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh)
+Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 modelTransform)
 {
 	VertexBuffer* vertexBuffer;
 	std::vector<int> indices;
@@ -134,7 +100,9 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh)
 		vertex.x = (float)pVertices[j].mData[0];
 		vertex.y = (float)pVertices[j].mData[1];
 		vertex.z = (float)pVertices[j].mData[2];
-		position.push_back(vertex);
+
+		vec4 rotVec = modelTransform * vec4(vertex.x, vertex.y, vertex.z, 1);
+		position.push_back(vec3(rotVec.x, rotVec.y, rotVec.z));
 		//(*pOutPosition)[j] = vertex;
 
 		vec2 uv;
@@ -173,6 +141,8 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh)
 	FbxSkin* skin = (FbxSkin*)fbxMesh->GetDeformer(0, FbxDeformer::eSkin);
 	if (skin != nullptr)
 	{
+		SkinnedMesh* newMesh = new SkinnedMesh();
+
 		std::vector<vec4> boneWeights;
 		std::vector<vec4> boneIndices;
 		boneWeights.resize(position.size(), vec4(-1, -1, -1, -1));
@@ -184,44 +154,42 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh)
 		//쉐이더에 들어갈 행렬은 bone들만.
 		//에니메이션하는 행렬들은 bone들 뿐일것임.
 		
-		FbxNode* rootBone = skin->GetCluster(0)->GetLink();
-		while(rootBone->GetParent() != nullptr && rootBone->GetParent()->GetParent() != nullptr)
+		for (int i = 0; i < boneCount; ++i)
 		{
-			rootBone = rootBone->GetParent();
+			FbxCluster* cluster = skin->GetCluster(i);
+			FbxNode* node = cluster->GetLink();
+
+			FbxAMatrix bindPoseMatrix;
+			cluster->GetTransformLinkMatrix(bindPoseMatrix);
+
+			Transform* boneTransform = new Transform();
+			std::string name = node->GetName();
+			boneTransform->SetName(name);
+			boneTransform->SetLocalMatrix(GetGLMMatrixFromFBXMatrix(bindPoseMatrix));
+			newMesh->AddBone(boneTransform);
 		}
-		std::cout << "ClusterName: " << rootBone->GetName() << std::endl;
-		Transform* boneRoot = GetBones(rootBone);
-		//DrawHierarchy(/*(FbxNode*)fbxScene*/rootBone);
 
 		for (int boneIndex = 0; boneIndex < boneCount; boneIndex++)
 		{
 			FbxCluster* cluster = skin->GetCluster(boneIndex);
 			FbxNode* bone = cluster->GetLink(); // Get a reference to the bone's node
 												// Get the bind pose
-
-			std::cout << "boneIndex: " << boneIndex << " name: " << bone->GetName() << std::endl;
-			//FbxAMatrix bindPoseMatrix;
-			//
-			//cluster->GetTransformLinkMatrix(bindPoseMatrix);
+			
+			FbxNode* parentBone = bone->GetParent();
+			if (parentBone != nullptr)
+			{
+				Transform* parentTransform = newMesh->GetBone(parentBone->GetName());
+				if (parentTransform != nullptr)
+					newMesh->GetBone(bone->GetName())->SetParent(parentTransform);
+				else
+					newMesh->SetRoot(newMesh->GetBone(bone->GetName()));
+			}
 
 			//Blending Infos
 			int *boneVertexIndices = cluster->GetControlPointIndices();
 			double *boneVertexWeights = cluster->GetControlPointWeights();
 			// Iterate through all the vertices, which are affected by the bone
 			int numBoneVertexIndices = cluster->GetControlPointIndicesCount();
-			
-			/*Transform* newTrans = new Transform();
-			auto fbxMatrix = bone->EvaluateLocalTransform(0.1f);
-			glm::mat4x4 mat;
-			auto double44 = fbxMatrix.Double44();
-			for (int col = 0; col < 4; ++col)
-				for (int row = 0; row < 4; ++row)
-				{
-					float val = double44[col][row];
-					mat[col][row] = val;
-				}
-			newTrans->SetWorldMatrix(mat);
-			boneRoot->AddChild(newTrans);*/
 
 			for (int i = 0; i < numBoneVertexIndices; i++)
 			{
@@ -276,8 +244,6 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh)
 			vertexBuffer->SetVector(Element::BoneWeights, i, boneWeights[i]);
 			vertexBuffer->SetVector(Element::BoneIndices, i, boneIndices[i]);
 		}
-		SkinnedMesh* newMesh = new SkinnedMesh();
-		newMesh->SetBone(boneRoot);
 		newMesh->SetMeshData(vertexBuffer, indices);
 		return newMesh;
 	}
@@ -316,65 +282,65 @@ void FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* fbxNode)
 		{
 			FbxAnimLayer* lAnimLayer = lAnimStack->GetMember<FbxAnimLayer>(j);
 
-			FbxString layerName = "  Animation Layer Name: ";
-			layerName += lAnimLayer->GetName();
-			std::string sLayerName = layerName;
+			//FbxString layerName = "  Animation Layer Name: ";
+			//layerName += lAnimLayer->GetName();
+			//std::string sLayerName = layerName;
 
-			std::queue<BoneInfo> queueNodes;
-			queueNodes.push(BoneInfo(fbxScene->GetRootNode()));
+			//std::queue<BoneInfo> queueNodes;
+			//queueNodes.push(BoneInfo(fbxScene->GetRootNode()));
 
-			while (queueNodes.empty() == false)
-			{
-				BoneInfo node = queueNodes.front();
-				queueNodes.pop();
+			//while (queueNodes.empty() == false)
+			//{
+			//	BoneInfo node = queueNodes.front();
+			//	queueNodes.pop();
 
-				int childNode = node.fbxNode->GetChildCount();
-				for (int k = 0; k < childNode; ++k)
-				{
-					FbxNode* childNode = node.fbxNode->GetChild(k);
-					queueNodes.push(BoneInfo(childNode, node.boneTransform));
-				}
-				FbxAnimCurve *translateCurve = node.fbxNode->LclTranslation.GetCurve(lAnimLayer);
-				if (translateCurve == nullptr)
-					continue;
-				FbxAnimCurve *rotationCurve = node.fbxNode->LclRotation.GetCurve(lAnimLayer);
-				FbxAnimCurve *scalingCurve = node.fbxNode->LclScaling.GetCurve(lAnimLayer);
+			//	int childNode = node.fbxNode->GetChildCount();
+			//	for (int k = 0; k < childNode; ++k)
+			//	{
+			//		FbxNode* childNode = node.fbxNode->GetChild(k);
+			//		queueNodes.push(BoneInfo(childNode, node.boneTransform));
+			//	}
+			//	FbxAnimCurve *translateCurve = node.fbxNode->LclTranslation.GetCurve(lAnimLayer);
+			//	if (translateCurve == nullptr)
+			//		continue;
+			//	FbxAnimCurve *rotationCurve = node.fbxNode->LclRotation.GetCurve(lAnimLayer);
+			//	FbxAnimCurve *scalingCurve = node.fbxNode->LclScaling.GetCurve(lAnimLayer);
 
-				int numKeys = translateCurve->KeyGetCount();
-				for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
-				{
-					//Todo: 각 행렬마다 프레임별로 저장해둬야함.
-					FbxTime frameTime = translateCurve->KeyGetTime(keyIndex);
-					FbxAMatrix fbxMatrix = node.fbxNode->EvaluateLocalTransform(frameTime);
-					glm::mat4x4 mat;
-					auto double44 = fbxMatrix.Double44();
-					for (int col = 0; col < 4; ++col)
-						for(int row = 0; row < 4 ; ++row)
-							mat[col][row] = double44[col][row];
-					node.boneTransform->SetLocalMatrix(mat);
-					//FbxVector4 rotation = node.fbxNode->EvaluateLocalRotation(frameTime);
-					//glm::quat quaternion = glm::quat((float)rotation[0], (float)rotation[1], (float)rotation[2], (float)rotation[3]);
-					//
-					//FbxVector4 position = node.fbxNode->EvaluateLocalTransform(lAnimLayer);
-					//glm::vec3 translate = glm::vec3((float)position[0], (float)position[1], (float)position[2]);
-					//node.boneTransform->SetRotateLocal(quaternion);
-					//node.boneTransform->SetLocalPosition(translate);
-					//
-					//float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
-				}
-				if (scalingCurve != nullptr)
-				{
-					
-				}
-				else
-				{
-					// If this animation layer has no scaling curve, then use the default one, if needed
-					FbxDouble3 scalingVector = fbxNode->LclScaling.Get();
-					float x = (float)scalingVector[0];
-					float y = (float)scalingVector[1];
-					float z = (float)scalingVector[2];
-				}
-			}
+			//	int numKeys = translateCurve->KeyGetCount();
+			//	for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
+			//	{
+			//		//Todo: 각 행렬마다 프레임별로 저장해둬야함.
+			//		FbxTime frameTime = translateCurve->KeyGetTime(keyIndex);
+			//		FbxAMatrix fbxMatrix = node.fbxNode->EvaluateLocalTransform(frameTime);
+			//		glm::mat4x4 mat;
+			//		auto double44 = fbxMatrix.Double44();
+			//		for (int col = 0; col < 4; ++col)
+			//			for(int row = 0; row < 4 ; ++row)
+			//				mat[col][row] = double44[col][row];
+			//		node.boneTransform->SetLocalMatrix(mat);
+			//		//FbxVector4 rotation = node.fbxNode->EvaluateLocalRotation(frameTime);
+			//		//glm::quat quaternion = glm::quat((float)rotation[0], (float)rotation[1], (float)rotation[2], (float)rotation[3]);
+			//		//
+			//		//FbxVector4 position = node.fbxNode->EvaluateLocalTransform(lAnimLayer);
+			//		//glm::vec3 translate = glm::vec3((float)position[0], (float)position[1], (float)position[2]);
+			//		//node.boneTransform->SetRotateLocal(quaternion);
+			//		//node.boneTransform->SetLocalPosition(translate);
+			//		//
+			//		//float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
+			//	}
+			//	if (scalingCurve != nullptr)
+			//	{
+			//		
+			//	}
+			//	else
+			//	{
+			//		// If this animation layer has no scaling curve, then use the default one, if needed
+			//		FbxDouble3 scalingVector = fbxNode->LclScaling.Get();
+			//		float x = (float)scalingVector[0];
+			//		float y = (float)scalingVector[1];
+			//		float z = (float)scalingVector[2];
+			//	}
+			//}
 		}
 	}
 
@@ -423,26 +389,4 @@ void FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, FbxNode* fbxNode)
 	//		// Analogically, process rotationa and translation
 	//	}
 	//}
-}
-Transform* FBXHelper::GetBones(FbxNode* rootNode)
-{
-	std::queue<BoneInfo> nodeQueue;
-	BoneInfo rootInfo = BoneInfo(rootNode);
-	nodeQueue.push(rootInfo);
-	Transform* rootTransform = rootInfo.boneTransform;
-	
-	while (nodeQueue.empty() == false)
-	{
-		BoneInfo parentNode = nodeQueue.front();
-		nodeQueue.pop();
-
-		int childCount = parentNode.fbxNode->GetChildCount();
-		for (int i = 0; i < childCount; ++i)
-		{
-			FbxNode* childNode = parentNode.fbxNode->GetChild(i);
-			nodeQueue.push(BoneInfo(childNode, parentNode.boneTransform));
-		}
-	}
-
-	return rootTransform;
 }

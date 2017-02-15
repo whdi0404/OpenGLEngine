@@ -61,39 +61,18 @@ void Mesh::SetMeshData(VertexBuffer* vertexBuffer, std::vector<int>& indices)
 
 void Mesh::DrawInstance(mat4x4* pMat, int count)
 {
-	//glm::mat4 Proj = glm::perspective(glm::radians(45.0f), (float)1024.0f / (float)768.0f, 0.1f, 5000.0f);
-	//glm::mat4 View = glm::inverse(camTrans.GetWorldMatrix());
-
-	////BindShaderProgram
-	//glUseProgram(shaderProgamID);
-	//
-
-	////BindView,Proj Matrices
-	//GLuint matProj = glGetUniformLocation(shaderProgramID, "matProj");
-	//glUniformMatrix4fv(matProj, 1, GL_FALSE, &Proj[0][0]);
-
-	//GLuint matView = glGetUniformLocation(shaderProgramID, "matView");
-	//glUniformMatrix4fv(matView, 1, GL_FALSE, &View[0][0]);
-
 	glBindVertexArray(vertexArrayID);
 
 	//BindMatrix
 	glBindBuffer(GL_ARRAY_BUFFER, matrixBufferID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(mat4) * count, pMat, GL_STATIC_DRAW);
 
-	//Texture Bind
-	/*GLuint ShaderTexID = glGetUniformLocation(shaderProgramID, "myTextureSampler");
-	glUniform1i(ShaderTexID, 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture->GetTextureID());
-	glBindSampler(ShaderTexID, texture->GetSamplerID());*/
-
 	//Draw
 	glDrawElementsInstanced(
 		drawMode,      // mode
 		indices.size(),    // count
 		GL_UNSIGNED_INT,   // type
-		(void*)0,           // element array buffer offset
+		(void*)0,      // element array buffer offset
 		count
 	);
 

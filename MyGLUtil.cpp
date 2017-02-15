@@ -10,6 +10,21 @@
 #endif
 
 
+glm::mat4x4 GetGLMMatrixFromFBXMatrix(FbxAMatrix fbxMatrix)
+{
+	glm::mat4x4 mat;
+	auto double44 = fbxMatrix.Double44();
+	for (int col = 0; col < 4; ++col)
+	{
+		for (int row = 0; row < 4; ++row)
+		{
+			float single = static_cast<float>(double44[col][row]);
+			mat[col][row] = single;
+		}
+	}
+	return mat;
+}
+
 GLuint CreateShader(const char* file_path, GLenum shaderType)
 {
 	GLuint shaderID = glCreateShader(shaderType);

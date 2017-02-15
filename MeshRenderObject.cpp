@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MeshRenderObject.h"
+#include "SkinnedMesh.h"
 #include "Camera.h"
 
 MeshRenderObject::MeshRenderObject()
@@ -24,6 +25,13 @@ void MeshRenderObject::Render(std::vector<PracticalRenderObject*>& renderObjects
 		mtrl->BindShader();
 		mtrl->SetCameraMatrix(camera);
 	}
+	SkinnedMesh* skinnedMesh = dynamic_cast<SkinnedMesh*>(mesh);
+	if (skinnedMesh != nullptr)
+	{
+		int cnt = skinnedMesh->GetBoneCount();
+		mtrl->SetMatrix4x4(std::string("matBones"), ((SkinnedMesh*)mesh)->GetBoneMatrices(), cnt);
+	}
+
 	mtrl->BindUniformValue();
-	GetMesh()->DrawInstance(g_Renderer->matrixBuffer.data(), g_Renderer->matrixBuffer.size());
+	mesh->DrawInstance(g_Renderer->matrixBuffer.data(), g_Renderer->matrixBuffer.size());
 }

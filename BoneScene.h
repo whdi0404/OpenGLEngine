@@ -16,4 +16,6 @@ public:
 
 	float speed;
 	float rotSpeed;
+
+	Transform* root;
 };

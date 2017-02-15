@@ -9,6 +9,7 @@ layout(location = 4) in mat4 matModel;
 uniform mat4 matView;
 uniform mat4 matProj;
 uniform sampler2D heightMap;
+uniform mat4 matBones[200];
 
 out VS_OUT
 {

@@ -10,6 +10,7 @@
 //};
 
 class VertexBuffer;
+class Material;
 class Mesh :
 	public Object
 {
@@ -21,17 +22,15 @@ public:
 	virtual ~Mesh();
 
 public:
-	//Type을 정하면 안됨. 그냥 메모리버퍼만 주고, 정점 갯수 혹은 스트라이드사이즈만 넘김
 	virtual void SetMeshData(VertexBuffer* vertexBuffer, std::vector<int>& indices);
-	void DrawInstance(mat4x4* pMat, int count);
+	virtual void DrawInstance(mat4x4* pMat, int count);
 
-private:
+protected:
 	VertexBuffer* vertexBuffer;
 	std::vector<int> indices;
-
 	GLuint vertexArrayID;
 	GLuint matrixBufferID;
 
-	GetMacro(unsigned short, ResourceID, resourceID);
-	GetSetMacro(GLenum, DrawMode, drawMode);
+	GetMacroProtected(unsigned short, ResourceID, resourceID);
+	GetSetMacroProtected(GLenum, DrawMode, drawMode);
 };
