@@ -85,6 +85,8 @@ Execute(del)();
 */
 glm::mat4x4 GetGLMMatrixFromFBXMatrix(FbxAMatrix fbxMatrix);
 
+FbxAMatrix GetFBXMatrixFromGLMMatrix(glm::mat4x4 glMatrix);
+
 GLuint CreateShader(const char* file_path, GLenum shaderType);
 
 GLuint AttachShaderToProgram(GLuint programID, GLuint count, ...);

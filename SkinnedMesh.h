@@ -11,7 +11,7 @@ public:
 
 	void SetAvatar(Avatar* avatar);
 	void SetRoot(Transform* root);
-	void AddBone(Transform* boneTransform);
+	void AddBone(Transform* boneTransform, mat4x4 deformerMatrix);
 	Transform* GetBone(std::string boneName);
 
 public:
@@ -22,6 +22,7 @@ private:
 	Avatar* avatar;
 	std::unordered_map<std::string, Transform*> bones;
 	std::vector<Transform*> boneTransforms;
+	std::vector<mat4x4> deformerMatrices;
 
 	GetMacro(mat4x4*, BoneMatrices, boneMatrices);
 	int GetBoneCount()

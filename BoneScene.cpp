@@ -9,6 +9,7 @@
 #include "SkinnedMesh.h"
 #include "Mesh.h"
 #include "Gizmo.h"
+#include "SkinnedMeshRenderObject.h"
 
 BoneScene::BoneScene()
 {
@@ -21,7 +22,7 @@ BoneScene::~BoneScene()
 GameObject* TestObject(Mesh* mesh, Material* material, vec3 offset, float scale)
 {
 	GameObject* obj = new GameObject();
-	MeshRenderObject* meshRenderer = obj->AddComponent<MeshRenderObject>();
+	SkinnedMeshRenderObject* meshRenderer = obj->AddComponent<SkinnedMeshRenderObject>();
 
 	meshRenderer->SetMaterial(material);
 	meshRenderer->SetMesh(mesh);
@@ -47,18 +48,18 @@ void BoneScene::Initialize()
 	skinnedMaterial->SetTexture(std::string("tex"), modelTex);
 
 	glm::mat4x4 modelMatrix = glm::mat4x4();
-	modelMatrix = glm::rotate(modelMatrix, -glm::radians(90.0f), glm::vec3(1, 0, 0));
+	//modelMatrix = glm::rotate(modelMatrix, -glm::radians(90.0f), glm::vec3(0, 1, 0));
 
-	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/SIG.FBX", modelMatrix);
-	TestObject((Mesh*)meshes[0], material, vec3(), 1);
+	//std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/SIG.FBX", modelMatrix);
+	//TestObject((Mesh*)meshes[0], material, vec3(), 1);
 
-	std::vector<Object*> bones = FBXHelper::GetResourcesFromFile("./Models/1 (1).FBX", modelMatrix);
-	SkinnedMesh* skinnedMesh = dynamic_cast<SkinnedMesh*>(bones[0]);
-	GameObject* testModel = TestObject((Mesh*)bones[0], skinnedMaterial, vec3(), 1.0f);
-	testModel->GetTransform()->SetLocalScale(1.0f, 1.0f, 1.0f);
+	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/1 (1).FBX", modelMatrix);
+	SkinnedMesh* skinnedMesh = dynamic_cast<SkinnedMesh*>(meshes[0]);
+	GameObject* testModel = TestObject(skinnedMesh, skinnedMaterial, vec3(), 1.0f);
+	//testModel->GetTransform()->SetLocalScale(0.01f, 0.01f, 0.01f);
 
 	root = skinnedMesh->GetRoot();
-	root->SetLocalScale(1.0f , 1.0f, 1.0f);
+	//root->SetLocalScale(1.0f , 1.0f, 1.0f);
 }
 
 void BoneScene::Update()

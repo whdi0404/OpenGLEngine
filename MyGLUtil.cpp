@@ -25,6 +25,22 @@ glm::mat4x4 GetGLMMatrixFromFBXMatrix(FbxAMatrix fbxMatrix)
 	return mat;
 }
 
+fbxsdk::FbxAMatrix GetFBXMatrixFromGLMMatrix(glm::mat4x4 glMatrix)
+{
+	fbxsdk::FbxAMatrix fbxMatrix;
+	fbxMatrix.SetRow(0, FbxVector4(glMatrix[0][0], glMatrix[0][1], glMatrix[0][2], glMatrix[0][3]));
+	fbxMatrix.SetRow(1, FbxVector4(glMatrix[1][0], glMatrix[1][1], glMatrix[1][2], glMatrix[1][3]));
+	fbxMatrix.SetRow(2, FbxVector4(glMatrix[2][0], glMatrix[2][1], glMatrix[2][2], glMatrix[2][3]));
+	fbxMatrix.SetRow(3, FbxVector4(glMatrix[3][0], glMatrix[3][1], glMatrix[3][2], glMatrix[3][3]));
+
+	//fbxMatrix.SetRow(0, FbxVector4(glMatrix[0][0], glMatrix[1][0], glMatrix[2][0], glMatrix[3][0]));
+	//fbxMatrix.SetRow(1, FbxVector4(glMatrix[0][1], glMatrix[1][1], glMatrix[2][1], glMatrix[3][1]));
+	//fbxMatrix.SetRow(2, FbxVector4(glMatrix[0][2], glMatrix[1][2], glMatrix[2][2], glMatrix[3][2]));
+	//fbxMatrix.SetRow(3, FbxVector4(glMatrix[0][3], glMatrix[1][3], glMatrix[2][3], glMatrix[3][3]));
+
+	return fbxMatrix;
+}
+
 GLuint CreateShader(const char* file_path, GLenum shaderType)
 {
 	GLuint shaderID = glCreateShader(shaderType);

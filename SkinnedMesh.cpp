@@ -22,12 +22,13 @@ void SkinnedMesh::SetRoot(Transform* root)
 	
 	boneMatrices = new mat4x4[boneTransforms.size()];
 	for(int i=0;i < boneTransforms.size();++i)
-		boneMatrices[i] = boneTransforms[i]->GetWorldMatrix();
+		boneMatrices[i] = boneTransforms[i]->GetWorldMatrix() * deformerMatrices[i];
 }
 
-void SkinnedMesh::AddBone(Transform * boneTransform)
+void SkinnedMesh::AddBone(Transform * boneTransform, mat4x4 deformerMatrix)
 {
 	boneTransforms.push_back(boneTransform);
+	deformerMatrices.push_back(deformerMatrix);
 	std::string boneName = boneTransform->GetName();
 	bones.insert(KEYVALUE(std::string, Transform*)(boneName, boneTransform));
 }

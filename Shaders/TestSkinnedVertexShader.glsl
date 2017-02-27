@@ -18,7 +18,22 @@ out VS_OUT
 
 void main()
 {
-	gl_Position = matProj * matView * matModel * vec4(vertexPosition_modelspace, 1);
+	vec4 pos = vec4(vertexPosition_modelspace, 1);
 
+	int index = int(round(boneIndices.x));
+	mat4x4 newMat = matBones[index] * boneWeights.x;
+       
+    index = int(round(boneIndices.y));
+	newMat += matBones[index] * boneWeights.y;
+	
+    index = int(round(boneIndices.z));
+	newMat += matBones[index] * boneWeights.z;
+	
+    index = int(round(boneIndices.w));
+	newMat += matBones[index] * boneWeights.w;
+
+	vec4 newVertex = newMat * pos;
+
+	gl_Position = matProj * matView * matModel * newVertex;
 	vs_out.uv = vertexUV;
 }
