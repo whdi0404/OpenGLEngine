@@ -88,13 +88,22 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 	std::vector<vec2> uvs;
 
 	FbxVector4* pVertices = fbxMesh->GetControlPoints();
+
 	FbxLayerElementArrayTemplate<FbxVector2>* pTexUvs;
 	fbxMesh->GetTextureUV(&pTexUvs);
 	if (pTexUvs == nullptr)
-		return false;
+		return nullptr;
+	FbxLayerElementUV* layerUVs = fbxMesh->GetLayer(0)->GetUVs();
+
+	FbxLayerElement::EReferenceMode referenceMode = layerUVs->GetReferenceMode();
+	FbxLayerElement::EMappingMode mappingMode = layerUVs->GetMappingMode();
+
+	std::cout << mappingMode << std::endl;
+
 	int vertexCount = fbxMesh->GetControlPointsCount();
-	int count = pTexUvs->GetCount();
 	//pOutPosition->resize(vertexCount);
+	bool uvSet = false;
+	uvs.resize(vertexCount);
 	for (int j = 0; j < vertexCount; ++j)
 	{
 		vec3 vertex;
@@ -106,10 +115,19 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 		position.push_back(vec3(rotVec.x, rotVec.y, rotVec.z));
 		//(*pOutPosition)[j] = vertex;
 
-		vec2 uv;
-		uv.x = (*pTexUvs)[j].mData[0];
-		uv.y = (*pTexUvs)[j].mData[1];
-		uvs.push_back(uv);
+		if (FbxLayerElement::eByControlPoint == mappingMode)
+		{
+			int uvIndex = 0;
+			if (FbxLayerElement::eDirect == referenceMode)
+				uvIndex = j;
+			else if (FbxLayerElement::eIndexToDirect == referenceMode)
+				uvIndex = layerUVs->GetIndexArray().GetAt(j);
+			vec2 uv;
+			uv.x = (*pTexUvs)[uvIndex].mData[0];
+			uv.y = (*pTexUvs)[uvIndex].mData[1];
+			uvs[uvIndex] = uv;
+			uvSet = true;
+		}
 	}
 
 	int polygonCount = fbxMesh->GetPolygonCount();
@@ -117,24 +135,46 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 	for (int j = 0; j < polygonCount; j++)
 	{
 		int iNumVertices = fbxMesh->GetPolygonSize(j);
+
 		if (iNumVertices == 3)
 		{
-			for (int k = 0; k < 3; k++)
-			{
-				int iControlPointIndex = fbxMesh->GetPolygonVertex(j, k);
-				indices.push_back(iControlPointIndex);
-				//(*pOutindices)[(j * 3) + k] = iControlPointIndex;
-			}
+			indices.push_back(fbxMesh->GetPolygonVertex(j, 0));
+			indices.push_back(fbxMesh->GetPolygonVertex(j, 1));
+			indices.push_back(fbxMesh->GetPolygonVertex(j, 2));
 		}
+
 		if (iNumVertices == 4)
 		{
 			indices.push_back(fbxMesh->GetPolygonVertex(j, 0));
 			indices.push_back(fbxMesh->GetPolygonVertex(j, 1));
 			indices.push_back(fbxMesh->GetPolygonVertex(j, 2));
-
+		
 			indices.push_back(fbxMesh->GetPolygonVertex(j, 0));
 			indices.push_back(fbxMesh->GetPolygonVertex(j, 2));
 			indices.push_back(fbxMesh->GetPolygonVertex(j, 3));
+		}
+
+		// 씨이이이발! Stiky Memo 참고
+		
+		if (FbxLayerElement::eByPolygonVertex == mappingMode)
+		{
+			for (int k = 0; k < iNumVertices; k++)
+			{
+				int iControlPointIndex = fbxMesh->GetPolygonVertex(j, k);
+
+				int uvIndex = 0;
+				int id = fbxMesh->GetTextureUVIndex(j, k);
+				if (FbxLayerElement::eDirect == referenceMode ||
+					FbxLayerElement::eIndexToDirect == referenceMode)
+					uvIndex = id;
+				else
+					continue;
+
+				vec2 uv;
+				uv.x = (*pTexUvs)[uvIndex].mData[0];
+				uv.y = (*pTexUvs)[uvIndex].mData[1];
+				uvs[iControlPointIndex] = uv;
+			}
 		}
 	}
 
