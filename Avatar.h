@@ -5,11 +5,33 @@ class Avatar :
 	public Object
 {
 private:
-	std::unordered_set<std::string> boneNames;
+	static std::map<FbxNode*, int> checkOverlapBuffer;
+
+private:
+	std::vector<mat4x4>  deformMatrices;
+	std::vector<mat4x4>  renderMatrices;
+
+	std::vector<Transform*> boneTransforms;
+	GetMacro(Transform*, Root, root);
 
 public:
 	Avatar();
 	~Avatar();
 
-	Transform* GetTransform(SkinnedMesh* skinnedMesh, std::string boneName);
+	//about FbxLoader
+	void LoadMeshCluster(FbxScene* scene, FbxMesh* mesh, FbxSkin* skin);
+	void CalculateHierarchy();
+	int GetBoneIndexFromCluster(FbxCluster* cluster);
+
+	void Update();
+
+	mat4x4* GetRenderMatrices()
+	{
+		return renderMatrices.data();
+	}
+
+	int GetBoneCount()
+	{
+		return renderMatrices.size();
+	}
 };

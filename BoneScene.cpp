@@ -10,6 +10,7 @@
 #include "Mesh.h"
 #include "Gizmo.h"
 #include "SkinnedMeshRenderObject.h"
+#include "Avatar.h"
 
 BoneScene::BoneScene()
 {
@@ -64,6 +65,8 @@ void BoneScene::Initialize()
 	//TestObject((Mesh*)meshes[0], material, vec3(), 1);
 
 	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.FBX", modelMatrix);
+
+	SkinnedMesh* skinnedMesh = nullptr;
 	for (int i = 0; i < meshes.size(); ++i)
 	{
 		Mesh* mesh = dynamic_cast<Mesh*>(meshes[i]);
@@ -71,14 +74,17 @@ void BoneScene::Initialize()
 			continue;
 
 		if (dynamic_cast<SkinnedMesh*>(meshes[i]) != nullptr)
-			TestObject(mesh, skinnedMaterial, vec3(), 0.1f);
+			TestObject(skinnedMesh = (SkinnedMesh*)mesh, skinnedMaterial, vec3(), 1);
 		else
-			TestObject(mesh, material, vec3(), 0.1f);
+			TestObject(mesh, material, vec3(), 1);
 	}
 	//testModel->GetTransform()->SetLocalScale(0.01f, 0.01f, 0.01f);
-
-	//root = skinnedMesh->GetRoot();
-	//root->SetLocalScale(1.0f , 1.0f, 1.0f);
+	root = nullptr;
+	if (skinnedMesh != nullptr)
+	{
+		root = skinnedMesh->GetAvatar()->GetRoot();
+		root->SetLocalScale(1.0f, 1.0f, 1.0f);
+	}
 }
 
 void BoneScene::Update()
@@ -156,24 +162,25 @@ void BoneScene::OnDrawGizmos()
 {
 	/*Gizmo::DrawLine(camera, vec3(0, 0, 0), vec3(3, 3, 3));
 */
-	//std::stack<Transform*> transStack = std::stack<Transform*>();
-	//transStack.push(root);
-	////transStack.push(trans->GetTransform());
-	//
-	//while (transStack.empty() == false)
-	//{
-	//	auto parent = transStack.top();
-	//	transStack.pop();
-	//
-	//	for (int i = 0; i < parent->GetChildCount(); ++i)
-	//	{
-	//		auto child = parent->GetChild(i);
-	//
-	//		Gizmo::SetColor(float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f);
-	//		Gizmo::DrawLine(camera, parent->GetWorldPosition(), child->GetWorldPosition());
-	//
-	//		if (child->GetChildCount() > 0)
-	//			transStack.push(child);
-	//	}
-	//}
+	if (root == nullptr)
+		return;
+	std::stack<Transform*> transStack = std::stack<Transform*>();
+	transStack.push(root);
+	
+	while (transStack.empty() == false)
+	{
+		auto parent = transStack.top();
+		transStack.pop();
+	
+		for (int i = 0; i < parent->GetChildCount(); ++i)
+		{
+			auto child = parent->GetChild(i);
+	
+			Gizmo::SetColor(float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f);
+			Gizmo::DrawLine(camera, parent->GetWorldPosition(), child->GetWorldPosition());
+	
+			if (child->GetChildCount() > 0)
+				transStack.push(child);
+		}
+	}
 }
