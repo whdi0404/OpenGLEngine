@@ -162,6 +162,9 @@
     <ClCompile Include="Gizmo.cpp">
       <Filter>FrameWork\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="KeyFrameAnimation.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -262,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="Gizmo.h">
       <Filter>FrameWork\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyFrameAnimation.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -11,5 +11,5 @@ uniform sampler2D tex;
 
 void main()
 {
-	color = vec4(fs_in.uv,0,1);//texture( tex, fs_in.uv );//
+	color = texture( tex, fs_in.uv );// vec4(fs_in.uv,0,1);//
 }

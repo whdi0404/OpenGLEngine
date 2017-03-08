@@ -5,6 +5,7 @@
 #include "VertexBuffer.h"
 #include "MeshVertexAttribute.h"
 #include "Avatar.h"
+#include "KeyFrameAnimation.h"
 
 std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::mat4x4 modelTransform)
 {
@@ -44,11 +45,11 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 				}
 			}
 
-			avatar->CalculateHierarchy();
+			avatar->CalculateHierarchy(pFbxScene);
 			if (avatar->GetBoneCount() == 0)
 			{
 				delete avatar;
-			};
+			}
 
 			pFbxRootNode->Destroy();
 		}
@@ -69,7 +70,7 @@ void FBXHelper::LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, Fb
 		FbxNodeAttribute::EType attributeType = nodeAttributeFbx->GetAttributeType();
 
 		switch (attributeType)
-		{		
+		{
 		case FbxNodeAttribute::eMesh:
 		{
 			FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
@@ -88,14 +89,13 @@ void FBXHelper::LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, Fb
 
 Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 modelTransform, Avatar* avatar)
 {
-	FbxPose* lPose = fbxScene->GetPose(0);
+	std::unordered_map<int, std::vector<int>> duplicatedVertex;
 
 	VertexBuffer* vertexBuffer;
 	std::vector<int> indices;
 
 	std::vector<vec3> position;
 	std::vector<vec2> uvs;
-
 
 	int vertexCount = fbxMesh->GetControlPointsCount();
 
@@ -137,30 +137,13 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 	{
 		int iNumVertices = fbxMesh->GetPolygonSize(j);
 
-		if (iNumVertices == 3)
-		{
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 0));
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 1));
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 2));
-		}
-
-		if (iNumVertices == 4)
-		{
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 0));
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 1));
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 2));
-		
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 0));
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 2));
-			indices.push_back(fbxMesh->GetPolygonVertex(j, 3));
-		}
-
+		bool duplicated = false;
+		std::vector<int> realIndices;
 		if (mappingMode == FbxLayerElement::eByPolygonVertex)
 		{
 			for (int k = 0; k < iNumVertices; k++)
 			{
 				int iControlPointIndex = fbxMesh->GetPolygonVertex(j, k);
-
 				int uvIndex = 0;
 				if (referenceMode == FbxLayerElement::eDirect ||
 					referenceMode == FbxLayerElement::eIndexToDirect)
@@ -169,8 +152,42 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 				vec2 uv;
 				uv.x = (*pTexUvs)[uvIndex].mData[0];
 				uv.y = (*pTexUvs)[uvIndex].mData[1];
-				uvs[iControlPointIndex] = uv;
+
+				auto& iter = duplicatedVertex.find(iControlPointIndex);
+				if (iter == duplicatedVertex.end())
+				{
+					duplicatedVertex.insert(std::make_pair(iControlPointIndex, std::vector<int>()));
+					uvs[iControlPointIndex] = uv;
+					realIndices.push_back(iControlPointIndex);
+				}
+				else
+				{
+					int newVertexIndex = position.size();
+					iter->second.push_back(newVertexIndex);
+					position.push_back(position[iControlPointIndex]);
+					uvs.push_back(uv);
+					realIndices.push_back(newVertexIndex);
+					duplicated = true;
+				}
 			}
+		}
+
+		if (iNumVertices == 3)
+		{
+			indices.push_back(realIndices[0]);
+			indices.push_back(realIndices[1]);
+			indices.push_back(realIndices[2]);
+		}
+
+		if (iNumVertices == 4)
+		{
+			indices.push_back(realIndices[0]);
+			indices.push_back(realIndices[1]);
+			indices.push_back(realIndices[2]);
+
+			indices.push_back(realIndices[0]);
+			indices.push_back(realIndices[2]);
+			indices.push_back(realIndices[3]);
 		}
 	}
 
@@ -202,7 +219,7 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 			for (int i = 0; i < numBoneVertexIndices; i++)
 			{
 				int boneVertexIndex = boneVertexIndices[i];
-				
+
 				for (int element = 0; element < 4; ++element)
 				{
 					if (boneWeights[boneVertexIndex][element] == 0)
@@ -227,6 +244,19 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 
 		vertexBuffer = new VertexBuffer(SkinningVertexAttribute);
 		vertexBuffer->SetVertexCount(position.size());
+
+		for (auto& iter : duplicatedVertex)
+		{
+			if (iter.second.size() > 0)
+			{
+				for (auto& iter2 : iter.second)
+				{
+					boneWeights[iter2] = boneWeights[iter.first];
+					boneIndices[iter2] = boneIndices[iter.first];
+				}
+			}
+		}
+
 		for (int i = 0; i < position.size(); ++i)
 		{
 			vertexBuffer->SetVector(Element::Position, i, glm::vec4(position[i].x, position[i].y, position[i].z, 0));
@@ -254,7 +284,6 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 	return nullptr;
 }
 
-//animationMatrix얻는 함수로 분리하자.
 FbxAMatrix FBXHelper::ComputeClusterDeformation(FbxMesh* pMesh, FbxCluster* pCluster)
 {
 	FbxCluster::ELinkMode lClusterMode = pCluster->GetLinkMode();
@@ -312,13 +341,6 @@ FbxAMatrix  FBXHelper::GetGlobalPosition(FbxNode* pNode, const FbxTime& pTime, F
 
 	if (!lPositionFound)
 	{
-		// There is no pose entry for that node, get the current global position instead.
-
-		// Ideally this would use parent global position and local position to compute the global position.
-		// Unfortunately the equation
-		//    lGlobalPosition = pParentGlobalPosition * lLocalPosition
-		// does not hold when inheritance type is other than "Parent" (RSrs).
-		// To compute the parent rotation and scaling is tricky in the RrSs and Rrs cases.
 		lGlobalPosition = pNode->EvaluateGlobalTransform(pTime);
 	}
 
@@ -342,4 +364,121 @@ FbxAMatrix FBXHelper::GetGeometry(FbxNode* pNode)
 	const FbxVector4 lS = pNode->GetGeometricScaling(FbxNode::eSourcePivot);
 
 	return FbxAMatrix(lT, lR, lS);
+}
+
+std::vector<KeyFrameAnimation*> FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, std::map<FbxNode*, int>& boneNodes)
+{
+	std::vector<KeyFrameAnimation*> animations;
+	FbxCriteria condi = FbxCriteria::ObjectTypeStrict(FbxAnimStack::ClassId);
+	int numAnimations = fbxScene->GetSrcObjectCount(condi);
+
+	for (int animationIndex = 0; animationIndex < numAnimations; animationIndex++)
+	{
+		FbxAnimStack *animStack = (FbxAnimStack*)(fbxScene->GetSrcObject(condi, animationIndex));
+		FbxAnimEvaluator *animEvaluator = fbxScene->GetAnimationEvaluator();
+
+		KeyFrameAnimation* newAnimation = new KeyFrameAnimation();
+		newAnimation->SetName(animStack->GetName());
+		
+		int numLayers = animStack->GetMemberCount();
+
+		for (auto& boneIter : boneNodes)
+		{
+			FbxNode* fbxNode = boneIter.first;
+
+			//아직 레이어는 작업 안 됨
+			for (int layerIndex = 0; layerIndex < numLayers; layerIndex++)
+			{
+				FbxAnimLayer *animLayer = (FbxAnimLayer*)animStack->GetMember(layerIndex);
+
+				FbxAnimCurve *translationCurve = fbxNode->LclTranslation.GetCurve(animLayer);
+				FbxAnimCurve *rotationCurve = fbxNode->LclRotation.GetCurve(animLayer);
+				FbxAnimCurve *scalingCurve = fbxNode->LclScaling.GetCurve(animLayer);
+				{
+					if (scalingCurve == nullptr)
+					{
+						FbxDouble3 scalingVector = fbxNode->LclScaling.Get();
+						float x = (float)scalingVector[0];
+						float y = (float)scalingVector[1];
+						float z = (float)scalingVector[2];
+						newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameScaling(glm::vec3(x, y, z), 0));
+					}
+					else
+					{
+						int numKeys = scalingCurve->KeyGetCount();
+						for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
+						{
+							FbxTime frameTime = scalingCurve->KeyGetTime(keyIndex);
+							FbxDouble3 scalingVector = fbxNode->EvaluateLocalScaling(frameTime);
+							float x = (float)scalingVector[0];
+							float y = (float)scalingVector[1];
+							float z = (float)scalingVector[2];
+							float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
+
+							newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameScaling(glm::vec3(x, y, z), frameSeconds));
+						}
+					}
+				}
+
+				{
+					if (translationCurve == nullptr)
+					{
+						FbxDouble3 translationVector = fbxNode->LclTranslation.Get();
+						float x = (float)translationVector[0];
+						float y = (float)translationVector[1];
+						float z = (float)translationVector[2];
+						newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameTranslation(glm::vec3(x, y, z), 0));
+					}
+					else
+					{
+						int numKeys = translationCurve->KeyGetCount();
+						for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
+						{
+							FbxTime frameTime = translationCurve->KeyGetTime(keyIndex);
+							FbxDouble3 translationVector = fbxNode->EvaluateLocalTranslation(frameTime);
+							float x = (float)translationVector[0];
+							float y = (float)translationVector[1];
+							float z = (float)translationVector[2];
+							float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
+
+							newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameTranslation(glm::vec3(x, y, z), frameSeconds));
+						}
+					}
+				}
+
+				{
+					if (rotationCurve == nullptr)
+					{
+						FbxVector4 rotationCurve = fbxNode->EvaluateLocalRotation(0);
+						float x = (float)rotationCurve[0];
+						float y = (float)rotationCurve[1];
+						float z = (float)rotationCurve[2];
+						float w = (float)rotationCurve[3];
+
+						newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameRotation(glm::quat(x, y, z, w), 0));
+					}
+					else
+					{
+						int numKeys = rotationCurve->KeyGetCount();
+						for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
+						{
+							FbxTime frameTime = rotationCurve->KeyGetTime(keyIndex);
+							FbxVector4 rotationCurve = fbxNode->EvaluateLocalRotation(frameTime);
+							float x = (float)rotationCurve[0];
+							float y = (float)rotationCurve[1];
+							float z = (float)rotationCurve[2];
+							float w = (float)rotationCurve[3];
+							float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
+
+							newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameRotation(glm::quat(x, y, z, w), frameSeconds));
+						}
+					}
+				}
+			}
+		}
+
+		animations.push_back(newAnimation);
+	}
+
+	return animations;
 }

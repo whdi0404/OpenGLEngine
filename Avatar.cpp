@@ -47,9 +47,11 @@ void Avatar::LoadMeshCluster(FbxScene* scene, FbxMesh* mesh, FbxSkin* skin)
 	}
 }
 
-void Avatar::CalculateHierarchy()
+void Avatar::CalculateHierarchy(FbxScene* fbxScene)
 {
 	renderMatrices.resize(deformMatrices.size());
+
+	animations = FBXHelper::LoadNodeKeyframeAnimation(fbxScene, checkOverlapBuffer);
 
 	for (auto& iter : checkOverlapBuffer)
 	{

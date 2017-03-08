@@ -1,4 +1,5 @@
 #pragma once
+#include "KeyFrameAnimation.h"
 
 class Mesh;
 class SkinnedMesh;
@@ -61,4 +62,6 @@ public :
 			}
 		}
 	}
+
+	static std::vector<KeyFrameAnimation*> LoadNodeKeyframeAnimation(FbxScene* fbxScene, std::map<FbxNode*, int>& boneNodes);
 };

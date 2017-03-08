@@ -64,8 +64,9 @@ void BoneScene::Initialize()
 	//std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/SIG.FBX", modelMatrix);
 	//TestObject((Mesh*)meshes[0], material, vec3(), 1);
 
-	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.FBX", modelMatrix);
+	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_ARpose1.fbx", modelMatrix);
 
+	float scale = 0.1f;
 	SkinnedMesh* skinnedMesh = nullptr;
 	for (int i = 0; i < meshes.size(); ++i)
 	{
@@ -74,16 +75,16 @@ void BoneScene::Initialize()
 			continue;
 
 		if (dynamic_cast<SkinnedMesh*>(meshes[i]) != nullptr)
-			TestObject(skinnedMesh = (SkinnedMesh*)mesh, skinnedMaterial, vec3(), 1);
+			TestObject(skinnedMesh = (SkinnedMesh*)mesh, skinnedMaterial, vec3(), scale);
 		else
-			TestObject(mesh, material, vec3(), 1);
+			TestObject(mesh, material, vec3(), scale);
 	}
 	//testModel->GetTransform()->SetLocalScale(0.01f, 0.01f, 0.01f);
 	root = nullptr;
 	if (skinnedMesh != nullptr)
 	{
 		root = skinnedMesh->GetAvatar()->GetRoot();
-		root->SetLocalScale(1.0f, 1.0f, 1.0f);
+		root->SetLocalScale(scale, scale, scale);
 	}
 }
 

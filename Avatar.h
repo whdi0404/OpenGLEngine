@@ -18,9 +18,11 @@ public:
 	Avatar();
 	~Avatar();
 
+	std::vector<KeyFrameAnimation*> animations;
+
 	//about FbxLoader
 	void LoadMeshCluster(FbxScene* scene, FbxMesh* mesh, FbxSkin* skin);
-	void CalculateHierarchy();
+	void CalculateHierarchy(FbxScene* fbxScene);
 	int GetBoneIndexFromCluster(FbxCluster* cluster);
 
 	void Update();
