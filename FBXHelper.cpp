@@ -28,28 +28,83 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 			Avatar* avatar = new Avatar();
 
 			FbxNode* pFbxRootNode = pFbxScene->GetRootNode();
+			int nodeCount = pFbxScene->GetNodeCount();
+
+			stack.push(pFbxRootNode);
+
+			while (stack.empty() == false)
+			{
+				FbxNode* node = stack.top();
+				stack.pop();
+
+				int numAttributes = node->GetNodeAttributeCount();
+				for (int i = 0; i < numAttributes; i++)
+				{
+					FbxNodeAttribute *nodeAttributeFbx = node->GetNodeAttributeByIndex(i);
+					FbxNodeAttribute::EType attributeType = nodeAttributeFbx->GetAttributeType();
+
+					switch (attributeType)
+					{
+						case FbxNodeAttribute::eSkeleton:
+						{
+							FbxSkeleton* fbxSkeleton = (FbxSkeleton*)nodeAttributeFbx;
+							avatar->AddNode(node);
+						}
+						break;
+					}
+				}
+
+				for (int i = 0; i < node->GetChildCount(); ++i)
+				{
+					FbxNode* childNode = node->GetChild(i);
+					stack.push(childNode);
+				}
+			}
+			std::vector<KeyFrameAnimation*> keyFrameAnimations = Avatar::GetKeyFrameAnimations(pFbxScene);
+
+			avatar->CalculateHierarchy();
+			if (avatar->GetBoneCount() == 0)
+				delete avatar;
+			else
+				returnObject.push_back(avatar);
+
+			//LoadMesh
 			stack.push(pFbxRootNode);
 			while (stack.empty() == false)
 			{
 				FbxNode* node = stack.top();
 				stack.pop();
 
+				int numAttributes = node->GetNodeAttributeCount();
+				for (int i = 0; i < numAttributes; i++)
+				{
+					FbxNodeAttribute *nodeAttributeFbx = node->GetNodeAttributeByIndex(i);
+					FbxNodeAttribute::EType attributeType = nodeAttributeFbx->GetAttributeType();
+
+					switch (attributeType)
+					{
+					case FbxNodeAttribute::eMesh:
+					{
+						FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
+
+						Mesh* mesh = LoadMeshData(pFbxScene, (FbxMesh*)nodeAttributeFbx, modelTransform, avatar);
+						if (mesh == nullptr)
+							continue;
+
+						returnObject.push_back(mesh);
+					}
+
+					break;
+					}
+				}
+
 				for (int i = 0; i < node->GetChildCount(); ++i)
 				{
 					FbxNode* childNode = node->GetChild(i);
-
-					LoadNode(returnObject, pFbxScene, childNode, modelTransform, avatar);
-
-					if (childNode->GetChildCount() != 0)
-						stack.push(childNode);
+					stack.push(childNode);
 				}
 			}
-
-			avatar->CalculateHierarchy(pFbxScene);
-			if (avatar->GetBoneCount() == 0)
-			{
-				delete avatar;
-			}
+			avatar->Update();
 
 			pFbxRootNode->Destroy();
 		}
@@ -59,32 +114,6 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 	pFbxScene->Destroy();
 
 	return returnObject;
-}
-
-void FBXHelper::LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, FbxNode* fbxNode, glm::mat4x4 modelTransform, Avatar* avatar)
-{
-	int numAttributes = fbxNode->GetNodeAttributeCount();
-	for (int i = 0; i < numAttributes; i++)
-	{
-		FbxNodeAttribute *nodeAttributeFbx = fbxNode->GetNodeAttributeByIndex(i);
-		FbxNodeAttribute::EType attributeType = nodeAttributeFbx->GetAttributeType();
-
-		switch (attributeType)
-		{
-		case FbxNodeAttribute::eMesh:
-		{
-			FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
-
-			Mesh* mesh = LoadMeshData(fbxScene, (FbxMesh*)nodeAttributeFbx, modelTransform, avatar);
-			if (mesh == nullptr)
-				continue;
-
-			refObject.push_back(mesh);
-		}
-
-		break;
-		}
-	}
 }
 
 Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 modelTransform, Avatar* avatar)
@@ -379,7 +408,7 @@ std::vector<KeyFrameAnimation*> FBXHelper::LoadNodeKeyframeAnimation(FbxScene* f
 
 		KeyFrameAnimation* newAnimation = new KeyFrameAnimation();
 		newAnimation->SetName(animStack->GetName());
-		
+
 		int numLayers = animStack->GetMemberCount();
 
 		for (auto& boneIter : boneNodes)

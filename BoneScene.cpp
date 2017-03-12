@@ -64,6 +64,7 @@ void BoneScene::Initialize()
 	//std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/SIG.FBX", modelMatrix);
 	//TestObject((Mesh*)meshes[0], material, vec3(), 1);
 
+	//std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.fbx", modelMatrix);
 	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_ARpose1.fbx", modelMatrix);
 
 	float scale = 0.1f;

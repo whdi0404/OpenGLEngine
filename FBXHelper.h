@@ -14,8 +14,6 @@ public:
 	static std::vector<Object*> GetResourcesFromFile(std::string filePath, glm::mat4x4 modelTransform);
 
 private:
-	static void LoadNode(std::vector<Object*>& refObject, FbxScene* fbxScene, FbxNode* fbxNode, glm::mat4x4 modelTransform, Avatar* avatar);
-
 	static Mesh* LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 modelTransform, Avatar* avatar);
 
 public :

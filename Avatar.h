@@ -1,5 +1,6 @@
 #pragma once
 #include "Object.h"
+#include "KeyFrameAnimation.h"
 class SkinnedMesh;
 class Avatar :
 	public Object
@@ -18,11 +19,11 @@ public:
 	Avatar();
 	~Avatar();
 
-	std::vector<KeyFrameAnimation*> animations;
-
 	//about FbxLoader
+
+	void AddNode(FbxNode* pNode);
 	void LoadMeshCluster(FbxScene* scene, FbxMesh* mesh, FbxSkin* skin);
-	void CalculateHierarchy(FbxScene* fbxScene);
+	void CalculateHierarchy();
 	int GetBoneIndexFromCluster(FbxCluster* cluster);
 
 	void Update();
@@ -35,5 +36,10 @@ public:
 	int GetBoneCount()
 	{
 		return renderMatrices.size();
+	}
+
+	static std::vector<KeyFrameAnimation*> GetKeyFrameAnimations(FbxScene* scene)
+	{
+		return FBXHelper::LoadNodeKeyframeAnimation(scene, checkOverlapBuffer);
 	}
 };

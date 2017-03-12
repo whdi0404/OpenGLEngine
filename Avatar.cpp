@@ -14,6 +14,21 @@ Avatar::~Avatar()
 {
 }
 
+void Avatar::AddNode(FbxNode * pNode)
+{
+	auto& iter = checkOverlapBuffer.find(pNode);
+	if (iter == checkOverlapBuffer.end())
+	{
+		//CreateBone
+		int boneIndex = checkOverlapBuffer.size();
+		checkOverlapBuffer.insert(std::make_pair(pNode, boneIndex));
+
+		Transform* boneTransform = new Transform();
+		boneTransform->SetName(pNode->GetName());
+		boneTransforms.push_back(boneTransform);
+	}
+}
+
 void Avatar::LoadMeshCluster(FbxScene* scene, FbxMesh* mesh, FbxSkin* skin)
 {
 	FbxPose* lPose = scene->GetPose(0);
@@ -26,33 +41,35 @@ void Avatar::LoadMeshCluster(FbxScene* scene, FbxMesh* mesh, FbxSkin* skin)
 		FbxNode* node = cluster->GetLink();
 		if (node == nullptr)
 			continue;
-
+		static std::unordered_set<FbxNode*> notAdded;
 		auto& iter = checkOverlapBuffer.find(node);
-		if (iter == checkOverlapBuffer.end())
+		if (iter != checkOverlapBuffer.end())
 		{
-			//CreateBone
-			int boneIndex = checkOverlapBuffer.size();
-			checkOverlapBuffer.insert(std::make_pair(node, boneIndex));
-
 			FbxAMatrix deformationMatrix = FBXHelper::ComputeClusterDeformation(mesh, cluster);
-			deformMatrices.push_back(GetGLMMatrixFromFBXMatrix(deformationMatrix));
+			deformMatrices[iter->second] = GetGLMMatrixFromFBXMatrix(deformationMatrix);
 
 			FbxAMatrix animationMatrix = FBXHelper::GetAnimationMatrix(cluster, 0, lPose);
-			Transform* boneTransform = new Transform();
-			boneTransform->SetName(node->GetName());
-			boneTransform->SetLocalMatrix(GetGLMMatrixFromFBXMatrix(animationMatrix));
+			boneTransforms[iter->second]->SetName(node->GetName());
+			boneTransforms[iter->second]->SetWorldMatrix(GetGLMMatrixFromFBXMatrix(animationMatrix));
+		}
+		else
+		{
+			if (notAdded.find(node) == notAdded.end())
+			{
+				FbxNodeAttribute *nodeAttributeFbx = node->GetNodeAttributeByIndex(0);
+				FbxNodeAttribute::EType attributeType = nodeAttributeFbx->GetAttributeType();
 
-			boneTransforms.push_back(boneTransform);
+				std::cout << "what the: " << node->GetName() << ", Attr: " << attributeType << std::endl;
+				notAdded.insert(node);
+			}
 		}
 	}
 }
 
-void Avatar::CalculateHierarchy(FbxScene* fbxScene)
+void Avatar::CalculateHierarchy()
 {
-	renderMatrices.resize(deformMatrices.size());
-
-	animations = FBXHelper::LoadNodeKeyframeAnimation(fbxScene, checkOverlapBuffer);
-
+	renderMatrices.resize(boneTransforms.size());
+	deformMatrices.resize(boneTransforms.size());
 	for (auto& iter : checkOverlapBuffer)
 	{
 		FbxNode* parentBone = iter.first->GetParent();
@@ -61,14 +78,11 @@ void Avatar::CalculateHierarchy(FbxScene* fbxScene)
 		{
 			auto& parentIter = checkOverlapBuffer.find(parentBone);
 			if (parentIter != checkOverlapBuffer.end())
-				boneTransforms[iter.second]->SetParent(boneTransforms[parentIter->second]);
+				boneTransforms[iter.second]->SetParent(boneTransforms[parentIter->second], false);
 			else
 				root = boneTransforms[iter.second];
 		}
 	}
-	Update();
-
-	checkOverlapBuffer.clear();
 }
 
 int Avatar::GetBoneIndexFromCluster(FbxCluster * cluster)
