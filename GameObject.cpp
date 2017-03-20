@@ -6,7 +6,7 @@
 
 GameObject::GameObject() : renderObject(nullptr), octreeLocationCode(0)
 {
-	cullSphere.center = vec3(0,0,0);
+	cullSphere.center = glm::vec3(0,0,0);
 	cullSphere.radius = 0;
 	transform = new Transform();
 	transform->gameObject = this;

@@ -13,7 +13,7 @@ class OctreeNode
 	friend class Octree;
 
 private:
-	OctreeNode(vec3 center, vec3 halfSize);
+	OctreeNode(glm::vec3 center, glm::vec3 halfSize);
 
 public:
 	size_t GetNodeTreeDepth();
@@ -55,7 +55,7 @@ public:
 	void DeleteObject(GameObject* object);
 	void GetCulledRenderObjects(RendererObjectCollector* renderObjCollector, Camera* camera);
 
-	void GetChildBoundingBox(uint32_t parentLocCode, Enum_Location localLocCode, vec3& center, vec3& halfSize);
+	void GetChildBoundingBox(uint32_t parentLocCode, Enum_Location localLocCode, glm::vec3& center, glm::vec3& halfSize);
 
 private:
 	void CreateCompleteOctree(uint32_t parentLocCode, int depth);

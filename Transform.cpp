@@ -8,11 +8,11 @@
 Transform::Transform() : localPosition(0, 0, 0), localScale(1, 1, 1), worldMatrix(1.0f),
 parent(nullptr), gameObject(nullptr)
 {
-	this->forward = vec3(0, 0, 1);
-	this->up = vec3(0, 1, 0);
-	this->right = vec3(1, 0, 0);
+	this->forward = glm::vec3(0, 0, 1);
+	this->up = glm::vec3(0, 1, 0);
+	this->right = glm::vec3(1, 0, 0);
 
-	localMatrix = worldMatrix = mat4x4();
+	localMatrix = worldMatrix = glm::mat4x4();
 }
 
 
@@ -22,7 +22,7 @@ Transform::~Transform()
 
 Transform & Transform::SetPosition(float x, float y, float z)
 {
-	mat4x4 newWorldmat = worldMatrix;
+	glm::mat4x4 newWorldmat = worldMatrix;
 	newWorldmat[3][0] = x;
 	newWorldmat[3][1] = y;
 	newWorldmat[3][2] = z;
@@ -30,7 +30,7 @@ Transform & Transform::SetPosition(float x, float y, float z)
 	return *this;
 }
 
-Transform & Transform::SetPosition(vec3 pos)
+Transform & Transform::SetPosition(glm::vec3 pos)
 {
 	SetPosition(pos.x, pos.y, pos.z);
 	return *this;
@@ -46,7 +46,7 @@ Transform & Transform::AddWorldPosition(float dx, float dy, float dz)
 	return *this;
 }
 
-Transform & Transform::AddWorldPosition(vec3 delta)
+Transform & Transform::AddWorldPosition(glm::vec3 delta)
 {
 	AddWorldPosition(delta.x, delta.y, delta.z);
 	return *this;
@@ -62,7 +62,7 @@ Transform & Transform::SetLocalPosition(float x, float y, float z)
 	return *this;
 }
 
-Transform & Transform::SetLocalPosition(vec3 pos)
+Transform & Transform::SetLocalPosition(glm::vec3 pos)
 {
 	localPosition = pos;
 
@@ -80,7 +80,7 @@ Transform & Transform::AddLocalPosition(float dx, float dy, float dz)
 	return *this;
 }
 
-Transform & Transform::AddLocalPosition(vec3 delta)
+Transform & Transform::AddLocalPosition(glm::vec3 delta)
 {
 	AddLocalPosition(delta.x, delta.y, delta.z);
 
@@ -97,7 +97,7 @@ Transform & Transform::SetLocalScale(float x, float y, float z)
 	return *this;
 }
 
-Transform & Transform::SetLocalScale(vec3 scale)
+Transform & Transform::SetLocalScale(glm::vec3 scale)
 {
 	localScale = scale;
 
@@ -105,27 +105,27 @@ Transform & Transform::SetLocalScale(vec3 scale)
 	return *this;
 }
 
-Transform & Transform::SetRotateLocal(const quat & quaternion)
+Transform & Transform::SetRotateLocal(const glm::quat & quaternion)
 {
 	SetRotateLocal(toMat4(quaternion));
 
 	return *this;
 }
 
-Transform & Transform::SetRotateLocal(const mat4x4 & matRotation)
+Transform & Transform::SetRotateLocal(const glm::mat4x4 & matRotation)
 {
-	right = normalize(vec3(
+	right = normalize(glm::vec3(
 		matRotation[0][0],
 		matRotation[0][1],
 		matRotation[0][2]));
 	
 
-	up = normalize(vec3(
+	up = normalize(glm::vec3(
 		matRotation[1][0],
 		matRotation[1][1],
 		matRotation[1][2]));
 
-	forward = normalize(vec3(
+	forward = normalize(glm::vec3(
 		matRotation[2][0],
 		matRotation[2][1],
 		matRotation[2][2]));
@@ -134,18 +134,18 @@ Transform & Transform::SetRotateLocal(const mat4x4 & matRotation)
 	return *this;
 }
 
-Transform & Transform::SetRotateAxisX(const vec3 & axis)
+Transform & Transform::SetRotateAxisX(const glm::vec3 & axis)
 {
 	return *this;
 }
 
-Transform & Transform::SetRotateAxisY(const vec3 & axis)
+Transform & Transform::SetRotateAxisY(const glm::vec3 & axis)
 {
 	// TODO: 여기에 반환 구문을 삽입합니다.
 	return *this;
 }
 
-Transform & Transform::SetRotateAxisZ(const vec3 & axis)
+Transform & Transform::SetRotateAxisZ(const glm::vec3 & axis)
 {
 	// TODO: 여기에 반환 구문을 삽입합니다.
 	return *this;
@@ -157,7 +157,7 @@ Transform & Transform::RotateAxisWorld(float axisXAngle, float axisYAngle, float
 	return *this;
 }
 
-Transform & Transform::RotateAxisWorld(vec3 deltaAngle)
+Transform & Transform::RotateAxisWorld(glm::vec3 deltaAngle)
 {
 	// TODO: 여기에 반환 구문을 삽입합니다.
 	return *this;
@@ -166,30 +166,30 @@ Transform & Transform::RotateAxisWorld(vec3 deltaAngle)
 Transform & Transform::RotateAxisLocal(float dAngleX, float dAngleY, float dAngleZ)
 {
 	//자신의 Right 축 기준으로 회전하는 회전 행렬을 얻는다.
-	mat4 identity = mat4();
+	glm::mat4x4 identity = glm::mat4x4();
 
-	mat4 matRotateX = rotate(identity, radians(dAngleX), this->right);
+	glm::mat4x4 matRotateX = glm::rotate(identity, glm::radians(dAngleX), this->right);
 
 	//자신의 Up 축 기준으로 회전하는 회전 행렬을 얻는다.
-	mat4 matRotateY = rotate(identity, radians(dAngleY), this->up);
+	glm::mat4x4 matRotateY = glm::rotate(identity, glm::radians(dAngleY), this->up);
 
 	//자신의 Front 축 기준으로 회전하는 회전 행렬을 얻는다.
-	mat4 matRotateZ = rotate(identity, radians(dAngleZ), this->forward);
+	glm::mat4x4 matRotateZ = glm::rotate(identity, glm::radians(dAngleZ), this->forward);
 
-	mat4 matRotate = matRotateZ * matRotateX * matRotateY;
+	glm::mat4x4 matRotate = matRotateZ * matRotateX * matRotateY;
 
 	//회전행렬대로 돌린다.
 	for (int i = 0; i < 3; i++) 
 	{
-		vec4 axisVec4 = matRotate * vec4(axis[i], 1);
-		axis[i] = vec3(axisVec4);
+		glm::vec4 axisVec4 = matRotate * glm::vec4(axis[i], 1);
+		axis[i] = glm::vec3(axisVec4);
 	}
 
 	UpdateTransform();
 	return *this;
 }
 
-Transform & Transform::RotateAxisLocal(vec3 deltaAngle)
+Transform & Transform::RotateAxisLocal(glm::vec3 deltaAngle)
 {
 	RotateAxisLocal(deltaAngle.x, deltaAngle.y, deltaAngle.z);
 	// TODO: 여기에 반환 구문을 삽입합니다.
@@ -203,10 +203,10 @@ Transform & Transform::UpdateTransform()
 	forward = normalize(forward);
 
 	//Final 행렬
-	vec3 r = this->right * this->localScale.x;
-	vec3 u = this->up * this->localScale.y;
-	vec3 f = this->forward * this->localScale.z;
-	vec3 p = this->localPosition;
+	glm::vec3 r = this->right * this->localScale.x;
+	glm::vec3 u = this->up * this->localScale.y;
+	glm::vec3 f = this->forward * this->localScale.z;
+	glm::vec3 p = this->localPosition;
 
 	//Final Matrix 에 적용
 	localMatrix[0][0] = r.x;		localMatrix[1][0] = u.x;		localMatrix[2][0] = f.x;		localMatrix[3][0] = p.x;
@@ -217,17 +217,17 @@ Transform & Transform::UpdateTransform()
 	if (parent != nullptr)
 	{
 		worldMatrix = parent->GetWorldMatrix() * localMatrix;
-		worldPosition = vec3(worldMatrix[3][0], worldMatrix[3][1], worldMatrix[3][2]);
+		worldPosition = glm::vec3(worldMatrix[3][0], worldMatrix[3][1], worldMatrix[3][2]);
 		
-		worldRightAxis = vec3(worldMatrix[0][0], worldMatrix[0][1], worldMatrix[0][2]);
+		worldRightAxis = glm::vec3(worldMatrix[0][0], worldMatrix[0][1], worldMatrix[0][2]);
 		lossyScale.x = worldRightAxis.length();
 		worldRightAxis = normalize(worldRightAxis);
 
-		worldUpAxis = vec3(worldMatrix[1][0], worldMatrix[1][1], worldMatrix[1][2]);
+		worldUpAxis = glm::vec3(worldMatrix[1][0], worldMatrix[1][1], worldMatrix[1][2]);
 		lossyScale.y = worldUpAxis.length();
 		worldUpAxis = normalize(worldUpAxis);
 
-		worldForwardAxis = vec3(worldMatrix[2][0], worldMatrix[2][1], worldMatrix[2][2]);
+		worldForwardAxis = glm::vec3(worldMatrix[2][0], worldMatrix[2][1], worldMatrix[2][2]);
 		lossyScale.z = worldForwardAxis.length();
 		worldForwardAxis = normalize(worldForwardAxis);
 	}
@@ -253,39 +253,39 @@ Transform & Transform::UpdateTransform()
 	return *this;
 }
 
-vec3 Transform::GetWorldPosition() const
+glm::vec3 Transform::GetWorldPosition() const
 {
 	return worldPosition;
 }
 
-vec3 Transform::GetLocalPosition() const
+glm::vec3 Transform::GetLocalPosition() const
 {
 	return localPosition;
 }
 
-vec3 Transform::GetLocalScale() const
+glm::vec3 Transform::GetLocalScale() const
 {
 	return localScale;
 }
 
-vec3 Transform::GetLossyScale() const
+glm::vec3 Transform::GetLossyScale() const
 {
 	return lossyScale;
 }
 
-mat4x4 Transform::GetWorldMatrix() const
+glm::mat4x4 Transform::GetWorldMatrix() const
 {
 	return worldMatrix;
 }
 
-mat4x4 Transform::GetLocalMatrix() const
+glm::mat4x4 Transform::GetLocalMatrix() const
 {
 	return localMatrix;
 }
 
-Transform & Transform::SetWorldMatrix(mat4x4 mat)
+Transform & Transform::SetWorldMatrix(glm::mat4x4 mat)
 {
-	mat4x4 newLocalMat;
+	glm::mat4x4 newLocalMat;
 	if(parent != nullptr)
 		newLocalMat = inverse(parent->GetWorldMatrix()) * mat;
 	else
@@ -296,30 +296,30 @@ Transform & Transform::SetWorldMatrix(mat4x4 mat)
 	return *this;
 }
 
-Transform & Transform::SetLocalMatrix(mat4x4 mat)
+Transform & Transform::SetLocalMatrix(glm::mat4x4 mat)
 {
-	up = vec3(mat[1][0], mat[1][1], mat[1][2]);
-	right = vec3(mat[0][0], mat[0][1], mat[0][2]);
-	forward = vec3(mat[2][0], mat[2][1], mat[2][2]);
+	up = glm::vec3(mat[1][0], mat[1][1], mat[1][2]);
+	right = glm::vec3(mat[0][0], mat[0][1], mat[0][2]);
+	forward = glm::vec3(mat[2][0], mat[2][1], mat[2][2]);
 	
-	localScale = vec3(glm::length(up), glm::length(right), glm::length(forward));
-	localPosition = vec3(mat[3][0], mat[3][1], mat[3][2]);
+	localScale = glm::vec3(glm::length(up), glm::length(right), glm::length(forward));
+	localPosition = glm::vec3(mat[3][0], mat[3][1], mat[3][2]);
 	UpdateTransform();
 
 	return *this;
 }
 
-vec3 Transform::GetBack(bool bNormalize) const
+glm::vec3 Transform::GetBack(bool bNormalize) const
 {
 	return glm::normalize(glm::vec3(worldMatrix[2]));
 }
 
-vec3 Transform::GetUp(bool bNormalize) const
+glm::vec3 Transform::GetUp(bool bNormalize) const
 {
 	return glm::normalize(glm::vec3(worldMatrix[1]));
 }
 
-vec3 Transform::GetRight(bool bNormalize) const
+glm::vec3 Transform::GetRight(bool bNormalize) const
 {
 	return glm::normalize(glm::vec3(worldMatrix[0]));
 }
@@ -362,4 +362,14 @@ Transform * Transform::GetRoot()
 		transform = transform->parent;
 	}
 	return transform;
+}
+
+glm::mat3x3 Transform::GetWorldRotateMatrix() const
+{
+	return glm::mat3x3(worldMatrix);
+}
+
+glm::mat3x3 Transform::GetLocalRotateMatrix() const
+{
+	return glm::mat3x3(localMatrix);
 }

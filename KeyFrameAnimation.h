@@ -19,7 +19,7 @@ struct KeyFrameTemplate : public KeyFrame
 
 struct KeyFrameScaling : public KeyFrameTemplate<glm::vec3>
 {
-	KeyFrameScaling(glm::vec3 value, float time){
+	KeyFrameScaling(glm::vec3 value, float time) {
 		this->value = value;
 		this->time = time;
 	}
@@ -41,11 +41,14 @@ struct KeyFrameRotation : public KeyFrameTemplate<glm::quat>
 
 struct AnimationLayer
 {
+private:
 	std::vector<std::vector<KeyFrameScaling*>> scaleKeyFrames;
 	std::vector<std::vector<KeyFrameRotation*>> rotateKeyFrames;
 	std::vector<std::vector<KeyFrameTranslation*>> translateKeyFrames;
 
+public:
 	void AddKeyFrame(int boneIndex, KeyFrame* keyFrame);
+	glm::mat4x4 GetMatrices(int boneIndex, float time);
 };
 
 class KeyFrameAnimation :
@@ -58,5 +61,6 @@ public:
 
 	void AddKeyFrame(int layerIndex, int boneIndex, KeyFrame* keyFrame);
 
-	glm::mat4x4 GetMatrices(float time, int boneIndex);
+	glm::mat4x4 GetMatrices(int layerIndex, int boneIndex, float time);
+	GetMacro(float, AnimationTime, animationTime);
 };

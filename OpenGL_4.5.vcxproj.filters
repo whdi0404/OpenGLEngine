@@ -61,6 +61,9 @@
     <Filter Include="Scenes">
       <UniqueIdentifier>{c93b39bd-7f4a-4385-bd3c-d75a8c355440}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FrameWork\Object\Component\Animator">
+      <UniqueIdentifier>{4fef10e9-1939-4e6a-bf09-10efdbbed11f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -165,6 +168,9 @@
     <ClCompile Include="KeyFrameAnimation.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>FrameWork\Object\Component\Animator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -268,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="KeyFrameAnimation.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>FrameWork\Object\Component\Animator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -27,9 +27,9 @@ void Octree::AddObject(GameObject* object)
 
 	uint32_t targetLocCode = 1;
 
-	float minLen = min(min(scale.x, scale.y), scale.z);
-	int targetDepth = floor(log2(minLen) - log2(max(0.1f, object->GetCullSphere().radius)));
-	targetDepth = min(targetDepth, cf_maxDepth);
+	float minLen = glm::min(glm::min(scale.x, scale.y), scale.z);
+	int targetDepth = floor(log2(minLen) - log2(glm::max(0.1f, object->GetCullSphere().radius)));
+	targetDepth = glm::min(targetDepth, cf_maxDepth);
 
 	Math::Sphere& objectSphere = object->GetCullSphere();
 
@@ -71,50 +71,50 @@ void Octree::GetCulledRenderObjects(RendererObjectCollector* renderObjCollector,
 	CollectAllRenderer(renderObjCollector, camera, LookupNode(1));
 }
 
-void Octree::GetChildBoundingBox(uint32_t parentLocCode, Enum_Location localLocCode, vec3 & center, vec3 & halfSize)
+void Octree::GetChildBoundingBox(uint32_t parentLocCode, Enum_Location localLocCode, glm::vec3 & center, glm::vec3 & halfSize)
 {
 	if (parentLocCode == 0)
 	{
-		center = vec3(0, 0, 0);
+		center = glm::vec3(0, 0, 0);
 		halfSize = this->scale * 0.5f * looseWeight;
 	}
 	else
 	{
 		OctreeNode* parentNode = this->LookupNode(parentLocCode);
-		vec3 parentTightHalfSize = parentNode->boundingBox.halfSize * invLooseWeight;
+		glm::vec3 parentTightHalfSize = parentNode->boundingBox.halfSize * invLooseWeight;
 
 		switch (localLocCode)
 		{
 		case Enum_Location::Bottom_Left_Front:
-			center = parentNode->boundingBox.center + (vec3(-parentTightHalfSize.x, -parentTightHalfSize.y, -parentTightHalfSize.z) * 0.5f);
+			center = parentNode->boundingBox.center + (glm::vec3(-parentTightHalfSize.x, -parentTightHalfSize.y, -parentTightHalfSize.z) * 0.5f);
 			halfSize = parentNode->boundingBox.halfSize * 0.5f;
 			break;
 		case Enum_Location::Top_Left_Front:
-			center = parentNode->boundingBox.center + (vec3(-parentTightHalfSize.x, parentTightHalfSize.y, -parentTightHalfSize.z) * 0.5f);
+			center = parentNode->boundingBox.center + (glm::vec3(-parentTightHalfSize.x, parentTightHalfSize.y, -parentTightHalfSize.z) * 0.5f);
 			halfSize = parentNode->boundingBox.halfSize * 0.5f;
 			break;
 		case Enum_Location::Bottom_Right_Front:
-			center = parentNode->boundingBox.center + (vec3(parentTightHalfSize.x, -parentTightHalfSize.y, -parentTightHalfSize.z) * 0.5f);
+			center = parentNode->boundingBox.center + (glm::vec3(parentTightHalfSize.x, -parentTightHalfSize.y, -parentTightHalfSize.z) * 0.5f);
 			halfSize = parentNode->boundingBox.halfSize * 0.5f;
 			break;
 		case Enum_Location::Top_Right_Front:
-			center = parentNode->boundingBox.center + (vec3(parentTightHalfSize.x, parentTightHalfSize.y, -parentTightHalfSize.z) * 0.5f);
+			center = parentNode->boundingBox.center + (glm::vec3(parentTightHalfSize.x, parentTightHalfSize.y, -parentTightHalfSize.z) * 0.5f);
 			halfSize = parentNode->boundingBox.halfSize * 0.5f;
 			break;
 		case Enum_Location::Bottom_Left_Back:
-			center = parentNode->boundingBox.center + (vec3(-parentTightHalfSize.x, -parentTightHalfSize.y, parentTightHalfSize.z) * 0.5f);
+			center = parentNode->boundingBox.center + (glm::vec3(-parentTightHalfSize.x, -parentTightHalfSize.y, parentTightHalfSize.z) * 0.5f);
 			halfSize = parentNode->boundingBox.halfSize * 0.5f;
 			break;
 		case Enum_Location::Top_Left_Back:
-			center = parentNode->boundingBox.center + (vec3(-parentTightHalfSize.x, parentTightHalfSize.y, parentTightHalfSize.z) * 0.5f);
+			center = parentNode->boundingBox.center + (glm::vec3(-parentTightHalfSize.x, parentTightHalfSize.y, parentTightHalfSize.z) * 0.5f);
 			halfSize = parentNode->boundingBox.halfSize * 0.5f;
 			break;
 		case Enum_Location::Bottom_Right_Back:
-			center = parentNode->boundingBox.center + (vec3(parentTightHalfSize.x, -parentTightHalfSize.y, parentTightHalfSize.z) * 0.5f);
+			center = parentNode->boundingBox.center + (glm::vec3(parentTightHalfSize.x, -parentTightHalfSize.y, parentTightHalfSize.z) * 0.5f);
 			halfSize = parentNode->boundingBox.halfSize * 0.5f;
 			break;
 		case Enum_Location::Top_Right_Back:
-			center = parentNode->boundingBox.center + (vec3(parentTightHalfSize.x, parentTightHalfSize.y, parentTightHalfSize.z) * 0.5f);
+			center = parentNode->boundingBox.center + (glm::vec3(parentTightHalfSize.x, parentTightHalfSize.y, parentTightHalfSize.z) * 0.5f);
 			halfSize = parentNode->boundingBox.halfSize * 0.5f;
 			break;
 		}
@@ -181,8 +181,8 @@ void Octree::AddNode(uint32_t parentLocationCode, uint8_t localLocationCode, boo
 	auto iter = Nodes.find(newNodeLocCode);
 	if (iter == Nodes.end())
 	{
-		vec3 center;
-		vec3 halfSize;
+		glm::vec3 center;
+		glm::vec3 halfSize;
 		GetChildBoundingBox(parentLocationCode, (Enum_Location)localLocationCode, center, halfSize);
 
 		OctreeNode* newNode = new OctreeNode(center, halfSize);
@@ -223,7 +223,7 @@ Octree::Enum_Location Octree::GetLocalLocCodeFromDirection(glm::vec3 dir)
 	return Enum_Location(x | z << 1 | y << 2);
 }
 
-OctreeNode::OctreeNode(vec3 center, vec3 halfSize)
+OctreeNode::OctreeNode(glm::vec3 center, glm::vec3 halfSize)
 {
 	ChildExists = 0;
 	this->boundingBox.center = center;

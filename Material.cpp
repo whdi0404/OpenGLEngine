@@ -39,7 +39,7 @@ void Material::SetFloat(std::string& paramName, float* value, int count)
 		hashMap_paramData.insert(KEYVALUE(std::string, ParamData)(paramName, ParamData(this, paramName, value, count)));
 }
 
-void Material::SetVec2(std::string& paramName, vec2* vector, int count)
+void Material::SetVec2(std::string& paramName, glm::vec2* vector, int count)
 {
 	auto iter = hashMap_paramData.find(paramName);
 	if (iter != hashMap_paramData.end())
@@ -48,7 +48,7 @@ void Material::SetVec2(std::string& paramName, vec2* vector, int count)
 		hashMap_paramData.insert(KEYVALUE(std::string, ParamData)(paramName, ParamData(this, paramName, vector, count)));
 }
 
-void Material::SetVec3(std::string& paramName, vec3* vector, int count)
+void Material::SetVec3(std::string& paramName, glm::vec3* vector, int count)
 {
 	auto iter = hashMap_paramData.find(paramName);
 	if (iter != hashMap_paramData.end())
@@ -57,7 +57,7 @@ void Material::SetVec3(std::string& paramName, vec3* vector, int count)
 		hashMap_paramData.insert(KEYVALUE(std::string, ParamData)(paramName, ParamData(this, paramName, vector, count)));
 }
 
-void Material::SetVec4(std::string& paramName, vec4* vector, int count)
+void Material::SetVec4(std::string& paramName, glm::vec4* vector, int count)
 {
 	auto iter = hashMap_paramData.find(paramName);
 	if (iter != hashMap_paramData.end())
@@ -66,7 +66,7 @@ void Material::SetVec4(std::string& paramName, vec4* vector, int count)
 		hashMap_paramData.insert(KEYVALUE(std::string, ParamData)(paramName, ParamData(this, paramName, vector, count)));
 }
 
-void Material::SetMatrix2x2(std::string& paramName, mat2x2* matrix, int count)
+void Material::SetMatrix2x2(std::string& paramName, glm::mat2x2* matrix, int count)
 {
 	auto iter = hashMap_paramData.find(paramName);
 	if (iter != hashMap_paramData.end())
@@ -75,7 +75,7 @@ void Material::SetMatrix2x2(std::string& paramName, mat2x2* matrix, int count)
 		hashMap_paramData.insert(KEYVALUE(std::string, ParamData)(paramName, ParamData(this, paramName, matrix, count)));
 }
 
-void Material::SetMatrix3x3(std::string& paramName, mat3x3* matrix, int count)
+void Material::SetMatrix3x3(std::string& paramName, glm::mat3x3* matrix, int count)
 {
 	auto iter = hashMap_paramData.find(paramName);
 	if (iter != hashMap_paramData.end())
@@ -84,7 +84,7 @@ void Material::SetMatrix3x3(std::string& paramName, mat3x3* matrix, int count)
 		hashMap_paramData.insert(KEYVALUE(std::string, ParamData)(paramName, ParamData(this, paramName, matrix, count)));
 }
 
-void Material::SetMatrix4x4(std::string& paramName, mat4x4* matrix, int count)
+void Material::SetMatrix4x4(std::string& paramName, glm::mat4x4* matrix, int count)
 {
 	auto iter = hashMap_paramData.find(paramName);
 	if (iter != hashMap_paramData.end())
@@ -111,7 +111,7 @@ void Material::BindShader()
 
 void Material::SetCameraMatrix(Camera* cam)
 {
-	//mat4x4 mat = mat4x4();
+	//glm::mat4x4 mat = glm::mat4x4();
 	glUniformMatrix4fv(matProj, 1, GL_FALSE, &cam->GetMatProj()[0][0]);
 	glUniformMatrix4fv(matView, 1, GL_FALSE, &cam->GetMatView()[0][0]);
 }
@@ -123,17 +123,17 @@ void* Material::ParamData::GetBuffer(Type type, int count)
 	case Type::FLOAT:
 		return new float[count];
 	case Type::VEC2:
-		return new vec2[count];
+		return new glm::vec2[count];
 	case Type::VEC3:
-		return new vec3[count];
+		return new glm::vec3[count];
 	case Type::VEC4:
-		return new vec4[count];
+		return new glm::vec4[count];
 	case Type::MAT2X2:
-		return new mat2x2[count];
+		return new glm::mat2x2[count];
 	case Type::MAT3X3:
-		return new mat3x3[count];
+		return new glm::mat3x3[count];
 	case Type::MAT4X4:
-		return new mat4x4[count];
+		return new glm::mat4x4[count];
 	}
 	return nullptr;
 }
@@ -155,56 +155,56 @@ Material::ParamData::ParamData(Material * mtrl, std::string & paramName, float *
 	BindUniformValue(mtrl, paramName);
 }
 
-Material::ParamData::ParamData(Material * mtrl, std::string & paramName, vec2 * vector2, int count) : count(count)
+Material::ParamData::ParamData(Material * mtrl, std::string & paramName, glm::vec2 * vector2, int count) : count(count)
 {
 	type = VEC2;
-	pData = new vec2[count];
-	memcpy_s(pData, sizeof(vec2) * count, vector2, sizeof(vec2) * count);
+	pData = new glm::vec2[count];
+	memcpy_s(pData, sizeof(glm::vec2) * count, vector2, sizeof(glm::vec2) * count);
 
 	BindUniformValue(mtrl, paramName);
 }
 
-Material::ParamData::ParamData(Material * mtrl, std::string & paramName, vec3 * vector3, int count) : count(count)
+Material::ParamData::ParamData(Material * mtrl, std::string & paramName, glm::vec3 * vector3, int count) : count(count)
 {
 	type = VEC3;
-	pData = new vec3[count];
-	memcpy_s(pData, sizeof(vec3) * count, vector3, sizeof(vec3) * count);
+	pData = new glm::vec3[count];
+	memcpy_s(pData, sizeof(glm::vec3) * count, vector3, sizeof(glm::vec3) * count);
 
 	BindUniformValue(mtrl, paramName);
 }
 
-Material::ParamData::ParamData(Material * mtrl, std::string & paramName, vec4 * vector4, int count) : count(count)
+Material::ParamData::ParamData(Material * mtrl, std::string & paramName, glm::vec4 * vector4, int count) : count(count)
 {
 	type = VEC4;
-	pData = new vec4[count];
-	memcpy_s(pData, sizeof(vec4) * count, vector4, sizeof(vec4) * count);
+	pData = new glm::vec4[count];
+	memcpy_s(pData, sizeof(glm::vec4) * count, vector4, sizeof(glm::vec4) * count);
 
 	BindUniformValue(mtrl, paramName);
 }
 
-Material::ParamData::ParamData(Material * mtrl, std::string & paramName, mat2x2 * mat2, int count) : count(count)
+Material::ParamData::ParamData(Material * mtrl, std::string & paramName, glm::mat2x2 * mat2, int count) : count(count)
 {
 	type = MAT2X2;
-	pData = new mat2x2[count];
-	memcpy_s(pData, sizeof(mat2x2) * count, mat2, sizeof(mat2x2) * count);
+	pData = new glm::mat2x2[count];
+	memcpy_s(pData, sizeof(glm::mat2x2) * count, mat2, sizeof(glm::mat2x2) * count);
 
 	BindUniformValue(mtrl, paramName);
 }
 
-Material::ParamData::ParamData(Material * mtrl, std::string & paramName, mat3x3 * mat3, int count) : count(count)
+Material::ParamData::ParamData(Material * mtrl, std::string & paramName, glm::mat3x3 * mat3, int count) : count(count)
 {
 	type = MAT3X3;
-	pData = new mat3x3[count];
-	memcpy_s(pData, sizeof(mat3x3) * count, mat3, sizeof(mat3x3) * count);
+	pData = new glm::mat3x3[count];
+	memcpy_s(pData, sizeof(glm::mat3x3) * count, mat3, sizeof(glm::mat3x3) * count);
 
 	BindUniformValue(mtrl, paramName);
 }
 
-Material::ParamData::ParamData(Material * mtrl, std::string & paramName, mat4x4 * mat4, int count) : count(count)
+Material::ParamData::ParamData(Material * mtrl, std::string & paramName, glm::mat4x4 * mat4, int count) : count(count)
 {
 	type = MAT4X4;
-	pData = new mat4x4[count];
-	memcpy_s(pData, sizeof(mat4x4) * count, mat4, sizeof(mat4x4) * count);
+	pData = new glm::mat4x4[count];
+	memcpy_s(pData, sizeof(glm::mat4x4) * count, mat4, sizeof(glm::mat4x4) * count);
 
 	BindUniformValue(mtrl, paramName);
 }
@@ -220,22 +220,22 @@ void Material::ParamData::ReleaseData()
 			delete[](float*)pData;
 			break;
 		case Type::VEC2:
-			delete[](vec2*)pData;
+			delete[](glm::vec2*)pData;
 			break;
 		case Type::VEC3:
-			delete[](vec3*)pData;
+			delete[](glm::vec3*)pData;
 			break;
 		case Type::VEC4:
-			delete[](vec4*)pData;
+			delete[](glm::vec4*)pData;
 			break;
 		case Type::MAT2X2:
-			delete[](mat2x2*)pData;
+			delete[](glm::mat2x2*)pData;
 			break;
 		case Type::MAT3X3:
-			delete[](mat3x3*)pData;
+			delete[](glm::mat3x3*)pData;
 			break;
 		case Type::MAT4X4:
-			delete[](mat4x4*)pData;
+			delete[](glm::mat4x4*)pData;
 			break;
 	}
 	pData = nullptr;
@@ -260,27 +260,27 @@ void Material::ParamData::SetData(void * data, int count)
 		break;
 	case Type::VEC2:
 		for (int i = 0; i < count; ++i)
-			((vec2*)pData)[i] = ((vec2*)data)[i];
+			((glm::vec2*)pData)[i] = ((glm::vec2*)data)[i];
 		break;
 	case Type::VEC3:
 		for (int i = 0; i < count; ++i)
-			((vec3*)pData)[i] = ((vec3*)data)[i];
+			((glm::vec3*)pData)[i] = ((glm::vec3*)data)[i];
 		break;
 	case Type::VEC4:
 		for (int i = 0; i < count; ++i)
-			((vec4*)pData)[i] = ((vec4*)data)[i];
+			((glm::vec4*)pData)[i] = ((glm::vec4*)data)[i];
 		break;
 	case Type::MAT2X2:
 		for (int i = 0; i < count; ++i)
-			((mat2x2*)pData)[i] = ((mat2x2*)data)[i];
+			((glm::mat2x2*)pData)[i] = ((glm::mat2x2*)data)[i];
 		break;
 	case Type::MAT3X3:
 		for (int i = 0; i < count; ++i)
-			((mat3x3*)pData)[i] = ((mat3x3*)data)[i];
+			((glm::mat3x3*)pData)[i] = ((glm::mat3x3*)data)[i];
 		break;
 	case Type::MAT4X4:
 		for (int i = 0; i < count; ++i)
-			((mat4x4*)pData)[i] = ((mat4x4*)data)[i];
+			((glm::mat4x4*)pData)[i] = ((glm::mat4x4*)data)[i];
 		break;
 	}
 }

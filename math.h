@@ -2,7 +2,6 @@
 #define ANG2RAD 3.14159265358979323846/180.0
 #include "Transform.h"
 
-using namespace glm;
 namespace Math
 {
 	struct Plane

@@ -140,11 +140,11 @@ bool Math::Box::Contain(Sphere & sphere)
 		halfSize.z < sphere.radius)
 		return false;
 	
-	vec3 boxMin = center - halfSize;
-	vec3 boxMax = center + halfSize;
+	glm::vec3 boxMin = center - halfSize;
+	glm::vec3 boxMax = center + halfSize;
 
-	vec3 sphereMin = sphere.center - sphere.radius;
-	vec3 sphereMax = sphere.center + sphere.radius;
+	glm::vec3 sphereMin = sphere.center - sphere.radius;
+	glm::vec3 sphereMax = sphere.center + sphere.radius;
 	
 	return sphereMin.x >= boxMin.x &&
 		sphereMax.x <= boxMax.x &&
@@ -166,21 +166,21 @@ glm::vec3 Math::Box::getVertex(int corner)
 	switch (corner)
 	{
 	case 0:
-		return center + vec3(halfSize.x, halfSize.y, halfSize.z);
+		return center + glm::vec3(halfSize.x, halfSize.y, halfSize.z);
 	case 1:
-		return center + vec3(-halfSize.x, halfSize.y, halfSize.z);
+		return center + glm::vec3(-halfSize.x, halfSize.y, halfSize.z);
 	case 2:
-		return center + vec3(halfSize.x, -halfSize.y, halfSize.z);
+		return center + glm::vec3(halfSize.x, -halfSize.y, halfSize.z);
 	case 3:
-		return center + vec3(-halfSize.x, -halfSize.y, halfSize.z);
+		return center + glm::vec3(-halfSize.x, -halfSize.y, halfSize.z);
 	case 4:
-		return center + vec3(halfSize.x, halfSize.y, -halfSize.z);
+		return center + glm::vec3(halfSize.x, halfSize.y, -halfSize.z);
 	case 5:
-		return center + vec3(-halfSize.x, halfSize.y, -halfSize.z);
+		return center + glm::vec3(-halfSize.x, halfSize.y, -halfSize.z);
 	case 6:
-		return center + vec3(halfSize.x, -halfSize.y, -halfSize.z);
+		return center + glm::vec3(halfSize.x, -halfSize.y, -halfSize.z);
 	case 7:
-		return center + vec3(-halfSize.x, -halfSize.y, -halfSize.z);
+		return center + glm::vec3(-halfSize.x, -halfSize.y, -halfSize.z);
 	}
 }
 

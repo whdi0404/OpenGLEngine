@@ -85,9 +85,9 @@ void Avatar::CalculateHierarchy()
 	}
 }
 
-int Avatar::GetBoneIndexFromCluster(FbxCluster * cluster)
+int Avatar::GetBoneIndexFromNode(FbxNode * node)
 {
-	auto& iter = checkOverlapBuffer.find(cluster->GetLink());
+	auto& iter = checkOverlapBuffer.find(node);
 
 	if (iter == checkOverlapBuffer.end())
 		return -1;
@@ -95,8 +95,15 @@ int Avatar::GetBoneIndexFromCluster(FbxCluster * cluster)
 		return iter->second;
 }
 
-void Avatar::Update()
+void Avatar::Update(KeyFrameAnimation* animation, float time)
 {
+	for (int i = 0; i < boneTransforms.size(); ++i)
+	{
+		Transform tempTransform;
+		tempTransform.SetLocalMatrix(animation->GetMatrices(0, i, time));
+		boneTransforms[i]->SetLocalMatrix(animation->GetMatrices(0, i, time));
+	}
+
 	for (int i = 0; i < renderMatrices.size(); ++i)
 		renderMatrices[i] = boneTransforms[i]->GetWorldMatrix() * deformMatrices[i];
 }

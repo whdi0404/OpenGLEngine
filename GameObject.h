@@ -66,8 +66,7 @@ inline TComponent* GameObject::AddComponent()
 	void (Component::*fpA)();
 	void (TComponent::*fpB)();
 */
-	if (&Component::Update != &TComponent::Update)
-		SceneGraph::GetInstance().updates.insert(newComp);
+	SceneGraph::GetInstance().updates.insert(newComp);
 
 	return newComponent;
 }

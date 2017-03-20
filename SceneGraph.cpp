@@ -9,7 +9,7 @@ SceneGraph::SceneGraph()
 {
 	scene = new STARTSCENE_CLASSNAME();
 	//재사용 가능한 옥트리 생성
-	octree = new Octree(vec3(4096.0f, 4096.0f, 4096.0f), 2.0f);
+	octree = new Octree(glm::vec3(4096.0f, 4096.0f, 4096.0f), 2.0f);
 }
 
 

@@ -9,6 +9,7 @@ Time::Time()
 	frequency = (double)freq.QuadPart;
 
 	QueryPerformanceCounter(&LI_nowTime);
+	LI_lastTime = LI_nowTime;
 
 	startTime = LI_nowTime.QuadPart / frequency;
 	lastTime = startTime;

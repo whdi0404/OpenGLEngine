@@ -11,6 +11,8 @@
 #include "Gizmo.h"
 #include "SkinnedMeshRenderObject.h"
 #include "Avatar.h"
+#include "Animator.h"
+#include "KeyFrameAnimation.h"
 
 BoneScene::BoneScene()
 {
@@ -20,7 +22,7 @@ BoneScene::~BoneScene()
 {
 }
 
-GameObject* TestObject(Mesh* mesh, Material* material, vec3 offset, float scale)
+GameObject* TestObject(Mesh* mesh, Material* material, glm::vec3 offset, float scale)
 {
 	GameObject* obj = new GameObject();
 	if (dynamic_cast<SkinnedMesh*>(mesh) != nullptr)
@@ -65,7 +67,8 @@ void BoneScene::Initialize()
 	//TestObject((Mesh*)meshes[0], material, vec3(), 1);
 
 	//std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.fbx", modelMatrix);
-	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_ARpose1.fbx", modelMatrix);
+	std::vector<Object*> animations = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_RUN00_F.fbx", modelMatrix);//Unitychan Animation/unitychan_RUN00_F.fbx
+	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.fbx", modelMatrix);
 
 	float scale = 0.1f;
 	SkinnedMesh* skinnedMesh = nullptr;
@@ -76,16 +79,31 @@ void BoneScene::Initialize()
 			continue;
 
 		if (dynamic_cast<SkinnedMesh*>(meshes[i]) != nullptr)
-			TestObject(skinnedMesh = (SkinnedMesh*)mesh, skinnedMaterial, vec3(), scale);
+			TestObject(skinnedMesh = (SkinnedMesh*)mesh, skinnedMaterial, glm::vec3(), scale);
 		else
-			TestObject(mesh, material, vec3(), scale);
+			TestObject(mesh, material, glm::vec3(), scale);
 	}
+
+	KeyFrameAnimation* keyFrameAnimation = (KeyFrameAnimation*)(*std::find_if(animations.begin(), animations.end(), [](Object* obj) -> bool
+	{
+		return dynamic_cast<KeyFrameAnimation*>(obj) != nullptr;
+	}));
+
+	Avatar* avatar = (Avatar*)(*std::find_if(meshes.begin(), meshes.end(), [](Object* obj) -> bool
+	{
+		return dynamic_cast<Avatar*>(obj) != nullptr;
+	}));
+
+	Animator* animator = (new GameObject())->AddComponent<Animator>();
+	animator->SetAvatar(avatar);
+	animator->SetNowAnimation(keyFrameAnimation);
+
 	//testModel->GetTransform()->SetLocalScale(0.01f, 0.01f, 0.01f);
 	root = nullptr;
 	if (skinnedMesh != nullptr)
 	{
 		root = skinnedMesh->GetAvatar()->GetRoot();
-		root->SetLocalScale(scale, scale, scale);
+		//root->SetLocalScale(scale, scale, scale);
 	}
 }
 
@@ -149,21 +167,10 @@ void BoneScene::Update()
 		camera->GetTransform()->RotateAxisLocal(-rotSpeed * dt, 0, 0);
 		camChanged = true;
 	}
-
-	//if (camChanged)
-	//{
-	//	//camera->RefreshViewMatrix();
-	//	glm::vec3 eyePos = camera->GetTransform()->GetWorldPosition();
-	//	//eyePos.y = 0;
-
-	//	//terrainMaterial->SetVec3(std::string("eyePosition"), eyePos);
-	//}
 }
 
 void BoneScene::OnDrawGizmos()
 {
-	/*Gizmo::DrawLine(camera, vec3(0, 0, 0), vec3(3, 3, 3));
-*/
 	if (root == nullptr)
 		return;
 	std::stack<Transform*> transStack = std::stack<Transform*>();

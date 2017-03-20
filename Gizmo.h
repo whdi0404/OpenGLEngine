@@ -37,11 +37,11 @@ public:
 		glLineWidth(lineThick);
 	}
 
-	static void DrawLine(Camera* cam, vec3 from, vec3 to)
+	static void DrawLine(Camera* cam, glm::vec3 from, glm::vec3 to)
 	{
 		glBegin(GL_LINES);
-		vec4 camPosFrom = GetPointFromCamera(cam, from);
-		vec4 camPosTo = GetPointFromCamera(cam, to);
+		glm::vec4 camPosFrom = GetPointFromCamera(cam, from);
+		glm::vec4 camPosTo = GetPointFromCamera(cam, to);
 
 		glVertex4f(camPosFrom.x, camPosFrom.y, camPosFrom.z, camPosFrom.w);
 		glVertex4f(camPosTo.x, camPosTo.y, camPosTo.z, camPosTo.w);
@@ -50,11 +50,11 @@ public:
 		oldPointPos = to;
 	}
 
-	static void DrawLineFromPrevDot(Camera* cam, vec3 to)
+	static void DrawLineFromPrevDot(Camera* cam, glm::vec3 to)
 	{
 		glBegin(GL_LINES);
-		vec4 camPosFrom = GetPointFromCamera(cam, oldPointPos);
-		vec4 camPosTo = GetPointFromCamera(cam, to);
+		glm::vec4 camPosFrom = GetPointFromCamera(cam, oldPointPos);
+		glm::vec4 camPosTo = GetPointFromCamera(cam, to);
 
 		glVertex4f(camPosFrom.x, camPosFrom.y, camPosFrom.z, camPosFrom.w);
 		glVertex4f(camPosTo.x, camPosTo.y, camPosTo.z, camPosTo.w);
@@ -63,9 +63,9 @@ public:
 		oldPointPos = to;
 	}
 
-	static glm::vec4 GetPointFromCamera(Camera* cam, vec3 point)
+	static glm::vec4 GetPointFromCamera(Camera* cam, glm::vec3 point)
 	{
-		return cam->GetMatProj() * cam->GetMatView() * vec4(point.x, point.y, point.z, 1);
+		return cam->GetMatProj() * cam->GetMatView() * glm::vec4(point.x, point.y, point.z, 1);
 	}
 
 };

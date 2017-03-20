@@ -9,10 +9,10 @@ private:
 	static std::map<FbxNode*, int> checkOverlapBuffer;
 
 private:
-	std::vector<mat4x4>  deformMatrices;
-	std::vector<mat4x4>  renderMatrices;
+	std::vector<glm::mat4x4>  deformMatrices;
+	std::vector<glm::mat4x4>  renderMatrices;
 
-	std::vector<Transform*> boneTransforms;
+	GetMacro(std::vector<Transform*>, BoneTrans, boneTransforms);
 	GetMacro(Transform*, Root, root);
 
 public:
@@ -24,11 +24,11 @@ public:
 	void AddNode(FbxNode* pNode);
 	void LoadMeshCluster(FbxScene* scene, FbxMesh* mesh, FbxSkin* skin);
 	void CalculateHierarchy();
-	int GetBoneIndexFromCluster(FbxCluster* cluster);
+	int GetBoneIndexFromNode(FbxNode* fbxNode);
 
-	void Update();
+	void Update(KeyFrameAnimation* animation, float time);
 
-	mat4x4* GetRenderMatrices()
+	glm::mat4x4* GetRenderMatrices()
 	{
 		return renderMatrices.data();
 	}
@@ -38,8 +38,8 @@ public:
 		return renderMatrices.size();
 	}
 
-	static std::vector<KeyFrameAnimation*> GetKeyFrameAnimations(FbxScene* scene)
+	static std::vector<KeyFrameAnimation*> GetKeyFrameAnimations(FbxScene* scene, Avatar* avatar)
 	{
-		return FBXHelper::LoadNodeKeyframeAnimation(scene, checkOverlapBuffer);
+		return FBXHelper::LoadNodeKeyframeAnimation(scene, avatar, checkOverlapBuffer);
 	}
 };

@@ -62,7 +62,7 @@ public:
 	void Release();
 
 	GetMacro(RendererObjectCollector*, Collector, renderObjectCollecdtor);
-	std::vector<mat4x4> matrixBuffer;
+	std::vector<glm::mat4x4> matrixBuffer;
 	Material* prevMtrl = nullptr;
 };
 

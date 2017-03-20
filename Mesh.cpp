@@ -47,10 +47,10 @@ void Mesh::SetMeshData(VertexBuffer* vertexBuffer, std::vector<int>& indices)
 	glEnableVertexAttribArray(matrixStartAttributePointer + 1);
 	glEnableVertexAttribArray(matrixStartAttributePointer + 2);
 	glEnableVertexAttribArray(matrixStartAttributePointer + 3);
-	glVertexAttribPointer(matrixStartAttributePointer + 0, 4, GL_FLOAT, GL_FALSE, sizeof(mat4), (void*)(sizeof(vec4) * 0));
-	glVertexAttribPointer(matrixStartAttributePointer + 1, 4, GL_FLOAT, GL_FALSE, sizeof(mat4), (void*)(sizeof(vec4) * 1));
-	glVertexAttribPointer(matrixStartAttributePointer + 2, 4, GL_FLOAT, GL_FALSE, sizeof(mat4), (void*)(sizeof(vec4) * 2));
-	glVertexAttribPointer(matrixStartAttributePointer + 3, 4, GL_FLOAT, GL_FALSE, sizeof(mat4), (void*)(sizeof(vec4) * 3));
+	glVertexAttribPointer(matrixStartAttributePointer + 0, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4x4), (void*)(sizeof(glm::vec4) * 0));
+	glVertexAttribPointer(matrixStartAttributePointer + 1, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4x4), (void*)(sizeof(glm::vec4) * 1));
+	glVertexAttribPointer(matrixStartAttributePointer + 2, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4x4), (void*)(sizeof(glm::vec4) * 2));
+	glVertexAttribPointer(matrixStartAttributePointer + 3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4x4), (void*)(sizeof(glm::vec4) * 3));
 	glVertexAttribDivisor(matrixStartAttributePointer + 0, 1);
 	glVertexAttribDivisor(matrixStartAttributePointer + 1, 1);
 	glVertexAttribDivisor(matrixStartAttributePointer + 2, 1);
@@ -59,13 +59,13 @@ void Mesh::SetMeshData(VertexBuffer* vertexBuffer, std::vector<int>& indices)
 	glBindVertexArray(0);
 }
 
-void Mesh::DrawInstance(mat4x4* pMat, int count)
+void Mesh::DrawInstance(glm::mat4x4* pMat, int count)
 {
 	glBindVertexArray(vertexArrayID);
 
 	//BindMatrix
 	glBindBuffer(GL_ARRAY_BUFFER, matrixBufferID);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(mat4) * count, pMat, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::mat4) * count, pMat, GL_STATIC_DRAW);
 
 	//Draw
 	glDrawElementsInstanced(

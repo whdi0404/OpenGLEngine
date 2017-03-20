@@ -20,7 +20,7 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 	std::vector<Object*> returnObject;
 	FbxImporter* pImporter = FbxImporter::Create(g_FbxSdkManager, "");
 	FbxScene* pFbxScene = FbxScene::Create(g_FbxSdkManager, "");
-
+	std::cout << filePath << std::endl;
 	if (pImporter->Initialize(filePath.c_str(), -1, g_FbxSdkManager->GetIOSettings()))
 	{
 		if (pImporter->Import(pFbxScene))
@@ -60,7 +60,6 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 					stack.push(childNode);
 				}
 			}
-			std::vector<KeyFrameAnimation*> keyFrameAnimations = Avatar::GetKeyFrameAnimations(pFbxScene);
 
 			avatar->CalculateHierarchy();
 			if (avatar->GetBoneCount() == 0)
@@ -88,6 +87,11 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 						FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
 
 						Mesh* mesh = LoadMeshData(pFbxScene, (FbxMesh*)nodeAttributeFbx, modelTransform, avatar);
+						if (nodeAttributeFbx->GetNode() == node)
+						{
+							int a = 0;
+							a++;
+						}
 						if (mesh == nullptr)
 							continue;
 
@@ -104,7 +108,12 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 					stack.push(childNode);
 				}
 			}
-			avatar->Update();
+
+			std::vector<KeyFrameAnimation*> keyFrameAnimations = Avatar::GetKeyFrameAnimations(pFbxScene, avatar);
+			std::for_each(keyFrameAnimations.begin(), keyFrameAnimations.end(), [&returnObject](KeyFrameAnimation* s) -> void
+			{
+				returnObject.push_back(s);
+			});
 
 			pFbxRootNode->Destroy();
 		}
@@ -112,7 +121,7 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 
 	pImporter->Destroy();
 	pFbxScene->Destroy();
-
+	std::cout << filePath << " end=======================" << std::endl << std::endl;
 	return returnObject;
 }
 
@@ -123,8 +132,8 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 	VertexBuffer* vertexBuffer;
 	std::vector<int> indices;
 
-	std::vector<vec3> position;
-	std::vector<vec2> uvs;
+	std::vector<glm::vec3> position;
+	std::vector<glm::vec2> uvs;
 
 	int vertexCount = fbxMesh->GetControlPointsCount();
 
@@ -142,7 +151,7 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 	FbxVector4* pVertices = fbxMesh->GetControlPoints();
 	for (int j = 0; j < vertexCount; ++j)
 	{
-		vec3 vertex;
+		glm::vec3 vertex;
 		vertex.x = (float)pVertices[j].mData[0];
 		vertex.y = (float)pVertices[j].mData[1];
 		vertex.z = (float)pVertices[j].mData[2];
@@ -178,7 +187,7 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 					referenceMode == FbxLayerElement::eIndexToDirect)
 					uvIndex = fbxMesh->GetTextureUVIndex(j, k);
 
-				vec2 uv;
+				glm::vec2 uv;
 				uv.x = (*pTexUvs)[uvIndex].mData[0];
 				uv.y = (*pTexUvs)[uvIndex].mData[1];
 
@@ -219,54 +228,79 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 			indices.push_back(realIndices[3]);
 		}
 	}
-
+	FbxNode* fbxNode = fbxMesh->GetNode();
 	int numDeformers = fbxMesh->GetDeformerCount();
-	FbxSkin* skin = (FbxSkin*)fbxMesh->GetDeformer(0, FbxDeformer::eSkin);
 
-	if (skin != nullptr && skin->GetClusterCount() != 0)
+	FbxSkin* skin = (FbxSkin*)fbxMesh->GetDeformer(0, FbxDeformer::eSkin);
+	FbxNode* skinNode = nullptr;
+
+	if (avatar != nullptr)
+	{
+		FbxNode* findNode = fbxNode;
+		while (findNode != nullptr)
+		{
+			findNode = findNode->GetParent();
+			if (avatar->GetBoneIndexFromNode(findNode) != -1)
+			{
+				skinNode = findNode;
+				break;
+			}
+		}
+	}
+
+	if (skin != nullptr || skinNode != nullptr)
 	{
 		SkinnedMesh* newMesh = new SkinnedMesh();
+		newMesh->SetName(fbxNode->GetName());
 		newMesh->SetAvatar(avatar);
 
-		std::vector<vec4> boneWeights;
-		std::vector<vec4> boneIndices;
-		boneWeights.resize(position.size(), vec4());
-		boneIndices.resize(position.size(), vec4());
+		std::vector<glm::vec4> boneWeights;
+		std::vector<glm::vec4> boneIndices;
+		boneWeights.resize(position.size(), glm::vec4());
+		boneIndices.resize(position.size(), glm::vec4());
 
-		avatar->LoadMeshCluster(fbxScene, fbxMesh, skin);
-
-		int boneCount = skin->GetClusterCount();
-		for (int boneIndex = 0; boneIndex < boneCount; boneIndex++)
+		if (skin != nullptr && skin->GetClusterCount() != 0)
 		{
-			FbxCluster* cluster = skin->GetCluster(boneIndex);
+			avatar->LoadMeshCluster(fbxScene, fbxMesh, skin);
 
-			int *boneVertexIndices = cluster->GetControlPointIndices();
-			int numBoneVertexIndices = cluster->GetControlPointIndicesCount();
-			double *boneVertexWeights = cluster->GetControlPointWeights();
-			int avatarBoneIndex = avatar->GetBoneIndexFromCluster(cluster);
-
-			for (int i = 0; i < numBoneVertexIndices; i++)
+			int boneCount = skin->GetClusterCount();
+			for (int boneIndex = 0; boneIndex < boneCount; boneIndex++)
 			{
-				int boneVertexIndex = boneVertexIndices[i];
+				FbxCluster* cluster = skin->GetCluster(boneIndex);
 
-				for (int element = 0; element < 4; ++element)
+				int *boneVertexIndices = cluster->GetControlPointIndices();
+				int numBoneVertexIndices = cluster->GetControlPointIndicesCount();
+				double *boneVertexWeights = cluster->GetControlPointWeights();
+				int avatarBoneIndex = avatar->GetBoneIndexFromNode(cluster->GetLink());
+
+				for (int i = 0; i < numBoneVertexIndices; i++)
 				{
-					if (boneWeights[boneVertexIndex][element] == 0)
+					int boneVertexIndex = boneVertexIndices[i];
+
+					for (int element = 0; element < 4; ++element)
 					{
-						boneIndices[boneVertexIndex][element] = avatarBoneIndex;
-						boneWeights[boneVertexIndex][element] = boneVertexWeights[i];
-						break;
+						if (boneWeights[boneVertexIndex][element] == 0)
+						{
+							boneIndices[boneVertexIndex][element] = avatarBoneIndex;
+							boneWeights[boneVertexIndex][element] = boneVertexWeights[i];
+							break;
+						}
 					}
 				}
 			}
 		}
-		std::for_each(boneWeights.begin(), boneWeights.end(), [](vec4& v)
+		else if(skinNode != nullptr)
 		{
-			if (v.x == -1) v.x = 0;
-			if (v.y == -1) v.y = 0;
-			if (v.z == -1) v.z = 0;
-			if (v.w == -1) v.w = 0;
-
+			int boneIdx = avatar->GetBoneIndexFromNode(skinNode);
+			for (int i = 0; i < boneWeights.size(); i++)
+			{
+				boneIndices[i][0] = boneIdx;
+				boneWeights[i][0] = 1;
+			}
+		}
+		
+		std::for_each(boneWeights.begin(), boneWeights.end(), [](glm::vec4& v)
+		{
 			v /= (v.x + v.y + v.z + v.w);
 		});
 		//UV, Indexing
@@ -280,8 +314,8 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 			{
 				for (auto& iter2 : iter.second)
 				{
-					boneWeights[iter2] = boneWeights[iter.first];
 					boneIndices[iter2] = boneIndices[iter.first];
+					boneWeights[iter2] = boneWeights[iter.first];
 				}
 			}
 		}
@@ -306,6 +340,7 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 			vertexBuffer->SetVector(Element::Texcoord0, i, glm::vec4(uvs[i].x, uvs[i].y, 0, 0));
 		}
 		Mesh* newMesh = new Mesh();
+		newMesh->SetName(fbxNode->GetName());
 		newMesh->SetMeshData(vertexBuffer, indices);
 		return newMesh;
 	}
@@ -395,7 +430,7 @@ FbxAMatrix FBXHelper::GetGeometry(FbxNode* pNode)
 	return FbxAMatrix(lT, lR, lS);
 }
 
-std::vector<KeyFrameAnimation*> FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, std::map<FbxNode*, int>& boneNodes)
+std::vector<KeyFrameAnimation*> FBXHelper::LoadNodeKeyframeAnimation(FbxScene* fbxScene, Avatar* avatar, std::map<FbxNode*, int>& boneNodes)
 {
 	std::vector<KeyFrameAnimation*> animations;
 	FbxCriteria condi = FbxCriteria::ObjectTypeStrict(FbxAnimStack::ClassId);
@@ -409,12 +444,12 @@ std::vector<KeyFrameAnimation*> FBXHelper::LoadNodeKeyframeAnimation(FbxScene* f
 		KeyFrameAnimation* newAnimation = new KeyFrameAnimation();
 		newAnimation->SetName(animStack->GetName());
 
-		int numLayers = animStack->GetMemberCount();
+		//int numLayers = animStack->GetMemberCount();
 
 		for (auto& boneIter : boneNodes)
 		{
 			FbxNode* fbxNode = boneIter.first;
-
+			/*
 			//아직 레이어는 작업 안 됨
 			for (int layerIndex = 0; layerIndex < numLayers; layerIndex++)
 			{
@@ -424,90 +459,129 @@ std::vector<KeyFrameAnimation*> FBXHelper::LoadNodeKeyframeAnimation(FbxScene* f
 				FbxAnimCurve *rotationCurve = fbxNode->LclRotation.GetCurve(animLayer);
 				FbxAnimCurve *scalingCurve = fbxNode->LclScaling.GetCurve(animLayer);
 				{
-					if (scalingCurve == nullptr)
-					{
+					//if (scalingCurve == nullptr)
+					//{
 						FbxDouble3 scalingVector = fbxNode->LclScaling.Get();
 						float x = (float)scalingVector[0];
 						float y = (float)scalingVector[1];
 						float z = (float)scalingVector[2];
 						newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameScaling(glm::vec3(x, y, z), 0));
-					}
-					else
-					{
-						int numKeys = scalingCurve->KeyGetCount();
-						for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
-						{
-							FbxTime frameTime = scalingCurve->KeyGetTime(keyIndex);
-							FbxDouble3 scalingVector = fbxNode->EvaluateLocalScaling(frameTime);
-							float x = (float)scalingVector[0];
-							float y = (float)scalingVector[1];
-							float z = (float)scalingVector[2];
-							float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
-
-							newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameScaling(glm::vec3(x, y, z), frameSeconds));
-						}
-					}
+					//}
+					//else
+					//{
+					//	int numKeys = scalingCurve->KeyGetCount();
+					//	for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
+					//	{
+					//		FbxTime frameTime = scalingCurve->KeyGetTime(keyIndex);
+					//		FbxDouble3 scalingVector = fbxNode->EvaluateLocalScaling(frameTime);
+					//		float x = (float)scalingVector[0];
+					//		float y = (float)scalingVector[1];
+					//		float z = (float)scalingVector[2];
+					//		float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
+					//
+					//		newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameScaling(glm::vec3(x, y, z), frameSeconds));
+					//	}
+					//}
 				}
 
 				{
-					if (translationCurve == nullptr)
-					{
+					//if (translationCurve == nullptr)
+					//{
 						FbxDouble3 translationVector = fbxNode->LclTranslation.Get();
 						float x = (float)translationVector[0];
 						float y = (float)translationVector[1];
 						float z = (float)translationVector[2];
-						newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameTranslation(glm::vec3(x, y, z), 0));
-					}
-					else
-					{
-						int numKeys = translationCurve->KeyGetCount();
-						for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
-						{
-							FbxTime frameTime = translationCurve->KeyGetTime(keyIndex);
-							FbxDouble3 translationVector = fbxNode->EvaluateLocalTranslation(frameTime);
-							float x = (float)translationVector[0];
-							float y = (float)translationVector[1];
-							float z = (float)translationVector[2];
-							float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
 
-							newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameTranslation(glm::vec3(x, y, z), frameSeconds));
-						}
-					}
+						glm::vec3 origin = avatar->GetBoneTrans()[boneNodes[fbxNode]]->GetLocalPosition();
+
+						newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameTranslation(glm::vec3(x, z, y), 0));
+					//}
+					//else
+					//{
+					//	int numKeys = translationCurve->KeyGetCount();
+					//	for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
+					//	{
+					//		FbxTime frameTime = translationCurve->KeyGetTime(keyIndex);
+					//		FbxDouble3 translationVector = fbxNode->EvaluateLocalTranslation(frameTime);
+					//		float x = (float)translationVector[0];
+					//		float y = (float)translationVector[1];
+					//		float z = (float)translationVector[2];
+					//		float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
+					//
+					//		newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameTranslation(glm::vec3(x, y, z), frameSeconds));
+					//	}
+					//}
 				}
 
 				{
-					if (rotationCurve == nullptr)
+					//if (rotationCurve == nullptr)
 					{
-						FbxVector4 rotationCurve = fbxNode->EvaluateLocalRotation(0);
+						FbxDouble3 rotationCurve = fbxNode->LclRotation.Get();
 						float x = (float)rotationCurve[0];
 						float y = (float)rotationCurve[1];
 						float z = (float)rotationCurve[2];
-						float w = (float)rotationCurve[3];
+						
+						glm::quat quaternion;
+						glm::mat3x3 m = avatar->GetBoneTrans()[boneNodes[fbxNode]]->GetLocalRotateMatrix();
+						glm::vec3 origin = glm::degrees(glm::eulerAngles(glm::toQuat(m)));
 
-						newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameRotation(glm::quat(x, y, z, w), 0));
-					}
-					else
-					{
-						int numKeys = rotationCurve->KeyGetCount();
-						for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
-						{
-							FbxTime frameTime = rotationCurve->KeyGetTime(keyIndex);
-							FbxVector4 rotationCurve = fbxNode->EvaluateLocalRotation(frameTime);
-							float x = (float)rotationCurve[0];
-							float y = (float)rotationCurve[1];
-							float z = (float)rotationCurve[2];
-							float w = (float)rotationCurve[3];
-							float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
+						//if (x != 0 || y != 0 || z != 0)
+						//{
+							quaternion = toQuat(m) * glm::toQuat(glm::eulerAngleXYZ(x, z, y));
+						//}
+						//else
+						//{
+						//	quaternion = toQuat(m);
+						//}
 
-							newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameRotation(glm::quat(x, y, z, w), frameSeconds));
-						}
+						std::cout << "원본: x:" << origin.x << ", y:" << origin.y << ", z:" << origin.z << std::endl <<
+							"추가 x:" << x << ", y:" << y << ", z:" << z << std::endl << std::endl;
+
+						newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameRotation(quaternion, 0));
 					}
+					//else
+					//{
+					//	int numKeys = rotationCurve->KeyGetCount();
+					//	for (int keyIndex = 0; keyIndex < numKeys; keyIndex++)
+					//	{
+					//		FbxTime frameTime = rotationCurve->KeyGetTime(keyIndex);
+					//		FbxVector4 rotationCurve = fbxNode->EvaluateLocalRotation(frameTime);
+					//		float x = (float)rotationCurve[0];
+					//		float y = (float)rotationCurve[1];
+					//		float z = (float)rotationCurve[2];
+					//		float w = (float)rotationCurve[3];
+					//		float frameSeconds = (float)frameTime.GetSecondDouble(); // If needed, get the time of the scaling keyframe, in seconds
+					//
+					//		glm::quat quaternion = glm::toQuat(glm::eulerAngleYXZ(y, x, z));
+					//		newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameRotation(quaternion, frameSeconds));
+					//
+					//		//newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameRotation(glm::quat(x, y, z, w), frameSeconds));
+					//	}
+					//}
 				}
+			}*/
+
+			FbxTakeInfo* takeInfo = fbxScene->GetTakeInfo(newAnimation->GetName().c_str());
+			FbxTime start = takeInfo->mLocalTimeSpan.GetStart();
+			FbxTime end = takeInfo->mLocalTimeSpan.GetStop();
+			float animationLength = end.GetFrameCount(FbxTime::eFrames100) - start.GetFrameCount(FbxTime::eFrames100) + 1;
+
+			for (FbxLongLong i = start.GetFrameCount(FbxTime::eFrames100); i <= end.GetFrameCount(FbxTime::eFrames100); ++i)
+			{
+				FbxTime currTime;
+				currTime.SetFrame(i, FbxTime::eFrames100);
+				FbxAMatrix currentTransformOffset = fbxNode->EvaluateLocalTransform(currTime);
+				glm::mat4x4 animMatrix = GetGLMMatrixFromFBXMatrix(currentTransformOffset);
+				Transform trans;
+				trans.SetWorldMatrix(animMatrix);
+
+				newAnimation->AddKeyFrame(0, boneIter.second, new KeyFrameRotation(glm::toQuat(trans.GetWorldRotateMatrix()), 0.01f * i));
+				newAnimation->AddKeyFrame(0, boneIter.second, new KeyFrameTranslation(trans.GetWorldPosition(), 0.01f * i));
+				newAnimation->AddKeyFrame(0, boneIter.second, new KeyFrameScaling(trans.GetLossyScale(), 0.01f * i));
 			}
 		}
 
 		animations.push_back(newAnimation);
 	}
-
 	return animations;
 }

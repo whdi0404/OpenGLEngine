@@ -18,12 +18,12 @@ private:
 		
 		ParamData(Material* mtrl, std::string& paramName, Texture2D* texture2D);
 		ParamData(Material* mtrl, std::string& paramName, float* value, int count);
-		ParamData(Material* mtrl, std::string& paramName, vec2* vector2, int count);
-		ParamData(Material* mtrl, std::string& paramName, vec3* vector3, int count);
-		ParamData(Material* mtrl, std::string& paramName, vec4* vector4, int count);
-		ParamData(Material* mtrl, std::string& paramName, mat2x2* mat2, int count);
-		ParamData(Material* mtrl, std::string& paramName, mat3x3* mat3, int count);
-		ParamData(Material* mtrl, std::string& paramName, mat4x4* mat4, int count);
+		ParamData(Material* mtrl, std::string& paramName, glm::vec2* vector2, int count);
+		ParamData(Material* mtrl, std::string& paramName, glm::vec3* vector3, int count);
+		ParamData(Material* mtrl, std::string& paramName, glm::vec4* vector4, int count);
+		ParamData(Material* mtrl, std::string& paramName, glm::mat2x2* mat2, int count);
+		ParamData(Material* mtrl, std::string& paramName, glm::mat3x3* mat3, int count);
+		ParamData(Material* mtrl, std::string& paramName, glm::mat4x4* mat4, int count);
 		
 		void ReleaseData();
 		void SetData(void* data, int dataSize);
@@ -44,12 +44,12 @@ public:
 
 	void SetTexture(std::string& paramName, Texture2D* texture);
 	void SetFloat(std::string& paramName, float* value, int count);
-	void SetVec2(std::string& paramName, vec2* vector, int count);
-	void SetVec3(std::string& paramName, vec3* vector, int count);
-	void SetVec4(std::string& paramName, vec4* vector, int count);
-	void SetMatrix2x2(std::string& paramName, mat2x2* matrix, int count);
-	void SetMatrix3x3(std::string& paramName, mat3x3* matrix, int count);
-	void SetMatrix4x4(std::string& paramName, mat4x4* matrix, int count);
+	void SetVec2(std::string& paramName, glm::vec2* vector, int count);
+	void SetVec3(std::string& paramName, glm::vec3* vector, int count);
+	void SetVec4(std::string& paramName, glm::vec4* vector, int count);
+	void SetMatrix2x2(std::string& paramName, glm::mat2x2* matrix, int count);
+	void SetMatrix3x3(std::string& paramName, glm::mat3x3* matrix, int count);
+	void SetMatrix4x4(std::string& paramName, glm::mat4x4* matrix, int count);
 
 	void BindUniformValue();
 	void BindShader();

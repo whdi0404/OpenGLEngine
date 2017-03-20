@@ -21,16 +21,16 @@ enum Element {
 
 class MeshVertexAttribute
 {
-	GetMacro(uint16, AttributeFlag, attributeFlag);
+	GetMacro(UINT16, AttributeFlag, attributeFlag);
 	GetMacro(int, VertexSize, vertexSize);
 	GetMacro(int, ElementCount, elementCount);
 
 public:
 	
 
-	MeshVertexAttribute(uint16 flag) : attributeFlag(flag), vertexSize(0), elementCount(0)
+	MeshVertexAttribute(UINT16 flag) : attributeFlag(flag), vertexSize(0), elementCount(0)
 	{
-		for (uint16 i = 1; i < Element::End; i <<= 1)
+		for (UINT16 i = 1; i < Element::End; i <<= 1)
 			if (attributeFlag & i)
 			{
 				vertexSize += GetElementSize((Element)i);
@@ -64,7 +64,7 @@ public:
 		if (attributeFlag & element)
 		{
 			int startOffset = 0;
-			for (uint16 i = 1; i < element; i <<= 1)
+			for (UINT16 i = 1; i < element; i <<= 1)
 				if (attributeFlag & i)
 					startOffset += GetElementSize((Element)i);
 			return startOffset;
@@ -79,7 +79,7 @@ public:
 
 	void EnableGLVertexAttributePointer()
 	{
-		for (uint16 i = 1, arrayIndex = 0; i < Element::End; i <<= 1)
+		for (UINT16 i = 1, arrayIndex = 0; i < Element::End; i <<= 1)
 		{
 			if (attributeFlag & i)
 			{

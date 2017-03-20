@@ -61,5 +61,5 @@ public :
 		}
 	}
 
-	static std::vector<KeyFrameAnimation*> LoadNodeKeyframeAnimation(FbxScene* fbxScene, std::map<FbxNode*, int>& boneNodes);
+	static std::vector<KeyFrameAnimation*> LoadNodeKeyframeAnimation(FbxScene* fbxScene, Avatar* avatar, std::map<FbxNode*, int>& boneNodes);
 };
