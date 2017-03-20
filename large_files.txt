@@ -1,0 +1,21 @@
+127479808 OpenGL_4.5.VC.db
+16784613 Tex/Chibi_Body_DF.png
+12745335 Models/Maskboy_MAP.rar
+10240537 Models/Three_bip_Sets_Including_Some_FBX/Complete Character Animation set.bip
+8057640 libfbxsdk.dll
+7837416 Models/Chibi_Character_Up_Maps.rar
+4845697 Tex/Tex_0049_7.jpg
+4815179 Tex/Character_Man.png
+4380482 Models/Three_bip_Sets_Including_Some_FBX/Human_Male.7z
+3809723 Models/Three_bip_Sets_Including_Some_FBX/SeperateMoves_01.7z
+3656727 Tex/Tex_0040_7.jpg
+3058118 Tex/Tex_0052_1.jpg
+3012079 Tex/Tex_0052_7.jpg
+2733406 Tex/Tex_0049_1.jpg
+2300928 DevIL.dll
+2300025 Tex/Tex_0040_1.jpg
+1592176 Models/Maskboy.FBX
+1513637 Models/Three_bip_Sets_Including_Some_FBX/VariousMoves.7z
+1359536 SIG.FBX
+1359536 Models/SIG.FBX
+1297920 Tex/Tex_0046_6.jpg
