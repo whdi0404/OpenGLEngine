@@ -87,11 +87,6 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 						FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
 
 						Mesh* mesh = LoadMeshData(pFbxScene, (FbxMesh*)nodeAttributeFbx, modelTransform, avatar);
-						if (nodeAttributeFbx->GetNode() == node)
-						{
-							int a = 0;
-							a++;
-						}
 						if (mesh == nullptr)
 							continue;
 
