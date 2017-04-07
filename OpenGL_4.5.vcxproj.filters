@@ -171,6 +171,9 @@
     <ClCompile Include="Animator.cpp">
       <Filter>FrameWork\Object\Component\Animator</Filter>
     </ClCompile>
+    <ClCompile Include="PhysXManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -277,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="Animator.h">
       <Filter>FrameWork\Object\Component\Animator</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysXManager.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

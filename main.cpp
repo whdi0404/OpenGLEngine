@@ -2,10 +2,12 @@
 #include "SceneGraph.h"
 #include "Time.h"
 #include "Gizmo.h"
+#include "PhysXManager.h"
 
 // GLFW 윈도우 핸들러
-GLFWwindow* g_Window = NULL;
-Renderer* g_Renderer = NULL;
+GLFWwindow* g_Window = nullptr;
+Renderer* g_Renderer = nullptr;
+PhysXManager* g_PhysXManager = nullptr;
 FbxManager* g_FbxSdkManager = nullptr;
 
 void ErrorCallback(int error, const char* description) {
@@ -54,6 +56,7 @@ int main() {
 
 	g_Renderer = new Renderer();
 	g_Renderer->Initialize();
+	g_PhysXManager = new PhysXManager();
 	Gizmo::Initialize();
 
 	// 주 렌더링 루프. 윈도우가 종료되기 전까지 반복한다.

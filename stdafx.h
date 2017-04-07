@@ -1,5 +1,4 @@
 #pragma once
-
 #include <iostream>
 #include <sstream>
 
@@ -20,6 +19,7 @@
 #define KFBX_DLLINFO
 #define FBXSDK_NEW_API
 #define FBXSDK_SHARED
+#define NDEBUG 1
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -32,6 +32,15 @@
 #include <IL/il.h>
 
 #include <fbxsdk.h>
+
+#include <PxPhysicsAPI.h>
+#include <PxPhysXConfig.h>
+#include <extensions/PxExtensionsAPI.h>
+#include <foundation/PxAssert.h>
+#include <foundation/PxMemory.h>
+#include <foundation/PxTransform.h>
+#include <foundation/PxFoundationVersion.h>
+#include <cudamanager/PxCudaContextManager.h>
 
 #include <vector>
 #include <map>
@@ -60,8 +69,6 @@ inline Output horrible_cast(const Input input) {
 	u.input = input;
 	return u.output;
 }
-
-//#pragma comment( lib, "winmm.lib" )
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glew32.lib")
 #pragma comment(lib, "glfw3dll.lib")
@@ -71,5 +78,7 @@ inline Output horrible_cast(const Input input) {
 extern Renderer* g_Renderer;
 extern GLFWwindow* g_Window;
 extern FbxManager* g_FbxSdkManager;
+
+using namespace physx;
 
 #define STARTSCENE_CLASSNAME BoneScene
