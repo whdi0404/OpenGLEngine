@@ -18,4 +18,6 @@ public:
 	float rotSpeed;
 
 	Transform* root;
+	Material* material;
+	std::vector<Object*> gunMesh;
 };

@@ -2,6 +2,7 @@
 class Time : public Singleton<Time>
 {
 	friend int main();
+	friend class SceneGraph;
 public:
 	Time();
 	~Time();

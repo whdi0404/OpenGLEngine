@@ -11,6 +11,7 @@ protected:
 
 	virtual void Initialize() {}
 	virtual void Update() {}
+	virtual void OnDrawGizmo() {}
 	virtual void Release() {}
 
 	GetMacro(GameObject*, GameObject, gameObject)

@@ -1,16 +1,14 @@
 #pragma once
+#include <stdio.h>
 #include <iostream>
 #include <sstream>
-
-#include <stdio.h>
-#include <string>
 #include <fstream>
+#include <string>
 #include <algorithm>
 #include <stdlib.h>
 #include <time.h>
 #include <cmath>
 //#include <MMSystem.h>
-#include <stdio.h>
 #include <Windows.h>
 
 #define GLFW_INCLUDE_GLU
@@ -24,7 +22,7 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp> 
+#include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
@@ -35,6 +33,8 @@
 
 #include <PxPhysicsAPI.h>
 #include <PxPhysXConfig.h>
+#include <foundation/PxMath.h>
+#include <foundation/PxMathUtils.h>
 #include <extensions/PxExtensionsAPI.h>
 #include <foundation/PxAssert.h>
 #include <foundation/PxMemory.h>
@@ -49,15 +49,14 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <iostream>
 #include "SingletonBase.h"
-
 #include "MyGLUtil.h"
 #include "Delegate.h"
 #include "FBXHelper.h"
 #include "math.h"
 #include "Renderer.h"
 #include "VertexAttributeDeclarative.h"
+#include "PhysXManager.h"
 
 template <class Output, class Input>
 inline Output horrible_cast(const Input input) {
@@ -75,10 +74,9 @@ inline Output horrible_cast(const Input input) {
 #pragma comment(lib, "libfbxsdk.lib")
 #pragma comment(lib, "DevIL.lib")
 
-extern Renderer* g_Renderer;
 extern GLFWwindow* g_Window;
+extern Renderer* g_Renderer;
+extern PhysXManager* g_PhysXManager;
 extern FbxManager* g_FbxSdkManager;
-
-using namespace physx;
 
 #define STARTSCENE_CLASSNAME BoneScene

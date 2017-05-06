@@ -50,6 +50,8 @@ namespace Math
 		float radius;
 		
 		bool Collision(Sphere& sphere);
+
+		static Sphere CreateBoundingSphere(VertexBuffer* vertexBuffer);
 	};
 };
 

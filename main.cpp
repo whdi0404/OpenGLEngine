@@ -2,7 +2,6 @@
 #include "SceneGraph.h"
 #include "Time.h"
 #include "Gizmo.h"
-#include "PhysXManager.h"
 
 // GLFW 윈도우 핸들러
 GLFWwindow* g_Window = nullptr;
@@ -57,18 +56,20 @@ int main() {
 	g_Renderer = new Renderer();
 	g_Renderer->Initialize();
 	g_PhysXManager = new PhysXManager();
+	g_PhysXManager->PreRender();
 	Gizmo::Initialize();
-
-	// 주 렌더링 루프. 윈도우가 종료되기 전까지 반복한다.
 	SceneGraph::GetInstance().Initialize();
 
 	while (!glfwWindowShouldClose(g_Window))
 	{
 		Time::GetInstance().Update();
+		g_PhysXManager->PreRender();
 		SceneGraph::GetInstance().Update();
 		SceneGraph::GetInstance().Render();
+		g_PhysXManager->PostRender();
 	}
 
+	delete g_PhysXManager;
 	delete g_Renderer;
 
 	// 윈도우 제거

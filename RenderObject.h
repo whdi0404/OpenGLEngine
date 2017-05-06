@@ -11,4 +11,6 @@ protected:
 
 	virtual void Initialize();
 	virtual void Release();
+
+	GetMacroProtected(Math::Sphere*, CullSphere, cullSphere);
 };

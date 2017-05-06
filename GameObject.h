@@ -22,7 +22,6 @@ public:
 	TComponent* GetComponent();
 private:
 	//void Update();
-	void RefreshOctreeNode();
 
 private:
 	std::vector<Component*> v_Components;

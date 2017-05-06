@@ -41,6 +41,21 @@ fbxsdk::FbxAMatrix GetFBXMatrixFromGLMMatrix(glm::mat4x4 glMatrix)
 	return fbxMatrix;
 }
 
+physx::PxVec2 GetPxVec2FromGLMVec2(glm::vec2 glVec4)
+{
+	return physx::PxVec2(glVec4.x, glVec4.y);
+}
+
+physx::PxVec3 GetPxVec3FromGLMVec3(glm::vec3 glVec3)
+{
+	return physx::PxVec3(glVec3.x, glVec3.y, glVec3.z);
+}
+
+physx::PxVec4 GetPxVec4FromGLMVec4(glm::vec4 glVec4)
+{
+	return physx::PxVec4(glVec4.x, glVec4.y, glVec4.z, glVec4.w);
+}
+
 GLuint CreateShader(const char* file_path, GLenum shaderType)
 {
 	GLuint shaderID = glCreateShader(shaderType);

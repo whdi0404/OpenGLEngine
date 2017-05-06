@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "math.h"
+#include "VertexBuffer.h"
 
 using namespace Math;
 
@@ -108,14 +109,12 @@ int FrustumG::boxInFrustum(Math::Box& b)
 
 	// for each plane do ...
 	for (int i = 0; i < 6; i++) {
-
 		// reset counters for corners in and out
 		out = 0; in = 0;
 		// for each corner of the box do ...
 		// get out of the cycle as soon as a box as corners
 		// both inside and out of the frustum
 		for (int k = 0; k < 8 && (in == 0 || out == 0); k++) {
-
 			// is the corner outside or inside
 			if (pl[i].PlaneDot(b.getVertex(k)) < 0)
 				out++;
@@ -130,7 +129,6 @@ int FrustumG::boxInFrustum(Math::Box& b)
 			result = INTERSECT;
 	}
 	return(result);
-
 }
 
 bool Math::Box::Contain(Sphere & sphere)
@@ -139,13 +137,13 @@ bool Math::Box::Contain(Sphere & sphere)
 		halfSize.y < sphere.radius ||
 		halfSize.z < sphere.radius)
 		return false;
-	
+
 	glm::vec3 boxMin = center - halfSize;
 	glm::vec3 boxMax = center + halfSize;
 
 	glm::vec3 sphereMin = sphere.center - sphere.radius;
 	glm::vec3 sphereMax = sphere.center + sphere.radius;
-	
+
 	return sphereMin.x >= boxMin.x &&
 		sphereMax.x <= boxMax.x &&
 
@@ -187,4 +185,60 @@ glm::vec3 Math::Box::getVertex(int corner)
 bool Math::Sphere::Collision(Sphere & sphere)
 {
 	return glm::length(sphere.center - center) <= sphere.radius + radius;
+}
+
+Sphere Math::Sphere::CreateBoundingSphere(VertexBuffer * vertexBuffer)
+{
+	if (vertexBuffer->GetAttribute()->HasElement(Element::Position) == false)
+		return Sphere();
+
+	glm::vec3 xmin, xmax, ymin, ymax, zmin, zmax;
+	xmin = ymin = zmin = glm::vec3(0, 0, 0) * FBXSDK_FLOAT_MAX;
+	xmax = ymax = zmax = glm::vec3(0, 0, 0) * FBXSDK_FLOAT_MIN;
+
+	int vertexCount = vertexBuffer->GetVertexCount();
+	for (int i = 0; i < vertexCount; ++i)
+	{
+		glm::vec4 p = vertexBuffer->GetVector(Element::Position, i);
+		if (p.x < xmin.x) xmin = glm::vec3(p.x, p.y, p.z);
+		if (p.x > xmax.x) xmax = glm::vec3(p.x, p.y, p.z);
+		if (p.y < ymin.y) ymin = glm::vec3(p.x, p.y, p.z);
+		if (p.y > ymax.y) ymax = glm::vec3(p.x, p.y, p.z);
+		if (p.z < zmin.z) zmin = glm::vec3(p.x, p.y, p.z);
+		if (p.z > zmax.z) zmax = glm::vec3(p.x, p.y, p.z);
+	}
+	auto xSpan = glm::length((xmax - xmin));
+	auto ySpan = glm::length((ymax - ymin));
+	auto zSpan = glm::length((zmax - zmin));
+	auto dia1 = xmin;
+	auto dia2 = xmax;
+	auto maxSpan = xSpan;
+
+	if (ySpan > maxSpan)
+	{
+		maxSpan = ySpan;
+		dia1 = ymin; dia2 = ymax;
+	}
+	if (zSpan > maxSpan)
+	{
+		dia1 = zmin; dia2 = zmax;
+	}
+
+	auto center = (dia1 + dia2) * 0.5f;
+	float radius = glm::length(dia2 - center);
+	for (int i = 0; i < vertexCount; ++i)
+	{
+		glm::vec4 p4 = vertexBuffer->GetVector(Element::Position, i);
+		glm::vec3 p = glm::vec3(p4.x, p4.y, p4.z);
+		float d = glm::length(p - center);
+		if (d > radius)
+		{
+			auto r = d;
+			radius = (radius + r) * 0.5f;
+			auto offset = r - radius;
+			center = (radius * center + offset * p) / r;
+		}
+	}
+
+	return Sphere{ center, radius };
 }

@@ -33,4 +33,5 @@ protected:
 
 	GetMacroProtected(unsigned short, ResourceID, resourceID);
 	GetSetMacroProtected(GLenum, DrawMode, drawMode);
+	GetMacro(Math::Sphere, BoundingSphere, boundingSphere);
 };

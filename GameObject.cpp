@@ -6,21 +6,17 @@
 
 GameObject::GameObject() : renderObject(nullptr), octreeLocationCode(0)
 {
-	cullSphere.center = glm::vec3(0,0,0);
+	cullSphere.center = glm::vec3(0, 0, 0);
 	cullSphere.radius = 0;
 	transform = new Transform();
 	transform->gameObject = this;
 
 	SceneGraph::GetInstance().scene->AddChild(transform, false);
-	RefreshOctreeNode();
+	SceneGraph::GetInstance().octree->AddObject(this);
 }
 
 GameObject::~GameObject()
 {
-}
-
-void GameObject::RefreshOctreeNode()
-{
-	SceneGraph::GetInstance().octree->DeleteObject(this);
-	SceneGraph::GetInstance().octree->AddObject(this);
+	if (transform == nullptr)
+		return;
 }

@@ -5,8 +5,10 @@
 #include "Octree.h"
 #include "GameObject.h"
 
+std::vector<Transform*> Transform::movedTransform;
+
 Transform::Transform() : localPosition(0, 0, 0), localScale(1, 1, 1), worldMatrix(1.0f),
-parent(nullptr), gameObject(nullptr)
+parent(nullptr), gameObject(nullptr), moved(false)
 {
 	this->forward = glm::vec3(0, 0, 1);
 	this->up = glm::vec3(0, 1, 0);
@@ -192,7 +194,6 @@ Transform & Transform::RotateAxisLocal(float dAngleX, float dAngleY, float dAngl
 Transform & Transform::RotateAxisLocal(glm::vec3 deltaAngle)
 {
 	RotateAxisLocal(deltaAngle.x, deltaAngle.y, deltaAngle.z);
-	// TODO: 여기에 반환 구문을 삽입합니다.
 	return *this;
 }
 
@@ -213,22 +214,22 @@ Transform & Transform::UpdateTransform()
 	localMatrix[0][1] = r.y;		localMatrix[1][1] = u.y;		localMatrix[2][1] = f.y;		localMatrix[3][1] = p.y;
 	localMatrix[0][2] = r.z;		localMatrix[1][2] = u.z;		localMatrix[2][2] = f.z;		localMatrix[3][2] = p.z;
 	localMatrix[0][3] = 0;			localMatrix[1][3] = 0;			localMatrix[2][3] = 0;			localMatrix[3][3] = 1;
-
+	
 	if (parent != nullptr)
 	{
 		worldMatrix = parent->GetWorldMatrix() * localMatrix;
 		worldPosition = glm::vec3(worldMatrix[3][0], worldMatrix[3][1], worldMatrix[3][2]);
 		
 		worldRightAxis = glm::vec3(worldMatrix[0][0], worldMatrix[0][1], worldMatrix[0][2]);
-		lossyScale.x = worldRightAxis.length();
+		lossyScale.x = glm::length(worldRightAxis);
 		worldRightAxis = normalize(worldRightAxis);
 
 		worldUpAxis = glm::vec3(worldMatrix[1][0], worldMatrix[1][1], worldMatrix[1][2]);
-		lossyScale.y = worldUpAxis.length();
+		lossyScale.y = glm::length(worldUpAxis);
 		worldUpAxis = normalize(worldUpAxis);
 
 		worldForwardAxis = glm::vec3(worldMatrix[2][0], worldMatrix[2][1], worldMatrix[2][2]);
-		lossyScale.z = worldForwardAxis.length();
+		lossyScale.z = glm::length(worldForwardAxis);
 		worldForwardAxis = normalize(worldForwardAxis);
 	}
 	else
@@ -243,11 +244,28 @@ Transform & Transform::UpdateTransform()
 	if (gameObject == nullptr)
 		return *this;
 
-	this->gameObject->GetCullSphere().center = worldPosition;
-	Octree* octree = SceneGraph::GetInstance().octree;
-	if (this->gameObject->GetOctreeLocCode())
+	if (gameObject->renderObject != nullptr)
 	{
-		this->gameObject->RefreshOctreeNode();
+		Math::Sphere*& rendererCullSphere = gameObject->renderObject->GetCullSphere();
+		if (rendererCullSphere != nullptr)
+		{
+			glm::vec3 centerV3 = rendererCullSphere->center;
+			glm::vec4 localCenter(centerV3.x, centerV3.y, centerV3.z, 1);
+			glm::vec4 worldCenter = glm::mat4x4(worldMatrix) * localCenter;
+
+			gameObject->cullSphere.center = glm::vec3(worldCenter.x, worldCenter.y, worldCenter.z);
+			gameObject->cullSphere.radius = rendererCullSphere->radius * glm::max(this->GetLossyScale().x, this->GetLossyScale().y, this->GetLossyScale().z);
+		}
+		else
+		{
+			gameObject->cullSphere.center = worldPosition;
+			gameObject->cullSphere.radius = 0;
+		}
+		if (moved == false)
+		{
+			movedTransform.push_back(this);
+			moved = true;
+		}
 	}
 
 	return *this;

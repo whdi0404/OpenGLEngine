@@ -172,6 +172,8 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderObject.cpp" />
     <ClCompile Include="Resources.cpp" />
+    <ClCompile Include="SampleAllocator.cpp" />
+    <ClCompile Include="SampleStepper.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneGraph.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -182,6 +184,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TerrainSystem.cpp" />
+    <ClCompile Include="TestMoving.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -208,9 +211,14 @@
     <ClInclude Include="Octree.h" />
     <ClInclude Include="PhysXManager.h" />
     <ClInclude Include="PracticalRenderObject.h" />
+    <ClInclude Include="PxTkNamespaceMangle.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RendererMemoryMacros.h" />
     <ClInclude Include="RenderObject.h" />
     <ClInclude Include="Resources.h" />
+    <ClInclude Include="SampleAllocator.h" />
+    <ClInclude Include="SampleAllocatorSDKClasses.h" />
+    <ClInclude Include="SampleStepper.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="Shader.h" />
@@ -219,6 +227,7 @@
     <ClInclude Include="SkinnedMeshRenderObject.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TerrainSystem.h" />
+    <ClInclude Include="TestMoving.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />

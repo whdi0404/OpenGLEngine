@@ -64,6 +64,12 @@
     <Filter Include="FrameWork\Object\Component\Animator">
       <UniqueIdentifier>{4fef10e9-1939-4e6a-bf09-10efdbbed11f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FrameWork\Physics\PhysX">
+      <UniqueIdentifier>{d4646f94-b05d-4818-849f-d4d3c163faee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TestGame">
+      <UniqueIdentifier>{afe309e7-f5a4-4418-9144-276ba251557c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -174,6 +180,15 @@
     <ClCompile Include="PhysXManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="SampleStepper.cpp">
+      <Filter>FrameWork\Physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="SampleAllocator.cpp">
+      <Filter>FrameWork\Physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="TestMoving.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -282,6 +297,24 @@
       <Filter>FrameWork\Object\Component\Animator</Filter>
     </ClInclude>
     <ClInclude Include="PhysXManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SampleStepper.h">
+      <Filter>FrameWork\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="SampleAllocatorSDKClasses.h">
+      <Filter>FrameWork\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="SampleAllocator.h">
+      <Filter>FrameWork\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="RendererMemoryMacros.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="PxTkNamespaceMangle.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="TestMoving.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

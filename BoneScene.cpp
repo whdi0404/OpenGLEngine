@@ -13,6 +13,7 @@
 #include "Avatar.h"
 #include "Animator.h"
 #include "KeyFrameAnimation.h"
+#include "TestMoving.h"
 
 BoneScene::BoneScene()
 {
@@ -53,7 +54,7 @@ void BoneScene::Initialize()
 	Shader* modelShader = new Shader("./Shaders/TestVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
 	Shader* skinnedShader = new Shader("./Shaders/TestSkinnedVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
 
-	Material* material = new Material(modelShader, 1);
+	material = new Material(modelShader, 1);
 	Material* skinnedMaterial = new Material(skinnedShader, 1);
 
 	Texture2D* modelTex = new Texture2D("./Models/UnityChanTexture/body_01.tga");
@@ -66,9 +67,9 @@ void BoneScene::Initialize()
 	//std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/SIG.FBX", modelMatrix);
 	//TestObject((Mesh*)meshes[0], material, vec3(), 1);
 
-	//std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.fbx", modelMatrix);
-	std::vector<Object*> animations = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_RUN00_F.fbx", modelMatrix);//Unitychan Animation/unitychan_RUN00_F.fbx
 	std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.fbx", modelMatrix);
+	std::vector<Object*> animations = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_RUN00_F.fbx", modelMatrix);//Unitychan Animation/unitychan_RUN00_F.fbx
+	gunMesh = FBXHelper::GetResourcesFromFile("./Models/Barrett.FBX", modelMatrix);
 
 	float scale = 0.1f;
 	SkinnedMesh* skinnedMesh = nullptr;
@@ -77,18 +78,18 @@ void BoneScene::Initialize()
 		Mesh* mesh = dynamic_cast<Mesh*>(meshes[i]);
 		if (mesh == nullptr)
 			continue;
-
+	
 		if (dynamic_cast<SkinnedMesh*>(meshes[i]) != nullptr)
-			TestObject(skinnedMesh = (SkinnedMesh*)mesh, skinnedMaterial, glm::vec3(), scale);
+			GameObject* obj = TestObject(skinnedMesh = (SkinnedMesh*)mesh, skinnedMaterial, glm::vec3(), scale);
 		else
-			TestObject(mesh, material, glm::vec3(), scale);
+			GameObject* obj = TestObject(mesh, material, glm::vec3(), scale);
 	}
 
 	KeyFrameAnimation* keyFrameAnimation = (KeyFrameAnimation*)(*std::find_if(animations.begin(), animations.end(), [](Object* obj) -> bool
 	{
 		return dynamic_cast<KeyFrameAnimation*>(obj) != nullptr;
 	}));
-
+	
 	Avatar* avatar = (Avatar*)(*std::find_if(meshes.begin(), meshes.end(), [](Object* obj) -> bool
 	{
 		return dynamic_cast<Avatar*>(obj) != nullptr;
@@ -112,17 +113,24 @@ void BoneScene::Update()
 	bool camChanged = false;
 
 	float dt = Time::GetInstance().GetDeltaTime();
-	int state = glfwGetKey(g_Window, GLFW_KEY_W);
+	float nowSpeed = speed;
+	int state = glfwGetKey(g_Window, GLFW_KEY_LEFT_SHIFT);
 	if (state == GLFW_PRESS)
 	{
-		camera->GetTransform()->AddLocalPosition(0, 0, -speed *dt);
+		nowSpeed = speed * 5;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_W);
+	if (state == GLFW_PRESS)
+	{
+		camera->GetTransform()->AddLocalPosition(0, 0, -nowSpeed *dt);
 		camChanged = true;
 	}
 
 	state = glfwGetKey(g_Window, GLFW_KEY_S);
 	if (state == GLFW_PRESS)
 	{
-		camera->GetTransform()->AddLocalPosition(0, 0, speed *dt);
+		camera->GetTransform()->AddLocalPosition(0, 0, nowSpeed *dt);
 		camChanged = true;
 	}
 
@@ -167,13 +175,33 @@ void BoneScene::Update()
 		camera->GetTransform()->RotateAxisLocal(-rotSpeed * dt, 0, 0);
 		camChanged = true;
 	}
+
+	state = glfwGetMouseButton(g_Window, GLFW_MOUSE_BUTTON_LEFT);
+	static int oldState = GLFW_RELEASE;
+	if (state == GLFW_PRESS && oldState == GLFW_RELEASE)
+	{
+		//GameObject* gun = new GameObject();
+		for each (Object* var in gunMesh)
+		{
+			if (dynamic_cast<Mesh*>(var) != nullptr)
+			{
+				GameObject* obj = TestObject((Mesh*)var, material, camera->GetTransform()->GetLocalPosition(), 1);
+				obj->AddComponent<TestMoving>()->SetCamera(camera);
+				//gun->GetTransform()->AddChild(obj->GetTransform(), false);
+			}
+		}
+		//gun->AddComponent<TestMoving>();
+		//gun->AddComponent<PhysXActor>()->CreateToBox();
+		std::cout << "ObjectCount: " << SceneGraph::GetInstance().GetObjectCount() <<std::endl;
+	}
+	oldState = state;
 }
 
 void BoneScene::OnDrawGizmos()
 {
 	if (root == nullptr)
 		return;
-	std::stack<Transform*> transStack = std::stack<Transform*>();
+	/*std::stack<Transform*> transStack = std::stack<Transform*>();
 	transStack.push(root);
 	
 	while (transStack.empty() == false)
@@ -191,5 +219,5 @@ void BoneScene::OnDrawGizmos()
 			if (child->GetChildCount() > 0)
 				transStack.push(child);
 		}
-	}
+	}*/
 }

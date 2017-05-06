@@ -19,6 +19,10 @@ void PracticalRenderObject::SetMaterial(Material * material)
 void PracticalRenderObject::SetMesh(Mesh * mesh)
 {
 	this->mesh = mesh;
+	if (mesh != nullptr)
+		cullSphere = &mesh->GetBoundingSphere();
+	else
+		cullSphere = nullptr;
 	RefreshHashCode();
 }
 

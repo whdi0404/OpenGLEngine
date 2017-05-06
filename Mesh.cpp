@@ -8,7 +8,7 @@
 
 unsigned short Mesh::totalResourceID = 0;
 
-Mesh::Mesh() : vertexBuffer(nullptr), drawMode(GL_TRIANGLES)
+Mesh::Mesh() : vertexBuffer(nullptr), drawMode(GL_TRIANGLES), boundingSphere({glm::vec3(0, 0, 0), 0})
 {
 	resourceID = totalResourceID++;
 }
@@ -57,6 +57,8 @@ void Mesh::SetMeshData(VertexBuffer* vertexBuffer, std::vector<int>& indices)
 	glVertexAttribDivisor(matrixStartAttributePointer + 3, 1);
 
 	glBindVertexArray(0);
+
+	boundingSphere = Math::Sphere::CreateBoundingSphere(vertexBuffer);
 }
 
 void Mesh::DrawInstance(glm::mat4x4* pMat, int count)

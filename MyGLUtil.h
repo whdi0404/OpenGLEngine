@@ -87,6 +87,12 @@ glm::mat4x4 GetGLMMatrixFromFBXMatrix(FbxAMatrix fbxMatrix);
 
 FbxAMatrix GetFBXMatrixFromGLMMatrix(glm::mat4x4 glMatrix);
 
+physx::PxVec2 GetPxVec2FromGLMVec2(glm::vec2 glVec4);
+
+physx::PxVec3 GetPxVec3FromGLMVec3(glm::vec3 glVec3);
+
+physx::PxVec4 GetPxVec4FromGLMVec4(glm::vec4 glVec4);
+
 GLuint CreateShader(const char* file_path, GLenum shaderType);
 
 GLuint AttachShaderToProgram(GLuint programID, GLuint count, ...);

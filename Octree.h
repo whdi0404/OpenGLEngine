@@ -24,12 +24,13 @@ public:
 	Box boundingBox;
 
 	std::vector<GameObject*> list_RenderObjects;
+	void AddNode(GameObject* gameObject);
 };
 
 class Octree :
 	public Object
 {
-	static const int cf_maxDepth;
+	static const int maxDepth;
 public:
 	enum Enum_Location
 	{
@@ -53,11 +54,17 @@ public:
 public:
 	void AddObject(GameObject* object);
 	void DeleteObject(GameObject* object);
-	void GetCulledRenderObjects(RendererObjectCollector* renderObjCollector, Camera* camera);
+	void ReallocateObject(GameObject* object);
 
+	void GetCulledRenderObjects(RendererObjectCollector* renderObjCollector, Camera* camera);
+	
 	void GetChildBoundingBox(uint32_t parentLocCode, Enum_Location localLocCode, glm::vec3& center, glm::vec3& halfSize);
 
+	void FindObject(std::string& objectName, std::vector<GameObject*>& objectList);
+
 private:
+	OctreeNode* GetCorrectNode(GameObject* object);
+
 	void CreateCompleteOctree(uint32_t parentLocCode, int depth);
 	void CollectAllRenderer(RendererObjectCollector* renderObjCollector, Camera* camera, OctreeNode* node);
 	OctreeNode * GetParentNode(uint32_t locCode);
@@ -70,10 +77,10 @@ private:
 	static Enum_Location GetLocalLocCodeFromDirection(glm::vec3);
 
 private:
-	std::unordered_map<uint32_t, OctreeNode*> Nodes;
+	std::vector<OctreeNode*> Nodes;
 	glm::vec3 scale;
 	float looseWeight;
 	float invLooseWeight;
 
-	
+	GetMacro(int, ObjectCount, objectCount);
 };

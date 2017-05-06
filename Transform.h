@@ -3,6 +3,8 @@
 
 class Transform : public Object
 {
+	static std::vector<Transform*> movedTransform;
+
 	friend class GameObject;
 	friend class SceneGraph;
 private:
@@ -36,6 +38,8 @@ private:
 
 	glm::mat4x4 worldMatrix;
 	glm::mat4x4 localMatrix;
+
+	bool moved;
 public:
 	Transform();
 	virtual ~Transform();
@@ -87,7 +91,6 @@ public:
 
 	//Transform 을 업데이트 한다 ( Trasform 의 정보가 갱신되었을때 사용된다 )
 	Transform& UpdateTransform();
-
 
 	// ------------------------------------------------------------------------
 	// Get 관련

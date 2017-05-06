@@ -19,6 +19,10 @@ public:
 	
 	void Render();
 
+	int GetObjectCount();
+
+	void FindObject(std::string& name, std::vector<GameObject*>& objectList);
+
 private:
 	std::unordered_set<Component*> updates;
 	Scene* scene;

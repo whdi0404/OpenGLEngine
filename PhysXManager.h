@@ -1,7 +1,8 @@
 #pragma once
-#include "SingletonBase.h"
-class PhysXManager :
-	public Singleton<PhysXManager>
+#include "SampleStepper.h"
+
+using namespace physx;
+class PhysXManager : public PxDeletionListener
 {
 private:
 	PxFoundation* foundation;
@@ -9,9 +10,17 @@ private:
 	PxPvdTransport*                  transport;
 	PxPvdInstrumentationFlags        pvdFlags;
 	PxPvd* pvd;
-	CUcontext* cuContext;
+	PxDefaultCpuDispatcher* mCpuDispatcher;
+	PxCooking*								mCooking;
+	FixedStepper fixedStepper;
 
-	PxPhysics*								physics;
+	GetMacro(PxPhysics*, Physics, physics);
+	PxMaterial* mMaterial;
+	GetMacro(PxScene*, Scene, mScene);
+	PxReal mStepSize;
+
+	int gpuMaxNumPartitions;
+	bool waitForResults;
 
 public:
 	PhysXManager();
@@ -28,4 +37,28 @@ public:
 		static PxDefaultAllocator gDefaultAllocator;
 		return gDefaultAllocator;
 	}
+
+	static void GetDefaultSceneDesc(PxSceneDesc&) {}
+
+	void PreRender();
+
+	void PostRender();
+
+	virtual void onRelease(const PxBase* observed, void* userData, PxDeletionEventFlag::Enum deletionEvent);
+};
+
+class PhysXActor : public Component
+{
+private:
+	PxMaterial* mMaterial;
+	PxRigidActor* actor;
+	PxRigidDynamic* rigidDynamic;
+
+public:
+	PhysXActor();
+	~PhysXActor();
+
+public:
+	void CreateToBox();
+	virtual void Update();
 };
