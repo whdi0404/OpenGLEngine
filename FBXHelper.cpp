@@ -550,7 +550,7 @@ std::vector<KeyFrameAnimation*> FBXHelper::LoadNodeKeyframeAnimation(FbxScene* f
 					//		glm::quat quaternion = glm::toQuat(glm::eulerAngleYXZ(y, x, z));
 					//		newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameRotation(quaternion, frameSeconds));
 					//
-					//		//newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameRotation(glm::quat(x, y, z, w), frameSeconds));
+					//		//newAnimation->AddKeyFrame(layerIndex, boneIter.second, new KeyFrameRotation(glm::quat(w, x, y, z), frameSeconds));
 					//	}
 					//}
 				}
@@ -565,7 +565,7 @@ std::vector<KeyFrameAnimation*> FBXHelper::LoadNodeKeyframeAnimation(FbxScene* f
 			{
 				FbxTime currTime;
 				currTime.SetFrame(i, FbxTime::eFrames100);
-				FbxAMatrix currentTransformOffset = fbxNode->EvaluateLocalTransform(currTime);
+				FbxAMatrix currentTransformOffset = fbxNode->EvaluateGlobalTransform(currTime);
 				glm::mat4x4 animMatrix = GetGLMMatrixFromFBXMatrix(currentTransformOffset);
 				Transform trans;
 				trans.SetWorldMatrix(animMatrix);

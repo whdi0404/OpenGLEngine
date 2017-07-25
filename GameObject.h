@@ -51,7 +51,7 @@ inline TComponent* GameObject::AddComponent()
 
 	if (dynamic_cast<RenderObject*>(newComponent) == nullptr)
 	{
-		v_Components.push_back((Component*)newComponent);
+		v_Components.emplace_back((Component*)newComponent);
 	}
 	else
 	{
@@ -65,7 +65,7 @@ inline TComponent* GameObject::AddComponent()
 	void (Component::*fpA)();
 	void (TComponent::*fpB)();
 */
-	SceneGraph::GetInstance().updates.insert(newComp);
+	SceneGraph::GetInstance().updates.emplace_back(newComp);
 
 	return newComponent;
 }

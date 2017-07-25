@@ -16,9 +16,9 @@ Animator::~Animator()
 
 void Animator::Update()
 {
-	double time = Time::GetInstance().GetDeltaTime();
+	float time = Time::GetInstance().GetDeltaTime();
 	nowTime += time;
-	if(nowTime > nowAnimation->GetAnimationTime())
+	while(nowTime >= nowAnimation->GetAnimationTime())
 		nowTime -= nowAnimation->GetAnimationTime();
 	avatar->Update(nowAnimation, nowTime);
 }

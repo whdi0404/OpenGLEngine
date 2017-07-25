@@ -13,6 +13,7 @@ class OctreeNode
 	friend class Octree;
 
 private:
+	OctreeNode();
 	OctreeNode(glm::vec3 center, glm::vec3 halfSize);
 
 public:
@@ -63,13 +64,13 @@ public:
 	void FindObject(std::string& objectName, std::vector<GameObject*>& objectList);
 
 private:
-	OctreeNode* GetCorrectNode(GameObject* object);
+	OctreeNode& GetCorrectNode(GameObject* object);
 
 	void CreateCompleteOctree(uint32_t parentLocCode, int depth);
-	void CollectAllRenderer(RendererObjectCollector* renderObjCollector, Camera* camera, OctreeNode* node);
-	OctreeNode * GetParentNode(uint32_t locCode);
-	OctreeNode * LookupNode(uint32_t locCode);
-	OctreeNode * LookupNode(uint32_t parentLocCode, uint32_t locaLocCode);
+	void CollectAllRenderer(RendererObjectCollector* renderObjCollector, Camera* camera, OctreeNode& node);
+	OctreeNode& GetParentNode(uint32_t locCode);
+	OctreeNode& LookupNode(uint32_t locCode);
+	OctreeNode& LookupNode(uint32_t parentLocCode, uint32_t locaLocCode);
 
 	void AddNode(uint32_t parentLocationCode, uint8_t localLocationCode, bool linkChild = true);
 	void DeleteNode(uint32_t locCode);
@@ -77,7 +78,7 @@ private:
 	static Enum_Location GetLocalLocCodeFromDirection(glm::vec3);
 
 private:
-	std::vector<OctreeNode*> Nodes;
+	std::vector<OctreeNode> Nodes;
 	glm::vec3 scale;
 	float looseWeight;
 	float invLooseWeight;

@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "Time.h"
 #include "Gizmo.h"
+
 class TestMoving :
 	public Component
 {
@@ -12,11 +13,7 @@ public:
 	~TestMoving();
 
 
-	virtual void Update()
-	{
-		float dt = Time::GetInstance().GetDeltaTime();
-		GetTransform()->AddWorldPosition(glm::vec3(0, 0, -5 * dt));
-	}
+	virtual void Update();
 	
 	virtual void OnDrawGizmo();
 

@@ -12,7 +12,6 @@ SceneGraph::SceneGraph()
 	octree = new Octree(glm::vec3(4096.0f, 4096.0f, 4096.0f), 2.0f);
 }
 
-
 SceneGraph::~SceneGraph()
 {
 }
@@ -30,17 +29,30 @@ void SceneGraph::Update()
 {
 	glfwPollEvents();
 
+	float reallocToOctreeTime, updateTime;
+	float startTime = Time::GetInstance().GetNowTimeSinceStart();
 	scene->Update();
-	for (auto& iter = updates.begin(); iter != updates.end(); ++iter)
-		(*iter)->Update();
+	int size = updates.size();
+	for (int i = 0; i < size; ++i)
+		updates[i]->Update();
+	updateTime = Time::GetInstance().GetNowTimeSinceStart();
 
-	for each (auto trans in Transform::movedTransform)
+	for each (auto& trans in Transform::movedTransform)
 	{
+		trans->RecalcuateBoundingSphere(); 
 		SceneGraph::GetInstance().octree->ReallocateObject(trans->gameObject);
 		trans->moved = false;
 	}
-
 	Transform::movedTransform.clear();
+	reallocToOctreeTime = Time::GetInstance().GetNowTimeSinceStart();
+	int state = glfwGetKey(g_Window, GLFW_KEY_Y);
+	if (state == GLFW_PRESS)
+	{
+		reallocToOctreeTime -= updateTime;
+		updateTime -= startTime;
+
+		std::cout << "updateTime: " << updateTime * 1000 << "ms reallocTime: " << reallocToOctreeTime * 1000 << "ms" << std::endl;
+	}
 }
 
 void SceneGraph::Render()
@@ -48,8 +60,9 @@ void SceneGraph::Render()
 	g_Renderer->Render(octree);
 	glUseProgram(0);
 
-	for each(auto gizmo in updates)
-		gizmo->OnDrawGizmo();
+	//int size = updates.size();
+	//for (int i = 0; i < size; ++i)
+	//	updates[i]->OnDrawGizmo();
 	scene->OnDrawGizmos();
 	glfwSwapBuffers(g_Window);
 }

@@ -82,7 +82,7 @@ std::vector<PracticalRenderObject*>* RendererObjectCollector::RegisterRenderObje
 {
 	if (dynamic_cast<Camera*>(renderObject) != nullptr)
 	{
-		v_Camera.push_back((Camera*)renderObject);
+		v_Camera.emplace_back((Camera*)renderObject);
 		return nullptr;
 	}
 	else if (dynamic_cast<PracticalRenderObject*>(renderObject) != nullptr)
@@ -102,7 +102,7 @@ std::vector<PracticalRenderObject*>* RendererObjectCollector::RegisterRenderObje
 			iter = renderObjectKey.find(key);
 
 			RendererVector newRendererVector((PracticalRenderObject*)renderObject);
-			renderObjects.push_back(newRendererVector);
+			renderObjects.emplace_back(newRendererVector);
 			//std::vector<PracticalRenderObject*>* practicalRenderObjects = practicalRenderObjects = RendererVector((PracticalRenderObject*)renderObject).renderobjects;
 			SortRenderObjects();
 			return newRendererVector.renderobjects;

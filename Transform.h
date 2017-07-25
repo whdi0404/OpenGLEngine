@@ -39,9 +39,10 @@ private:
 	glm::mat4x4 worldMatrix;
 	glm::mat4x4 localMatrix;
 
+	bool noRecalculateChild;
 	bool moved;
 public:
-	Transform();
+	Transform(bool noRecalculateChild = false);
 	virtual ~Transform();
 
 public:
@@ -137,4 +138,9 @@ public:
 	size_t GetChildCount() { return v_Children.size(); }
 
 	Transform* GetRoot();
+
+	void MoveTest();
+
+private:
+	void RecalcuateBoundingSphere();
 };

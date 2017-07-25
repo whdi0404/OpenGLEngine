@@ -7,8 +7,8 @@
 
 std::vector<Transform*> Transform::movedTransform;
 
-Transform::Transform() : localPosition(0, 0, 0), localScale(1, 1, 1), worldMatrix(1.0f),
-parent(nullptr), gameObject(nullptr), moved(false)
+Transform::Transform(bool noRecalculateChild) : localPosition(0, 0, 0), localScale(1, 1, 1), worldMatrix(1.0f),
+parent(nullptr), gameObject(nullptr), moved(false), noRecalculateChild(noRecalculateChild)
 {
 	this->forward = glm::vec3(0, 0, 1);
 	this->up = glm::vec3(0, 1, 0);
@@ -238,38 +238,26 @@ Transform & Transform::UpdateTransform()
 		worldPosition = localPosition;
 		lossyScale = localScale;
 	}
-	for (int i = 0; i < v_Children.size(); ++i)
-		v_Children[i]->UpdateTransform();
+
+	if (noRecalculateChild == false)
+	{
+		for (int i = 0; i < v_Children.size(); ++i)
+			v_Children[i]->UpdateTransform();
+	}
 
 	if (gameObject == nullptr)
 		return *this;
 
-	if (gameObject->renderObject != nullptr)
+	if (moved == false && gameObject->renderObject != nullptr)
 	{
-		Math::Sphere*& rendererCullSphere = gameObject->renderObject->GetCullSphere();
-		if (rendererCullSphere != nullptr)
-		{
-			glm::vec3 centerV3 = rendererCullSphere->center;
-			glm::vec4 localCenter(centerV3.x, centerV3.y, centerV3.z, 1);
-			glm::vec4 worldCenter = glm::mat4x4(worldMatrix) * localCenter;
-
-			gameObject->cullSphere.center = glm::vec3(worldCenter.x, worldCenter.y, worldCenter.z);
-			gameObject->cullSphere.radius = rendererCullSphere->radius * glm::max(this->GetLossyScale().x, this->GetLossyScale().y, this->GetLossyScale().z);
-		}
-		else
-		{
-			gameObject->cullSphere.center = worldPosition;
-			gameObject->cullSphere.radius = 0;
-		}
-		if (moved == false)
-		{
-			movedTransform.push_back(this);
-			moved = true;
-		}
+		movedTransform.emplace_back(this);
+		moved = true;
 	}
 
 	return *this;
 }
+
+
 
 glm::vec3 Transform::GetWorldPosition() const
 {
@@ -361,7 +349,7 @@ Transform & Transform::SetParent(Transform * parent, bool attachWorld)
 Transform & Transform::AddChild(Transform * child, bool attachWorld)
 {
 	child->parent = this;
-	v_Children.push_back(child);
+	v_Children.emplace_back(child);
 
 	if (attachWorld)
 		child->SetWorldMatrix(child->GetWorldMatrix());
@@ -380,6 +368,33 @@ Transform * Transform::GetRoot()
 		transform = transform->parent;
 	}
 	return transform;
+}
+
+void Transform::MoveTest()
+{
+	moved = true;
+}
+
+void Transform::RecalcuateBoundingSphere()
+{
+	if (gameObject->renderObject != nullptr)
+	{
+		Math::Sphere*& rendererCullSphere = gameObject->renderObject->GetCullSphere();
+		if (rendererCullSphere != nullptr)
+		{
+			glm::vec3 centerV3 = rendererCullSphere->center;
+			glm::vec4 localCenter(centerV3.x, centerV3.y, centerV3.z, 1);
+			glm::vec4 worldCenter = glm::mat4x4(worldMatrix) * localCenter;
+
+			gameObject->cullSphere.center = glm::vec3(worldCenter.x, worldCenter.y, worldCenter.z);
+			gameObject->cullSphere.radius = rendererCullSphere->radius * glm::max(this->GetLossyScale().x, this->GetLossyScale().y, this->GetLossyScale().z);
+		}
+		else
+		{
+			gameObject->cullSphere.center = worldPosition;
+			gameObject->cullSphere.radius = 0;
+		}
+	}
 }
 
 glm::mat3x3 Transform::GetWorldRotateMatrix() const

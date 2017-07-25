@@ -2,6 +2,7 @@
 #include "Avatar.h"
 #include "SkinnedMesh.h"
 #include "FBXHelper.h"
+#include "Time.h"
 
 std::map<FbxNode*, int> Avatar::checkOverlapBuffer = std::map<FbxNode*, int>();
 
@@ -23,9 +24,9 @@ void Avatar::AddNode(FbxNode * pNode)
 		int boneIndex = checkOverlapBuffer.size();
 		checkOverlapBuffer.insert(std::make_pair(pNode, boneIndex));
 
-		Transform* boneTransform = new Transform();
+		Transform* boneTransform = new Transform(true);
 		boneTransform->SetName(pNode->GetName());
-		boneTransforms.push_back(boneTransform);
+		boneTransforms.emplace_back(boneTransform);
 	}
 }
 
@@ -97,13 +98,13 @@ int Avatar::GetBoneIndexFromNode(FbxNode * node)
 
 void Avatar::Update(KeyFrameAnimation* animation, float time)
 {
-	for (int i = 0; i < boneTransforms.size(); ++i)
-	{
-		Transform tempTransform;
-		tempTransform.SetLocalMatrix(animation->GetMatrices(0, i, time));
-		boneTransforms[i]->SetLocalMatrix(animation->GetMatrices(0, i, time));
-	}
+	//double startTime = Time::GetInstance().GetNowTimeSinceStart();
 
+	for (int i = 0; i < boneTransforms.size(); ++i)
+		boneTransforms[i]->SetWorldMatrix(animation->GetMatrices(0, i, time));
+
+	//std::cout << " Animate: " << (Time::GetInstance().GetNowTimeSinceStart() - startTime) * 1000 << std::endl;
 	for (int i = 0; i < renderMatrices.size(); ++i)
 		renderMatrices[i] = boneTransforms[i]->GetWorldMatrix() * deformMatrices[i];
+
 }

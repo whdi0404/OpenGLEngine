@@ -11,7 +11,7 @@ GameObject::GameObject() : renderObject(nullptr), octreeLocationCode(0)
 	transform = new Transform();
 	transform->gameObject = this;
 
-	SceneGraph::GetInstance().scene->AddChild(transform, false);
+	//SceneGraph::GetInstance().scene->AddChild(transform, false);
 	SceneGraph::GetInstance().octree->AddObject(this);
 }
 

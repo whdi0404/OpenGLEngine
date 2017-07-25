@@ -12,6 +12,13 @@ TestMoving::~TestMoving()
 {
 }
 
+void TestMoving::Update()
+{
+	float dt = Time::GetInstance().GetDeltaTime();
+	float speed = 5 * dt;
+	GetTransform()->AddLocalPosition(speed, speed, speed);
+}
+
 void TestMoving::OnDrawGizmo()
 {
 	//RenderObject* renderObject = GetGameObject()->GetComponent<RenderObject>();

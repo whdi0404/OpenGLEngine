@@ -60,13 +60,29 @@ int main() {
 	Gizmo::Initialize();
 	SceneGraph::GetInstance().Initialize();
 
+	auto& timeInstance = Time::GetInstance();
+
+	//float renderTime;
+	//float updateTime;
+	float startTime;
 	while (!glfwWindowShouldClose(g_Window))
 	{
-		Time::GetInstance().Update();
+		timeInstance.Update();
+		//startTime = timeInstance.GetNowTimeSinceStart();
 		g_PhysXManager->PreRender();
 		SceneGraph::GetInstance().Update();
+		//updateTime = timeInstance.GetNowTimeSinceStart();
 		SceneGraph::GetInstance().Render();
+		//renderTime = timeInstance.GetNowTimeSinceStart();
 		g_PhysXManager->PostRender();
+
+		//int state = glfwGetKey(g_Window, GLFW_KEY_Y);
+		//if (state == GLFW_PRESS)
+		//{
+		//	renderTime -= updateTime;
+		//	updateTime -= startTime;
+		//	std::cout << "updateTime: " << updateTime * 1000 << "ms" << "renderTime: " << renderTime * 1000 << "ms" << std::endl;
+		//}
 	}
 
 	delete g_PhysXManager;

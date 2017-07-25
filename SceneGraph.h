@@ -24,7 +24,7 @@ public:
 	void FindObject(std::string& name, std::vector<GameObject*>& objectList);
 
 private:
-	std::unordered_set<Component*> updates;
+	std::vector<Component*> updates;
 	Scene* scene;
 	Octree* octree;
 };

@@ -11,7 +11,7 @@ public:
 
 	void Update();
 
-	GetSetMacro(double, NowTime, nowTime);
+	GetSetMacro(float, NowTime, nowTime);
 	GetMacro(KeyFrameAnimation*, NowAnimation, nowAnimation);
 	GetSetMacro(Avatar*, Avatar, avatar);
 public:

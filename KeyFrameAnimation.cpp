@@ -8,7 +8,7 @@ void AnimationLayer::AddKeyFrame(int boneIndex, KeyFrame* keyFrame)
 	{
 		if (boneIndex >= translateKeyFrames.size())
 			translateKeyFrames.resize(boneIndex + 1);
-		translateKeyFrames[boneIndex].push_back(translation);
+		translateKeyFrames[boneIndex].emplace_back(translation);
 
 		std::sort(translateKeyFrames[boneIndex].begin(), translateKeyFrames[boneIndex].end(), [](KeyFrameTranslation*& a, KeyFrameTranslation*& b)-> bool
 		{
@@ -22,7 +22,7 @@ void AnimationLayer::AddKeyFrame(int boneIndex, KeyFrame* keyFrame)
 	{
 		if (boneIndex >= rotateKeyFrames.size())
 			rotateKeyFrames.resize(boneIndex + 1);
-		rotateKeyFrames[boneIndex].push_back(rotation);
+		rotateKeyFrames[boneIndex].emplace_back(rotation);
 		std::sort(rotateKeyFrames[boneIndex].begin(), rotateKeyFrames[boneIndex].end(), [](KeyFrameRotation*& a, KeyFrameRotation*& b)-> bool
 		{
 			return a->time < b->time;
@@ -35,7 +35,7 @@ void AnimationLayer::AddKeyFrame(int boneIndex, KeyFrame* keyFrame)
 	{
 		if (boneIndex >= scaleKeyFrames.size())
 			scaleKeyFrames.resize(boneIndex + 1);
-		scaleKeyFrames[boneIndex].push_back(scaling);
+		scaleKeyFrames[boneIndex].emplace_back(scaling);
 		std::sort(scaleKeyFrames[boneIndex].begin(), scaleKeyFrames[boneIndex].end(), [](KeyFrameScaling*& a, KeyFrameScaling*& b)-> bool
 		{
 			return a->time < b->time;
@@ -70,8 +70,8 @@ glm::mat4x4 AnimationLayer::GetMatrices(int boneIndex, float time)
 
 		if (translation[mid]->time > time)
 		{
-			int start = glm::clamp(mid - 1, 0, (int)rotation.size() - 1);
-			int next = glm::clamp(mid, 0, (int)rotation.size() - 1);
+			int start = glm::clamp(mid - 1, 0, (int)translation.size() - 1);
+			int next = glm::clamp(mid, 0, (int)translation.size() - 1);
 			float normalizedTime = inverseLerp(translation[start]->time, translation[next]->time, time);
 			translate = lerp(translation[start]->value, translation[next]->value, normalizedTime);
 		}
@@ -128,14 +128,14 @@ glm::mat4x4 AnimationLayer::GetMatrices(int boneIndex, float time)
 
 		if (scaling[mid]->time > time)
 		{
-			int start = glm::clamp(mid - 1, 0, (int)rotation.size() - 1);
-			int next = glm::clamp(mid, 0, (int)rotation.size() - 1);
+			int start = glm::clamp(mid - 1, 0, (int)scaling.size() - 1);
+			int next = glm::clamp(mid, 0, (int)scaling.size() - 1);
 			float normalizedTime = inverseLerp(scaling[start]->time, scaling[next]->time, time);
 			scale = lerp(scaling[mid - 1]->value, scaling[mid]->value, normalizedTime);
 		}
 		else
 		{
-			int start = glm::clamp(mid, 0, (int)rotation.size() - 1);
+			int start = glm::clamp(mid, 0, (int)scaling.size() - 1);
 			int next = (mid + 1) % scaling.size();
 			float normalizedTime = inverseLerp(scaling[start]->time, scaling[next]->time, time);
 			scale = lerp(scaling[start]->value, scaling[next]->value, normalizedTime);
