@@ -88,16 +88,16 @@ int FrustumG::pointInFrustum(glm::vec3 & p)
 	return(result);
 }
 
-int FrustumG::sphereInFrustum(glm::vec3 & p, float radius)
+int FrustumG::sphereInFrustum(Math::Sphere& sphere)
 {
 	float distance;
 	int result = INSIDE;
 
 	for (int i = 0; i < 6; i++) {
-		distance = pl[i].PlaneDot(p);
-		if (distance < -radius)
+		distance = pl[i].PlaneDot(sphere.center);
+		if (distance < -sphere.radius)
 			return OUTSIDE;
-		else if (distance < radius)
+		else if (distance < sphere.radius)
 			result = INTERSECT;
 	}
 	return(result);

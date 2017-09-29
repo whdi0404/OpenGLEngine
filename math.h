@@ -78,6 +78,6 @@ public:
 	void setCamInternals(float angle, float ratio, float nearD, float farD);
 	void setCamDef(Transform& trans);
 	int pointInFrustum(glm::vec3 &p);
-	int sphereInFrustum(glm::vec3 &p, float radius);
+	int sphereInFrustum(Math::Sphere& sphere);
 	int boxInFrustum(Math::Box& b);
 };

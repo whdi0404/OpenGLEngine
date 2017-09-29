@@ -1,6 +1,54 @@
 #include "stdafx.h"
 #include "Texture.h"
 
+Texture2D::Texture2D(std::string filename) :
+	width(0), height(0), bytePerPixel(0)
+{
+	ilTextureID = -1;
+	// generate an image name
+	ilGenImages(1, &ilTextureID);
+	// bind it
+	ilBindImage(ilTextureID);
+	// match image origin to OpenGL’s
+	ilEnable(IL_ORIGIN_SET);
+	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
+	// load  the image
+	bool success = ilLoadImage((ILstring)filename.c_str());
+	// check to see if everything went OK
+	if (!success) {
+		ilDeleteImages(1, &ilTextureID);
+		ilTextureID = -1;
+		return;
+	}
+
+	//TODO: 원하는 텍스쳐 포멧으로 컨버트 하도록
+	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+	width = ilGetInteger(IL_IMAGE_WIDTH);
+	height = ilGetInteger(IL_IMAGE_HEIGHT);
+	bytePerPixel = ilGetInteger(IL_IMAGE_BYTES_PER_PIXEL);
+	format = (Format)ilGetInteger(IL_IMAGE_FORMAT);
+	dataType = (DataType)ilGetInteger(IL_IMAGE_TYPE);
+
+	/* Create and load textures to OpenGL */
+	glGenTextures(1, &textureID); /* Texture name generation */
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, format,
+		width,
+		height,
+		0, format, dataType,
+		ilGetData());
+
+	glGenSamplers(1, &samplerID);
+}
+
+Texture2D::~Texture2D()
+{
+	ilDeleteImage(ilTextureID);
+	glDeleteTextures(1, &textureID);
+	glDeleteSamplers(1, &samplerID);
+}
+
 Color Texture2D::GetPixel(int x, int y)
 {
 	ilBindImage(ilTextureID);
@@ -74,53 +122,4 @@ Color Texture2D::GetPixel(int x, int y)
 	delete pixelData;
 
 	return pixelColor;
-}
-
-Texture2D::Texture2D(std::string filename) :
-	width(0), height(0), bytePerPixel(0)
-{
-	ilTextureID = -1;
-	// generate an image name
-	ilGenImages(1, &ilTextureID);
-	// bind it
-	ilBindImage(ilTextureID);
-	// match image origin to OpenGL’s
-	ilEnable(IL_ORIGIN_SET);
-	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
-	// load  the image
-	bool success = ilLoadImage((ILstring)filename.c_str());
-	// check to see if everything went OK
-	if (!success) {
-		ilDeleteImages(1, &ilTextureID);
-		ilTextureID = -1;
-		return;
-	}
-
-	//TODO: 원하는 텍스쳐 포멧으로 컨버트 하도록
-	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-
-	width = ilGetInteger(IL_IMAGE_WIDTH);
-	height = ilGetInteger(IL_IMAGE_HEIGHT);
-	bytePerPixel = ilGetInteger(IL_IMAGE_BYTES_PER_PIXEL);
-	format = (Format)ilGetInteger(IL_IMAGE_FORMAT);
-	dataType = (DataType)ilGetInteger(IL_IMAGE_TYPE);
-
-	
-	/* Create and load textures to OpenGL */
-	glGenTextures(1, &textureID); /* Texture name generation */
-	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, format,
-		width,
-		height,
-		0, format, dataType,
-		ilGetData());
-
-	glGenSamplers(1, &samplerID);
-}
-
-Texture2D::~Texture2D()
-{
-	ilDeleteImage(ilTextureID);
-	glDeleteTextures(1, &textureID);
-	glDeleteSamplers(1, &samplerID);
 }

@@ -105,6 +105,7 @@ public:
 
 		if (isCulling == true)
 			glEnable(GL_CULL_FACE);
+
 		glPolygonMode(GL_FRONT, GL_FILL);
 		glPolygonMode(GL_BACK, GL_FILL);
 	}

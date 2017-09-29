@@ -60,9 +60,9 @@ void SceneGraph::Render()
 	g_Renderer->Render(octree);
 	glUseProgram(0);
 
-	//int size = updates.size();
-	//for (int i = 0; i < size; ++i)
-	//	updates[i]->OnDrawGizmo();
+	int size = updates.size();
+	for (int i = 0; i < size; ++i)
+		updates[i]->OnDrawGizmo();
 	scene->OnDrawGizmos();
 	glfwSwapBuffers(g_Window);
 }

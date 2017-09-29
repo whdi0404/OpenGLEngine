@@ -11,7 +11,7 @@ private:
 	PxPvdInstrumentationFlags        pvdFlags;
 	PxPvd* pvd;
 	PxDefaultCpuDispatcher* mCpuDispatcher;
-	PxCooking*								mCooking;
+	GetMacro(PxCooking*, Cookie, mCooking);
 	FixedStepper fixedStepper;
 
 	GetMacro(PxPhysics*, Physics, physics);

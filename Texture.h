@@ -5,7 +5,7 @@
 class Color
 {
 public:
-	Color() : r(0),g(0),b(0),a(0)
+	Color() : r(0), g(0), b(0), a(0)
 	{
 	}
 	Color(float r, float g, float b, float a = 1.0f)
@@ -17,7 +17,6 @@ public:
 	}
 public:
 	float r, g, b, a;
-
 };
 
 class Texture2D : public Object
@@ -48,15 +47,15 @@ public:
 	};
 
 	GetMacro(GLuint, TextureID, textureID)
-	GetMacro(unsigned int, Width, width)
-	GetMacro(unsigned int, Height, height)
-	GetMacro(size_t, BytePerPixel, bytePerPixel)
-	GetMacro(Format, Format, format)
-	GetMacro(DataType, DataType, dataType)
-	GetMacro(GLuint, SamplerID, samplerID)
-	GetMacro(ILuint, ILTextureID, ilTextureID)
+		GetMacro(unsigned int, Width, width)
+		GetMacro(unsigned int, Height, height)
+		GetMacro(size_t, BytePerPixel, bytePerPixel)
+		GetMacro(Format, Format, format)
+		GetMacro(DataType, DataType, dataType)
+		GetMacro(GLuint, SamplerID, samplerID)
+		GetMacro(ILuint, ILTextureID, ilTextureID)
 
-	Color GetPixel(int x, int y);
+		Color GetPixel(int x, int y);
 
 public:
 	Texture2D(std::string filename);

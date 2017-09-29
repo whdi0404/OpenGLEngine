@@ -41,9 +41,9 @@ fbxsdk::FbxAMatrix GetFBXMatrixFromGLMMatrix(glm::mat4x4 glMatrix)
 	return fbxMatrix;
 }
 
-physx::PxVec2 GetPxVec2FromGLMVec2(glm::vec2 glVec4)
+physx::PxVec2 GetPxVec2FromGLMVec2(glm::vec2 glVec2)
 {
-	return physx::PxVec2(glVec4.x, glVec4.y);
+	return physx::PxVec2(glVec2.x, glVec2.y);
 }
 
 physx::PxVec3 GetPxVec3FromGLMVec3(glm::vec3 glVec3)
@@ -54,6 +54,21 @@ physx::PxVec3 GetPxVec3FromGLMVec3(glm::vec3 glVec3)
 physx::PxVec4 GetPxVec4FromGLMVec4(glm::vec4 glVec4)
 {
 	return physx::PxVec4(glVec4.x, glVec4.y, glVec4.z, glVec4.w);
+}
+
+glm::vec2 GetGLMVec2FromPxVec2(physx::PxVec2 pxVec2)
+{
+	return glm::vec2(pxVec2.x, pxVec2.y);
+}
+
+glm::vec3 GetGLMVec3FromPxVec3(physx::PxVec3 pxVec3)
+{
+	return glm::vec3(pxVec3.x, pxVec3.y, pxVec3.z);
+}
+
+glm::vec4 GetGLMVec4FromPxVec4(physx::PxVec4 pxVec4)
+{
+	return glm::vec4(pxVec4.x, pxVec4.y, pxVec4.z, pxVec4.w);
 }
 
 GLuint CreateShader(const char* file_path, GLenum shaderType)

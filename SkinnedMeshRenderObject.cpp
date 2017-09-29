@@ -2,6 +2,7 @@
 #include "SkinnedMeshRenderObject.h"
 #include "SkinnedMesh.h"
 #include "Avatar.h"
+#include "Camera.h"
 
 SkinnedMeshRenderObject::SkinnedMeshRenderObject()
 {
@@ -16,7 +17,6 @@ void SkinnedMeshRenderObject::Render(std::vector<PracticalRenderObject*>& render
 {
 	for (int i = 0; i < renderObjects.size(); ++i)
 	{
-		//if(camera->frustum.pointInFrustum(renderObjects[i]->GetTransform()->GetWorldPosition()))
 		g_Renderer->matrixBuffer.emplace_back(renderObjects[i]->GetTransform()->GetWorldMatrix());
 	}
 	Material* mtrl = GetMaterial();

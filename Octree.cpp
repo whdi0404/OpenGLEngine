@@ -163,11 +163,12 @@ void Octree::CollectAllRenderer(RendererObjectCollector* renderObjCollector, Cam
 			if (dynamic_cast<PracticalRenderObject*>(obj->renderObject) != nullptr)
 			{
 				auto& cullSphere = obj->GetCullSphere();
-				if (camera->frustum.sphereInFrustum(cullSphere.center, cullSphere.radius) != FrustumG::OUTSIDE)
+				if (camera->frustum.sphereInFrustum(cullSphere) != FrustumG::OUTSIDE)
 					((PracticalRenderObject*)node.list_RenderObjects[i]->renderObject)->AddToVector();
 			}
 		}
 	}
+
 	for (int i = 0; i < 8; i++)
 	{
 		if (node.ChildExists&(1 << i))

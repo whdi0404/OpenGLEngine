@@ -14,16 +14,10 @@ TestMoving::~TestMoving()
 
 void TestMoving::Update()
 {
-	float dt = Time::GetInstance().GetDeltaTime();
-	float speed = 5 * dt;
-	GetTransform()->AddLocalPosition(speed, speed, speed);
 }
 
 void TestMoving::OnDrawGizmo()
 {
-	//RenderObject* renderObject = GetGameObject()->GetComponent<RenderObject>();
-	//if (camera == nullptr || renderObject == nullptr)
-	//	return;
-	//
-	//Gizmo::DrawSphere(camera, GetGameObject()->GetCullSphere().center, GetGameObject()->GetCullSphere().radius);
+	auto& cullSphere = GetGameObject()->GetCullSphere();
+	Gizmo::DrawSphere(camera, cullSphere.center, cullSphere.radius,4);
 }

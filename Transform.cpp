@@ -136,6 +136,21 @@ Transform & Transform::SetRotateLocal(const glm::mat4x4 & matRotation)
 	return *this;
 }
 
+Transform& Transform::SetRotateWorld(const glm::quat& quaternion)
+{
+	SetRotateWorld(toMat4(quaternion));
+	return *this;
+}
+
+Transform& Transform::SetRotateWorld(const glm::mat4x4& matRotation)
+{
+	if(parent != nullptr)
+		SetRotateLocal(inverse(parent->GetWorldMatrix()) * matRotation);
+	else
+		SetRotateLocal(matRotation);
+	return *this;
+}
+
 Transform & Transform::SetRotateAxisX(const glm::vec3 & axis)
 {
 	return *this;
@@ -370,11 +385,6 @@ Transform * Transform::GetRoot()
 	return transform;
 }
 
-void Transform::MoveTest()
-{
-	moved = true;
-}
-
 void Transform::RecalcuateBoundingSphere()
 {
 	if (gameObject->renderObject != nullptr)
@@ -405,4 +415,9 @@ glm::mat3x3 Transform::GetWorldRotateMatrix() const
 glm::mat3x3 Transform::GetLocalRotateMatrix() const
 {
 	return glm::mat3x3(localMatrix);
+}
+
+glm::quat Transform::GetWorldQuaternion() const
+{
+	return glm::quat();
 }

@@ -14,21 +14,10 @@
 #include "Animator.h"
 #include "KeyFrameAnimation.h"
 #include "TestMoving.h"
-
-#define macMove(gameObject) \
-{\
-float dt = Time::GetInstance().GetDeltaTime(); \
-gameObject -> GetTransform()->AddWorldPosition(glm::vec3(0, 0, -0.005f * dt)); \
-gameObject -> GetTransform()->AddWorldPosition(glm::vec3(0, 0, -0.005f * dt)); \
-gameObject -> GetTransform()->AddWorldPosition(glm::vec3(0, 0, -0.005f * dt)); \
-gameObject -> GetTransform()->AddWorldPosition(glm::vec3(0, 0, -0.005f * dt)); \
-gameObject -> GetTransform()->AddWorldPosition(glm::vec3(0, 0, -0.005f * dt)); \
-}
-//
-//#define macMove50(gameObject) macMove(gameObject) macMove(gameObject) macMove(gameObject) macMove(gameObject) macMove(gameObject) macMove(gameObject) macMove(gameObject) macMove(gameObject) macMove(gameObject) macMove(gameObject)
-//
-//#define macMove500(gameObject) macMove50(gameObject) macMove50(gameObject) macMove50(gameObject) macMove50(gameObject) macMove50(gameObject) macMove50(gameObject) macMove50(gameObject) macMove50(gameObject) macMove50(gameObject) macMove50(gameObject)
-
+#include "RigidBody.h"
+#include "TerrainSystem.h"
+#include "SphereCollider.h"
+#include "TerrainCollider.h"
 BoneScene::BoneScene()
 {
 }
@@ -60,7 +49,7 @@ GameObject* TestObject(Mesh* mesh, Material* material, glm::vec3 offset, float s
 
 void BoneScene::Initialize()
 {
-	speed = 4.0f;
+	speed = 20.0f;
 	rotSpeed = 120.0f;
 	camera = (new GameObject())->AddComponent<Camera>();
 	camera->GetTransform()->SetLocalPosition(0, 0, 10);
@@ -70,7 +59,7 @@ void BoneScene::Initialize()
 	//
 	material = new Material(modelShader, 1);
 	//Material* skinnedMaterial = new Material(skinnedShader, 1);
-	
+
 	Texture2D* modelTex = new Texture2D("./Models/UnityChanTexture/body_01.tga");
 	material->SetTexture(std::string("tex"), modelTex);
 	//skinnedMaterial->SetTexture(std::string("tex"), modelTex);
@@ -120,8 +109,33 @@ void BoneScene::Initialize()
 	//	root = skinnedMesh->GetAvatar()->GetRoot();
 	//	//root->SetLocalScale(scale, scale, scale);
 	//}
+	{
+		GameObject* obj = new GameObject();
+		TerrainSystem* terrainSystem = obj->AddComponent<TerrainSystem>();
 
-	stressTest = new GameObject();
+		Shader* tessellationShader = new Shader("./Shaders/TessVetexShader.glsl", "./Shaders/TessFragmentShader.glsl",
+			"./Shaders/TessCtrlShader.glsl", "./Shaders/TessEvelShader.glsl");
+
+		Texture2D* heightMap = new Texture2D("./Tex/terrain-heightmap.bmp"/*cDsYZ.jpg*/);
+		Material* terrainMaterial = new Material(tessellationShader, 1);
+		terrainMaterial->SetTexture(std::string("heightMap"), heightMap);
+		terrainSystem->SetMaterial(terrainMaterial);
+		terrainSystem->CreateMesh(heightMap, /*0.03125f*/1.f, 50);
+
+		obj->AddComponent<TerrainCollider>();
+		/*obj->AddComponent<TestMoving>()->SetCamera(camera);*/
+		//obj->GetTransform()->SetLocalPosition(offset).SetLocalScale(scale, scale, scale).RotateAxisLocal(0, 0, 0);
+
+		for (int x = 0; x < heightMap->GetWidth() / 16; ++x)
+		{
+			for (int z = 0; z < heightMap->GetHeight() / 16; ++z)
+			{
+				GameObject* aa = new GameObject();
+				aa->GetTransform()->SetLocalPosition(x * 16, 30, z * 16);
+				aa->AddComponent<SphereCollider>()->SetCamera(camera);
+			}
+		}
+	}
 }
 
 void BoneScene::Update()
@@ -196,22 +210,25 @@ void BoneScene::Update()
 	static int oldState = GLFW_RELEASE;
 	if (state == GLFW_PRESS && oldState == GLFW_RELEASE)
 	{
-		for (int i = 0; i < 100; ++i)
-		{
+		//for (int i = 0; i < 100; ++i)
+		//{
 			//GameObject* gun = new GameObject();
-			for each (Object* var in gunMesh)
-			{
-				if (dynamic_cast<Mesh*>(var) != nullptr)
-				{
-					GameObject* obj = TestObject((Mesh*)var, material, camera->GetTransform()->GetLocalPosition(), 1);
-					obj->AddComponent<TestMoving>()->SetCamera(camera);
-					//gun->GetTransform()->AddChild(obj->GetTransform(), false);
-				}
-			}
-		}
+		//for each (Object* var in gunMesh)
+		//{
+		//	if (dynamic_cast<Mesh*>(var) != nullptr)
+		//	{
+		//		GameObject* obj = TestObject((Mesh*)var, material, camera->GetTransform()->GetWorldPosition(), 1);
+		//		obj->AddComponent<TestMoving>()->SetCamera(camera);
+		//		//gun->GetTransform()->AddChild(obj->GetTransform(), false);
+		//	}
+		//}
+		GameObject* obj = new GameObject();
+		obj->GetTransform()->SetLocalPosition(camera->GetTransform()->GetWorldPosition());
+		obj->AddComponent<SphereCollider>()->SetCamera(camera);
+		//}
 		//gun->AddComponent<TestMoving>();
 		//gun->AddComponent<PhysXActor>()->CreateToBox();
-		std::cout << "ObjectCount: " << SceneGraph::GetInstance().GetObjectCount() <<std::endl;
+		std::cout << "ObjectCount: " << SceneGraph::GetInstance().GetObjectCount() << std::endl;
 	}
 	oldState = state;
 
@@ -232,19 +249,19 @@ void BoneScene::OnDrawGizmos()
 		return;
 	/*std::stack<Transform*> transStack = std::stack<Transform*>();
 	transStack.push(root);
-	
+
 	while (transStack.empty() == false)
 	{
 		auto parent = transStack.top();
 		transStack.pop();
-	
+
 		for (int i = 0; i < parent->GetChildCount(); ++i)
 		{
 			auto child = parent->GetChild(i);
-	
+
 			Gizmo::SetColor(float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f);
 			Gizmo::DrawLine(camera, parent->GetWorldPosition(), child->GetWorldPosition());
-	
+
 			if (child->GetChildCount() > 0)
 				transStack.push(child);
 		}

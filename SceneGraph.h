@@ -14,7 +14,6 @@ public:
 
 	void Initialize();
 
-	//Update,Coroutines
 	void Update();
 	
 	void Render();

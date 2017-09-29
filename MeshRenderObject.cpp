@@ -15,7 +15,6 @@ void MeshRenderObject::Render(std::vector<PracticalRenderObject*>& renderObjects
 {
 	for (int i = 0; i < renderObjects.size(); ++i)
 	{
-		//if(camera->frustum.pointInFrustum(renderObjects[i]->GetTransform()->GetWorldPosition()))
 		g_Renderer->matrixBuffer.emplace_back(renderObjects[i]->GetTransform()->GetWorldMatrix());
 	}
 	Material* mtrl = GetMaterial();

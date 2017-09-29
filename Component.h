@@ -14,6 +14,14 @@ protected:
 	virtual void OnDrawGizmo() {}
 	virtual void Release() {}
 
+	template<class TComponent>
+	TComponent* GetComponent()
+	{
+		if(gameObject != nullptr)
+			return gameObject->GetComponent<TComponent>();
+		return nullptr;
+	}
+
 	GetMacro(GameObject*, GameObject, gameObject)
 	GetMacro(Transform*, Transform, transform)
 	GetSetMacro(bool, Enable, enable);

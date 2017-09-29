@@ -68,6 +68,9 @@ public:
 	Transform& SetRotateLocal(const glm::quat& quaternion);
 	Transform& SetRotateLocal(const glm::mat4x4& matRotation);
 
+	Transform& SetRotateWorld(const glm::quat& quaternion);
+	Transform& SetRotateWorld(const glm::mat4x4& matRotation);
+
 	Transform& SetRotateAxisX(const glm::vec3& axis);
 	Transform& SetRotateAxisY(const glm::vec3& axis);
 	Transform& SetRotateAxisZ(const glm::vec3& axis);
@@ -138,8 +141,6 @@ public:
 	size_t GetChildCount() { return v_Children.size(); }
 
 	Transform* GetRoot();
-
-	void MoveTest();
 
 private:
 	void RecalcuateBoundingSphere();

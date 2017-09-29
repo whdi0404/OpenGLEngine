@@ -13,7 +13,7 @@ public:
 	~TestMoving();
 
 
-	virtual void Update();
+	virtual void Update() override;
 	
 	virtual void OnDrawGizmo();
 

@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "RenderObject.h"
 #include "SceneGraph.h"
+#include <functional>
 
 class GameObject :
 	public Object
@@ -59,23 +60,23 @@ inline TComponent* GameObject::AddComponent()
 	}
 
 	newComp->Initialize();
-
-	/*IsOverridden<Component, Component::Update, TComponent, Component::Update>();
-
-	void (Component::*fpA)();
-	void (TComponent::*fpB)();
-*/
+	
 	SceneGraph::GetInstance().updates.emplace_back(newComp);
-
+	
 	return newComponent;
 }
 
 template<typename TComponent>
 inline TComponent * GameObject::GetComponent()
 {
+	if (dynamic_cast<TComponent*>(renderObject) != nullptr)
+		return (TComponent*)renderObject;
+
 	for (int i = 0; i < v_Components.size(); ++i)
 	{
 		if (dynamic_cast<TComponent*>(v_Components[i]) != nullptr)
 			return (TComponent*)v_Components[i];
 	}
+
+	return nullptr;
 }
