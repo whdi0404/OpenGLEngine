@@ -8,7 +8,7 @@ void SphereCollider::Initialize()
 	//юс╫ц
 	pxMaterial = g_PhysXManager->GetPhysics()->createMaterial(0.5f, 0.5f, 0.1f);
 
-	PxShape* ballShape = PxRigidActorExt::createExclusiveShape(*pxRigidDynamic, PxSphereGeometry(1.0f), *pxMaterial);
+	PxShape* ballShape = PxRigidActorExt::createExclusiveShape(*pxRigidDynamic, PxSphereGeometry(0.5f), *pxMaterial);
 	{
 		PxFilterData fd = ballShape->getSimulationFilterData();
 		fd.word3 |= SNOWBALL_FLAG;
@@ -36,7 +36,7 @@ void SphereCollider::OnTriggerExit(Collider * collider)
 {
 }
 
-void SphereCollider::OnDrawGizmo()
-{
-	Gizmo::DrawSphere(camera, GetTransform()->GetWorldPosition(), 1, 4);
-}
+//void SphereCollider::OnDrawGizmo()
+//{
+//	Gizmo::DrawSphere(camera, GetTransform()->GetWorldPosition(), 1, 4);
+//}

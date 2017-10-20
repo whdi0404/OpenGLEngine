@@ -4,7 +4,7 @@
 using namespace Math;
 
 Camera::Camera() : FOVDeg(45.0f), projectionType(ProjectionType::Perspective),
-fNear(0.1f), fFar(200.0f)
+fNear(0.1f), fFar(2000.0f)
 {
 }
 

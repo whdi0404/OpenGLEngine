@@ -20,6 +20,7 @@ public:
 	Transform* root;
 	Material* material;
 	std::vector<Object*> gunMesh;
+	Object* sphereMesh;
 
 	GameObject* stressTest;
 };

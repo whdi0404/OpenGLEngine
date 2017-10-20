@@ -14,8 +14,8 @@ void main(){
 	//color = vec3(fs_in.tessuv, 1);
 	//color.rg -= vec2(int(color.r), int(color.g));
 
-	float col = texture( heightMap, fs_in.uv).r * 5.0f;
-	color.r = col--;
-	color.g = max(0, col--);
-	color.b = max(0, col--);
+	float col = texture( heightMap, fs_in.uv).r;
+	color.b = col;
+	color.r = fs_in.uv.x;
+	color.g = fs_in.uv.y;
 }

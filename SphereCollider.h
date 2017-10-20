@@ -20,7 +20,6 @@ public:
 	~SphereCollider() {}
 
 	virtual void Initialize() override;
-	virtual void OnDrawGizmo() override;
 
 	void SetCamera(Camera* camera) { this->camera = camera; }
 	virtual void OnTriggerEnter(Collider * collider) override;

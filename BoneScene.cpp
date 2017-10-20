@@ -73,7 +73,7 @@ void BoneScene::Initialize()
 	//std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.fbx", modelMatrix);
 	//std::vector<Object*> animations = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_RUN00_F.fbx", modelMatrix);//Unitychan Animation/unitychan_RUN00_F.fbx
 	gunMesh = FBXHelper::GetResourcesFromFile("./Models/Barrett.FBX", modelMatrix);
-
+	sphereMesh = FBXHelper::GetResourcesFromFile("./Models/Sphere.FBX", modelMatrix)[0];
 	//float scale = 0.1f;
 	//SkinnedMesh* skinnedMesh = nullptr;
 	//for (int i = 0; i < meshes.size(); ++i)
@@ -115,24 +115,26 @@ void BoneScene::Initialize()
 
 		Shader* tessellationShader = new Shader("./Shaders/TessVetexShader.glsl", "./Shaders/TessFragmentShader.glsl",
 			"./Shaders/TessCtrlShader.glsl", "./Shaders/TessEvelShader.glsl");
+		float heightScale = 50;
+		float tileScale = 1;
 
 		Texture2D* heightMap = new Texture2D("./Tex/terrain-heightmap.bmp"/*cDsYZ.jpg*/);
 		Material* terrainMaterial = new Material(tessellationShader, 1);
 		terrainMaterial->SetTexture(std::string("heightMap"), heightMap);
 		terrainSystem->SetMaterial(terrainMaterial);
-		terrainSystem->CreateMesh(heightMap, /*0.03125f*/1.f, 50);
+		terrainSystem->CreateMesh(heightMap, /*0.03125f*/tileScale, heightScale);
 
 		obj->AddComponent<TerrainCollider>();
 		/*obj->AddComponent<TestMoving>()->SetCamera(camera);*/
 		//obj->GetTransform()->SetLocalPosition(offset).SetLocalScale(scale, scale, scale).RotateAxisLocal(0, 0, 0);
 
-		for (int x = 0; x < heightMap->GetWidth() / 16; ++x)
+		int div = 8;
+		for (int x = 0; x < heightMap->GetWidth() / div; ++x)
 		{
-			for (int z = 0; z < heightMap->GetHeight() / 16; ++z)
+			for (int z = 0; z < heightMap->GetHeight() / div; ++z)
 			{
-				GameObject* aa = new GameObject();
-				aa->GetTransform()->SetLocalPosition(x * 16, 30, z * 16);
-				aa->AddComponent<SphereCollider>()->SetCamera(camera);
+				GameObject* obj = TestObject((Mesh*)sphereMesh, material, glm::vec3(x * div * tileScale, heightScale * 1.1f, z * div* tileScale), 1);
+				obj->AddComponent<SphereCollider>()->SetCamera(camera);
 			}
 		}
 	}
@@ -222,8 +224,7 @@ void BoneScene::Update()
 		//		//gun->GetTransform()->AddChild(obj->GetTransform(), false);
 		//	}
 		//}
-		GameObject* obj = new GameObject();
-		obj->GetTransform()->SetLocalPosition(camera->GetTransform()->GetWorldPosition());
+		GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition(), 1);
 		obj->AddComponent<SphereCollider>()->SetCamera(camera);
 		//}
 		//gun->AddComponent<TestMoving>();

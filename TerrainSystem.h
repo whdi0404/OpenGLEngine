@@ -10,6 +10,8 @@ private:
 	Mesh* terrainMesh;
 
 	GetMacro(glm::ivec2, TerrainSize, terrainSize);
+	GetMacro(float, TileSize, tileSize);
+	GetMacro(float, HeightScale, heightScale);
 	Texture2D* texture;
 
 public:
@@ -17,10 +19,8 @@ public:
 	~TerrainSystem();
 
 public:
-	void CreateMesh(Texture2D* texture, float tileSize, float maxHeight);
+	void CreateMesh(Texture2D* texture, float tileSize, float heightScale);
 	float GetHeight(glm::ivec2 pos);
-
-	GetMacro(float, MaxHeight, maxHeight);
 
 protected:
 	virtual void Render(std::vector<PracticalRenderObject*>& renderObjects, Camera*& camera);
