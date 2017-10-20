@@ -105,12 +105,6 @@ GLuint AttachShaderToProgram(GLuint programID, GLuint count, ...);
 
 GLuint LoadDefaultShaders(const char * vertex_file_path, const char * fragment_file_path, const char * tessellation_control_file_path = nullptr, const char * tessellation_evaluate_file_path = nullptr);
 
-//template<typename T>
-//T lerp(T a, T b, float t)
-//{
-//	return a + ((b - a) * t);
-//}
-
 template<typename T>
 
 T inverseLerp(T a, T b, T value)
