@@ -14,6 +14,7 @@ TestMoving::~TestMoving()
 
 void TestMoving::Update()
 {
+	this->GetTransform()->AddWorldPosition(glm::vec3(10.0f * Time::GetInstance().GetDeltaTime(),0,0));
 }
 
 void TestMoving::OnDrawGizmo()

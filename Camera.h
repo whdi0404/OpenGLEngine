@@ -8,6 +8,9 @@ public:
 	enum ProjectionType {Perspective = 0, Orthographic};
 
 private:
+	static Camera* mainCamera;
+
+private:
 	float FOVDeg;
 	float fNear, fFar;
 	ProjectionType projectionType;
@@ -51,4 +54,7 @@ public:
 
 private:
 	void RefreshFrustumPlanes();
+
+public:
+	static Camera* GetMainCamera();
 };

@@ -4,14 +4,13 @@
 class TerrainSystem;
 class TerrainCollider : public Collider
 {
-	enum
-	{
-		CCD_FLAG = 1 << 29,
-		SNOWBALL_FLAG = 1 << 30,
-		DETACHABLE_FLAG = 1 << 31
-	};
 private:
 	TerrainSystem* terrain;
+
+	std::vector<PxRigidActor*> heightColliders;
+	int clusterCellCount;
+	int clusterScale;
+	int tessellationFactor;
 
 public:
 	TerrainCollider() {}
@@ -21,7 +20,7 @@ public:
 	virtual void OnTriggerExit(Collider * collider) override;
 
 	virtual void Initialize() override;
-	virtual void Update() override {}
+	virtual void Update() override;
 
 	void CreateCollider();
 

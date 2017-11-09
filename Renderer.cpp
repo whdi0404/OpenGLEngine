@@ -9,6 +9,8 @@
 #include "Time.h"
 #include "Octree.h"
 
+//#define DrawLine
+
 Renderer::Renderer() : renderObjectCollecdtor(new RendererObjectCollector())
 {
 	matrixBuffer.reserve(1024);
@@ -23,12 +25,14 @@ void Renderer::Initialize()
 	ilInit();
 
 	glClearColor(0.6f, 0.8f, 0.85f, 0);
-
+#ifdef DrawLine
+	glPolygonMode(GL_FRONT, GL_LINE);
+	glPolygonMode(GL_BACK, GL_LINE);
+	glDisable(GL_CULL_FACE);
+#else
 	glFrontFace(GL_CCW);
-	//glPolygonMode(GL_FRONT, GL_LINE);
-	//glPolygonMode(GL_BACK, GL_LINE);
-	//glDisable(GL_CULL_FACE);
 	glEnable(GL_CULL_FACE);
+#endif
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -63,6 +67,18 @@ void Renderer::Render(Octree* octree)
 			matrixBuffer.clear();
 			(*renderObjects.renderobjects)[0]->Render(*renderObjects.renderobjects, cam);
 		}
+
+	}
+}
+
+void Renderer::DrawGizmos()
+{
+	std::vector<Camera*>& cameraList = renderObjectCollecdtor->GetCameraList();
+
+	for (int i = 0; i < cameraList.size(); ++i)
+	{
+		Camera* cam = cameraList[i];
+		g_PhysXManager->DrawGizmos(cam);
 	}
 }
 

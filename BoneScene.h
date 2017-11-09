@@ -19,6 +19,7 @@ public:
 
 	Transform* root;
 	Material* material;
+	Material* terrainMaterial;
 	std::vector<Object*> gunMesh;
 	Object* sphereMesh;
 

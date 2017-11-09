@@ -59,6 +59,7 @@ public:
 
 	void Initialize();
 	void Render(Octree* octree);
+	void DrawGizmos();
 	void Release();
 
 	GetMacro(RendererObjectCollector*, Collector, renderObjectCollecdtor);

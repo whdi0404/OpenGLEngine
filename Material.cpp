@@ -214,29 +214,29 @@ void Material::ParamData::ReleaseData()
 	if (pData == nullptr) return;
 	switch (type)
 	{
-		case Type::TEX2D:
-			break;
-		case Type::FLOAT:
-			delete[](float*)pData;
-			break;
-		case Type::VEC2:
-			delete[](glm::vec2*)pData;
-			break;
-		case Type::VEC3:
-			delete[](glm::vec3*)pData;
-			break;
-		case Type::VEC4:
-			delete[](glm::vec4*)pData;
-			break;
-		case Type::MAT2X2:
-			delete[](glm::mat2x2*)pData;
-			break;
-		case Type::MAT3X3:
-			delete[](glm::mat3x3*)pData;
-			break;
-		case Type::MAT4X4:
-			delete[](glm::mat4x4*)pData;
-			break;
+	case Type::TEX2D:
+		break;
+	case Type::FLOAT:
+		delete[](float*)pData;
+		break;
+	case Type::VEC2:
+		delete[](glm::vec2*)pData;
+		break;
+	case Type::VEC3:
+		delete[](glm::vec3*)pData;
+		break;
+	case Type::VEC4:
+		delete[](glm::vec4*)pData;
+		break;
+	case Type::MAT2X2:
+		delete[](glm::mat2x2*)pData;
+		break;
+	case Type::MAT3X3:
+		delete[](glm::mat3x3*)pData;
+		break;
+	case Type::MAT4X4:
+		delete[](glm::mat4x4*)pData;
+		break;
 	}
 	pData = nullptr;
 }
@@ -249,7 +249,7 @@ void Material::ParamData::SetData(void * data, int count)
 		this->count = count;
 		pData = GetBuffer(type, count);
 	}
-	
+
 	switch (type)
 	{
 	case Type::TEX2D:
@@ -293,17 +293,25 @@ void Material::ParamData::SetParam(int activeTexture)
 		glUniform1fv(uniformLocation, count, (GLfloat*)pData);
 		break;
 	case Type::TEX2D:
+	{
 		glUniform1i(uniformLocation, activeTexture);
 		glActiveTexture(GL_TEXTURE0 + activeTexture);
-		glBindTexture(GL_TEXTURE_2D, ((Texture2D*)pData)->GetTextureID());
+
+		Texture2D* pTex = (Texture2D*)pData;
+
+		glBindTexture(GL_TEXTURE_2D, pTex->GetTextureID());
 		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, pTex->GetMagFilter());
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, pTex->GetMinFilter());
 		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4);
-		break;
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, pTex->GetAniso());
+		
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	}
+	break;
 	case Type::VEC2:
 		glUniform2fv(uniformLocation, count, (GLfloat*)pData);
 		break;

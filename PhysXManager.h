@@ -42,6 +42,12 @@ public:
 
 	void PreRender();
 
+	void DrawGizmos(Camera* camera);
+
+	void RenderData(Camera* camera, const PxRenderBuffer & data);
+
+	void RenderBuffer(float* pVertList, float* pColorList, int type, int num);
+
 	void PostRender();
 
 	virtual void onRelease(const PxBase* observed, void* userData, PxDeletionEventFlag::Enum deletionEvent);

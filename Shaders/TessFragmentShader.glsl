@@ -16,6 +16,6 @@ void main(){
 
 	float col = texture( heightMap, fs_in.uv).r;
 	color.b = col;
-	color.r = fs_in.uv.x;
-	color.g = fs_in.uv.y;
+	color.r = col;
+	color.g = col;
 }

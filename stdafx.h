@@ -49,6 +49,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <stdlib.h>
+
 #include "SingletonBase.h"
 #include "MyGLUtil.h"
 #include "Delegate.h"

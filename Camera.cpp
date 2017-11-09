@@ -3,8 +3,10 @@
 
 using namespace Math;
 
+Camera* Camera::mainCamera = nullptr;
+
 Camera::Camera() : FOVDeg(45.0f), projectionType(ProjectionType::Perspective),
-fNear(0.1f), fFar(2000.0f)
+fNear(0.1f), fFar(20000.0f)
 {
 }
 
@@ -14,6 +16,9 @@ Camera::~Camera()
 
 void Camera::Initialize()
 {
+	if (mainCamera == nullptr)
+		mainCamera = this;
+
 	RenderObject::Initialize();
 	RefreshProjection();
 	RefreshViewMatrix();
@@ -54,6 +59,11 @@ void Camera::RefreshFrustumPlanes()
 {
 	Transform* transform = GetTransform();
 	frustum.setCamDef(*transform);
+}
+
+Camera * Camera::GetMainCamera()
+{
+	return mainCamera;
 }
 
 void Camera::Render()

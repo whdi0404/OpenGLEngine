@@ -40,6 +40,11 @@ Texture2D::Texture2D(std::string filename) :
 		ilGetData());
 
 	glGenSamplers(1, &samplerID);
+
+	//GL_LINEAR_MIPMAP_LINEAR;
+	magFilter = GL_LINEAR;
+	minFilter = GL_LINEAR;
+	aniso = 1;
 }
 
 Texture2D::~Texture2D()
@@ -49,8 +54,43 @@ Texture2D::~Texture2D()
 	glDeleteSamplers(1, &samplerID);
 }
 
+Color Texture2D::GetPixelBilinear(glm::vec2 uv)
+{
+	uv = glm::saturate(uv);
+
+	////uv += glm::vec2(1.0f / width, 1.0f / height) * 0.5f;
+	//
+	//float invWidth = 1.0f / width;
+	//float invHeight = 1.0f / height;
+
+	//float tx = (uv.x - ((int)(uv.x / invWidth) * invWidth)) / invWidth;
+	//float ty = (uv.y - ((int)(uv.y / invHeight) * invHeight)) / invHeight;
+
+	//float x = glm::floor(width * uv.x);
+	//float y = glm::floor(height * uv.y);
+
+	////return bilinear(tx, ty, GetPixel(x, y), GetPixel(x + 1, y), GetPixel(x, y + 1), GetPixel(x + 1, y + 1));
+	//return bilinear( ty, tx, GetPixel(x + 1, y + 1),GetPixel(x, y + 1), GetPixel(x + 1, y),  GetPixel(x, y));
+
+	uv.x = uv.x * width + 0.5f;
+	uv.y = uv.y * height + 0.5f;
+	int x = floor(uv.x);
+	int y = floor(uv.y);
+	double u_ratio = uv.x - x;
+	double v_ratio = uv.y - y;
+	double u_opposite = 1 - u_ratio;
+	double v_opposite = 1 - v_ratio;
+	double result = (GetPixel(x, y).r * u_opposite + GetPixel(x + 1, y).r * u_ratio) * v_opposite +
+		(GetPixel(x, y + 1).r * u_opposite + GetPixel(x + 1, y + 1).r * u_ratio) * v_ratio;
+
+	return Color(result, result, result, result);
+}
+
 Color Texture2D::GetPixel(int x, int y)
 {
+	x = glm::clamp(x, 0, width - 1);
+	y = glm::clamp(y, 0, height - 1);
+
 	ilBindImage(ilTextureID);
 	ILubyte* ilData = ilGetData();
 

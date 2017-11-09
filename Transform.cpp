@@ -40,10 +40,19 @@ Transform & Transform::SetPosition(glm::vec3 pos)
 
 Transform & Transform::AddWorldPosition(float dx, float dy, float dz)
 {
-	localPosition += dx * worldRightAxis;
-	localPosition += dy * worldUpAxis;
-	localPosition += dz * worldForwardAxis;
-
+	if (parent != nullptr)
+	{
+		localPosition += dx * worldRightAxis;
+		localPosition += dy * worldUpAxis;
+		localPosition += dz * worldForwardAxis;
+	}
+	else
+	{
+		localPosition.x += dx;
+		localPosition.y += dy;
+		localPosition.z += dz;
+	}
+	
 	UpdateTransform();
 	return *this;
 }

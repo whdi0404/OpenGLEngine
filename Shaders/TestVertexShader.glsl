@@ -6,7 +6,6 @@ layout(location = 2) in mat4 matModel;
 
 uniform mat4 matView;
 uniform mat4 matProj;
-uniform sampler2D heightMap;
 
 out VS_OUT
 {

@@ -201,6 +201,9 @@
     <ClCompile Include="SphereCollider.cpp">
       <Filter>FrameWork\Object\Component</Filter>
     </ClCompile>
+    <ClCompile Include="TextureUtil.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -340,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="SphereCollider.h">
       <Filter>FrameWork\Object\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureUtil.h">
+      <Filter>Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

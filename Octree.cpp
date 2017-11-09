@@ -5,7 +5,7 @@
 #include "Camera.h"
 #include "PracticalRenderObject.h"
 
-const int Octree::maxDepth = 4;
+const int Octree::maxDepth = 5;
 
 Octree::Octree(glm::vec3 scale, float looseWeight)
 {

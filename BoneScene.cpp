@@ -49,10 +49,9 @@ GameObject* TestObject(Mesh* mesh, Material* material, glm::vec3 offset, float s
 
 void BoneScene::Initialize()
 {
-	speed = 20.0f;
+	speed = 10.0f;
 	rotSpeed = 120.0f;
 	camera = (new GameObject())->AddComponent<Camera>();
-	camera->GetTransform()->SetLocalPosition(0, 0, 10);
 
 	Shader* modelShader = new Shader("./Shaders/TestVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
 	//Shader* skinnedShader = new Shader("./Shaders/TestSkinnedVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
@@ -115,11 +114,12 @@ void BoneScene::Initialize()
 
 		Shader* tessellationShader = new Shader("./Shaders/TessVetexShader.glsl", "./Shaders/TessFragmentShader.glsl",
 			"./Shaders/TessCtrlShader.glsl", "./Shaders/TessEvelShader.glsl");
-		float heightScale = 50;
+		float heightScale = 20;
 		float tileScale = 1;
 
+
 		Texture2D* heightMap = new Texture2D("./Tex/terrain-heightmap.bmp"/*cDsYZ.jpg*/);
-		Material* terrainMaterial = new Material(tessellationShader, 1);
+		terrainMaterial = new Material(tessellationShader, 1);
 		terrainMaterial->SetTexture(std::string("heightMap"), heightMap);
 		terrainSystem->SetMaterial(terrainMaterial);
 		terrainSystem->CreateMesh(heightMap, /*0.03125f*/tileScale, heightScale);
@@ -128,15 +128,19 @@ void BoneScene::Initialize()
 		/*obj->AddComponent<TestMoving>()->SetCamera(camera);*/
 		//obj->GetTransform()->SetLocalPosition(offset).SetLocalScale(scale, scale, scale).RotateAxisLocal(0, 0, 0);
 
-		int div = 8;
-		for (int x = 0; x < heightMap->GetWidth() / div; ++x)
-		{
-			for (int z = 0; z < heightMap->GetHeight() / div; ++z)
-			{
-				GameObject* obj = TestObject((Mesh*)sphereMesh, material, glm::vec3(x * div * tileScale, heightScale * 1.1f, z * div* tileScale), 1);
-				obj->AddComponent<SphereCollider>()->SetCamera(camera);
-			}
-		}
+		camera->GetTransform()->SetLocalPosition(tileScale* heightMap->GetWidth() * 0.5f, heightScale * 1.5f, tileScale * heightMap->GetHeight());
+		camera->GetTransform()->RotateAxisLocal(-25, 0, 0);
+
+		//int div = 7;
+		//for (int x = 5; x < heightMap->GetWidth() / div; ++x)
+		//{
+		//	for (int z = 5; z < heightMap->GetHeight() / div; ++z)
+		//	{
+		//		GameObject* obj = TestObject((Mesh*)sphereMesh, material, glm::vec3(x * div * tileScale * 0.7f, heightScale * 1.1f, z * div* tileScale * 0.7f), 1);
+		//		obj->AddComponent<SphereCollider>()->SetCamera(camera);
+		//		//obj->AddComponent<TestMoving>()->SetCamera(camera);
+		//	}
+		//}
 	}
 }
 
@@ -207,6 +211,36 @@ void BoneScene::Update()
 		camera->GetTransform()->RotateAxisLocal(-rotSpeed * dt, 0, 0);
 		camChanged = true;
 	}
+
+	static glm::vec2 uvPlus = glm::vec2(0, 0);
+
+	state = glfwGetKey(g_Window, GLFW_KEY_U);
+	if (state == GLFW_PRESS)
+	{
+		uvPlus.x += dt * 0.001f;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_I);
+	if (state == GLFW_PRESS)
+	{
+		uvPlus.x -= dt * 0.001f;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_J);
+	if (state == GLFW_PRESS)
+	{
+		uvPlus.y += dt * 0.001f;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_K);
+	if (state == GLFW_PRESS)
+	{
+		uvPlus.y -= dt * 0.001f;
+	}
+
+	terrainMaterial->SetVec2(std::string("uvPlus"), &uvPlus, 1);
+
+	std::cout << "uvPlus: x=" << uvPlus.x  << ", y=" << uvPlus.y << std::endl;
 
 	state = glfwGetMouseButton(g_Window, GLFW_MOUSE_BUTTON_LEFT);
 	static int oldState = GLFW_RELEASE;

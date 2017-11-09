@@ -72,9 +72,9 @@ int main() {
 		g_PhysXManager->PreRender();
 		SceneGraph::GetInstance().Update();
 		//updateTime = timeInstance.GetNowTimeSinceStart();
-		SceneGraph::GetInstance().Render();
 		//renderTime = timeInstance.GetNowTimeSinceStart();
 		g_PhysXManager->PostRender();
+		SceneGraph::GetInstance().Render();
 
 		//int state = glfwGetKey(g_Window, GLFW_KEY_Y);
 		//if (state == GLFW_PRESS)

@@ -12,7 +12,8 @@ out CS_OUT
 } cs_out[];
 
 uniform vec3 eyePosition;
-uniform float dynamicTessFactor = 64;
+uniform float tessellationCount;
+uniform float dynamicTessFactor = 1;
 
 uniform vec2 screen_size = vec2(1280, 720);
 uniform mat4 matView;
@@ -25,11 +26,11 @@ vec4 project(vec4 vertex){
 }
 
 vec2 screen_space(vec4 vertex){
-    return (clamp(vertex.xy, -1.3, 1.3)+1) * (screen_size*0.5);
+    return (clamp(vertex.xy, -1.3, 1.3)) * (screen_size*0.5);
 }
 
 float level(vec2 v0, vec2 v1){
-     return clamp(distance(v0, v1) * 0.25f, 1, dynamicTessFactor);
+     return clamp(distance(v0, v1) * 0.125f, 1, dynamicTessFactor * tessellationCount);
  }
 
  bool offscreen(vec4 vertex){
@@ -37,8 +38,8 @@ float level(vec2 v0, vec2 v1){
         return true;
     }
     return any(
-        lessThan(vertex.xy, vec2(-1.7)) ||
-        greaterThan(vertex.xy, vec2(1.7))
+        lessThan(vertex.xy, vec2(-2.5)) ||
+        greaterThan(vertex.xy, vec2(2.5))
     );  
 }
 

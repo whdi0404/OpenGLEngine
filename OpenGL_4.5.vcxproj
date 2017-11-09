@@ -193,6 +193,7 @@
     <ClCompile Include="TerrainSystem.cpp" />
     <ClCompile Include="TestMoving.cpp" />
     <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureUtil.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VertexAttributeDeclarative.cpp" />
@@ -240,6 +241,7 @@
     <ClInclude Include="TerrainSystem.h" />
     <ClInclude Include="TestMoving.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="TextureUtil.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Delegate.h" />

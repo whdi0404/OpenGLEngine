@@ -9,7 +9,7 @@ SceneGraph::SceneGraph()
 {
 	scene = new STARTSCENE_CLASSNAME();
 	//재사용 가능한 옥트리 생성
-	octree = new Octree(glm::vec3(4096.0f, 4096.0f, 4096.0f), 2.0f);
+	octree = new Octree(glm::vec3(32768.0f, 32768.0f, 32768.0f), 2.0f);
 }
 
 SceneGraph::~SceneGraph()
@@ -64,6 +64,7 @@ void SceneGraph::Render()
 	for (int i = 0; i < size; ++i)
 		updates[i]->OnDrawGizmo();
 	scene->OnDrawGizmos();
+	g_Renderer->DrawGizmos();
 	glfwSwapBuffers(g_Window);
 }
 
