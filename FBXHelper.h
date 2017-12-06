@@ -11,7 +11,7 @@ class Avatar;
 class FBXHelper
 {
 public:
-	static std::vector<Object*> GetResourcesFromFile(std::string filePath, glm::mat4x4 modelTransform);
+	static std::vector<Object*> GetResourcesFromFile(std::string filePath, glm::mat4x4 modelTransform = glm::mat4x4());
 
 private:
 	static Mesh* LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 modelTransform, Avatar* avatar);

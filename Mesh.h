@@ -26,8 +26,8 @@ public:
 	virtual void DrawInstance(glm::mat4x4* pMat, int count);
 
 protected:
-	VertexBuffer* vertexBuffer;
-	std::vector<int> indices;
+	GetSetMacroProtected(VertexBuffer*, VertexBuffer, vertexBuffer);
+	GetSetMacroProtected(std::vector<int>, Indices, indices);
 	GLuint vertexArrayID;
 	GLuint matrixBufferID;
 

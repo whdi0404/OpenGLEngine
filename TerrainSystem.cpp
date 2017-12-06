@@ -15,7 +15,7 @@ TerrainSystem::TerrainSystem()
 TerrainSystem::~TerrainSystem()
 {
 }
-void TerrainSystem::CreateMesh(Texture2D * texture, float tileScale, float heightScale)
+void TerrainSystem::CreateMesh(Texture2D * texture, float tileScale, float heightScale, float tessellateCount)
 {
 	this->heightScale = heightScale;
 	this->tileScale = tileScale;
@@ -27,12 +27,12 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileScale, float heigh
 	int texH = texture->GetHeight();
 
 	terrainSize = glm::ivec2(texW, texH);
-
-	float tessellateCount = 1;
-	int width = texW / tessellateCount + 1;
-	int height = texH / tessellateCount + 1;
-
-	float mapHalfSize = width * 0.5f * tileScale;
+	
+	float width = texW / tessellateCount + 1;
+	float height = texH / tessellateCount + 1;
+	//8 -> 9
+	//4 -> 5
+	//float mapHalfSize = width * 0.5f * tileScale;
 
 	VertexBuffer* newVertexBuffer = new VertexBuffer(TestVertexAttribute);
 	newVertexBuffer->SetVertexCount(width * height);
@@ -43,10 +43,15 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileScale, float heigh
 		for (int x = 0; x < width; ++x)
 		{
 			int arrayIdx = y * width + x;
+			
 			glm::vec3 pos = glm::vec3(x * tileScale * tessellateCount, GetHeight(glm::vec2((float)x / width, (float)y / height)), y * tileScale * tessellateCount);
 
+			//1.0078125
+			//1.00390625
+			float a = ((texW + tessellateCount) / texW);
+			a = 1 + ((a - 1.0f) * (tessellateCount - 1.0f) / tessellateCount);
 			newVertexBuffer->SetVector(Element::Position, arrayIdx, glm::vec4(pos.x, pos.y, pos.z, 0));
-			newVertexBuffer->SetVector(Element::Texcoord0, arrayIdx, glm::vec4(float(x + 1) / (width), float(y + 1) / (height), 0, 0));
+			newVertexBuffer->SetVector(Element::Texcoord0, arrayIdx, glm::vec4((float(x)) / (width) * a, (float(y)) / (height) * a, 0, 0));
 		}
 	}
 
@@ -62,6 +67,7 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileScale, float heigh
 
 			indices.push_back(y * width + x + 1);
 			indices.push_back((y + 1) * width + x + 1);
+
 		}
 	}
 	terrainMesh->SetDrawMode(GL_PATCHES);

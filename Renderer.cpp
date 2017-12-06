@@ -9,7 +9,7 @@
 #include "Time.h"
 #include "Octree.h"
 
-//#define DrawLine
+#define DrawLine
 
 Renderer::Renderer() : renderObjectCollecdtor(new RendererObjectCollector())
 {

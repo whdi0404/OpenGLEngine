@@ -13,11 +13,11 @@
 #include "Avatar.h"
 #include "Animator.h"
 #include "KeyFrameAnimation.h"
-#include "TestMoving.h"
 #include "RigidBody.h"
 #include "TerrainSystem.h"
-#include "SphereCollider.h"
 #include "TerrainCollider.h"
+#include "PhysXResourceManager.h"
+
 BoneScene::BoneScene()
 {
 }
@@ -49,6 +49,8 @@ GameObject* TestObject(Mesh* mesh, Material* material, glm::vec3 offset, float s
 
 void BoneScene::Initialize()
 {
+	InitResource();
+
 	speed = 10.0f;
 	rotSpeed = 120.0f;
 	camera = (new GameObject())->AddComponent<Camera>();
@@ -122,9 +124,18 @@ void BoneScene::Initialize()
 		terrainMaterial = new Material(tessellationShader, 1);
 		terrainMaterial->SetTexture(std::string("heightMap"), heightMap);
 		terrainSystem->SetMaterial(terrainMaterial);
-		terrainSystem->CreateMesh(heightMap, /*0.03125f*/tileScale, heightScale);
+		terrainSystem->CreateMesh(heightMap, /*0.03125f*/tileScale, heightScale, 4);
 
 		obj->AddComponent<TerrainCollider>();
+
+		//GameObject* obj2 = new GameObject();
+		//TerrainSystem* terrainSystem2 = obj2->AddComponent<TerrainSystem>();
+		//
+		//terrainMaterial = new Material(tessellationShader, 1);
+		//terrainMaterial->SetTexture(std::string("heightMap"), heightMap);
+		//terrainSystem2->SetMaterial(terrainMaterial);
+		//terrainSystem2->CreateMesh(heightMap, /*0.03125f*/tileScale, heightScale, 2);
+		//obj2->AddComponent<TerrainCollider>();
 		/*obj->AddComponent<TestMoving>()->SetCamera(camera);*/
 		//obj->GetTransform()->SetLocalPosition(offset).SetLocalScale(scale, scale, scale).RotateAxisLocal(0, 0, 0);
 
@@ -142,6 +153,17 @@ void BoneScene::Initialize()
 		//	}
 		//}
 	}
+}
+
+void BoneScene::InitResource()
+{
+	PxMaterial* default_Material = g_PhysXManager->GetPhysics()->createMaterial(0.5f, 0.5f, 0.1f);
+	g_PhysXManager->GetResources()->AddResource("default_Material", default_Material);
+	
+	Mesh* box_Mesh = (Mesh*)FBXHelper::GetResourcesFromFile("./Models/Box.fbx")[0];
+	g_PhysXManager->GetResources()->AddGeometryResource("box_Mesh", box_Mesh, PxVec3(0.01f, 0.01f, 0.01f));
+
+	g_PhysXManager->GetResources()->AddSphereGeomResource("default_Sphere", 0.5f);
 }
 
 void BoneScene::Update()
@@ -212,58 +234,19 @@ void BoneScene::Update()
 		camChanged = true;
 	}
 
-	static glm::vec2 uvPlus = glm::vec2(0, 0);
-
-	state = glfwGetKey(g_Window, GLFW_KEY_U);
-	if (state == GLFW_PRESS)
-	{
-		uvPlus.x += dt * 0.001f;
-	}
-
-	state = glfwGetKey(g_Window, GLFW_KEY_I);
-	if (state == GLFW_PRESS)
-	{
-		uvPlus.x -= dt * 0.001f;
-	}
-
-	state = glfwGetKey(g_Window, GLFW_KEY_J);
-	if (state == GLFW_PRESS)
-	{
-		uvPlus.y += dt * 0.001f;
-	}
-
-	state = glfwGetKey(g_Window, GLFW_KEY_K);
-	if (state == GLFW_PRESS)
-	{
-		uvPlus.y -= dt * 0.001f;
-	}
-
-	terrainMaterial->SetVec2(std::string("uvPlus"), &uvPlus, 1);
-
-	std::cout << "uvPlus: x=" << uvPlus.x  << ", y=" << uvPlus.y << std::endl;
-
 	state = glfwGetMouseButton(g_Window, GLFW_MOUSE_BUTTON_LEFT);
 	static int oldState = GLFW_RELEASE;
 	if (state == GLFW_PRESS && oldState == GLFW_RELEASE)
 	{
-		//for (int i = 0; i < 100; ++i)
-		//{
-			//GameObject* gun = new GameObject();
-		//for each (Object* var in gunMesh)
-		//{
-		//	if (dynamic_cast<Mesh*>(var) != nullptr)
-		//	{
-		//		GameObject* obj = TestObject((Mesh*)var, material, camera->GetTransform()->GetWorldPosition(), 1);
-		//		obj->AddComponent<TestMoving>()->SetCamera(camera);
-		//		//gun->GetTransform()->AddChild(obj->GetTransform(), false);
-		//	}
-		//}
 		GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition(), 1);
-		obj->AddComponent<SphereCollider>()->SetCamera(camera);
-		//}
-		//gun->AddComponent<TestMoving>();
-		//gun->AddComponent<PhysXActor>()->CreateToBox();
-		std::cout << "ObjectCount: " << SceneGraph::GetInstance().GetObjectCount() << std::endl;
+		obj->AddComponent<RigidBody>()->SetMesh("default_Sphere", false);
+	}
+
+	state = glfwGetMouseButton(g_Window, GLFW_MOUSE_BUTTON_RIGHT);
+	if (state == GLFW_PRESS && oldState == GLFW_RELEASE)
+	{
+		GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition(), 1);
+		obj->AddComponent<RigidBody>()->SetMesh("box_Mesh", true);
 	}
 	oldState = state;
 

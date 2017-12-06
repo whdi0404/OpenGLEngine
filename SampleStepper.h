@@ -30,7 +30,6 @@
 #ifndef SAMPLE_STEPPER_H
 #define SAMPLE_STEPPER_H
 
-#include "stdafx.h"
 #include "SampleAllocator.h"
 #include "SampleAllocatorSDKClasses.h"
 #include "RendererMemoryMacros.h"

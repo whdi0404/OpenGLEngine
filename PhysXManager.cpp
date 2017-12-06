@@ -2,6 +2,7 @@
 #include "PhysXManager.h"
 #include "Time.h"
 #include "Gizmo.h"
+#include "PhysXResourceManager.h"
 
 PhysXManager::PhysXManager() : pvd(nullptr), mStepSize(0.016666660f), fixedStepper(0.016666660f, 8), waitForResults(false), gpuMaxNumPartitions(32)
 {
@@ -75,14 +76,10 @@ PhysXManager::PhysXManager() : pvd(nullptr), mStepSize(0.016666660f), fixedStepp
 	//sceneDesc.flags |= PxSceneFlag::eADAPTIVE_FORCE;
 	sceneDesc.flags |= PxSceneFlag::eENABLE_ACTIVETRANSFORMS;
 	sceneDesc.flags |= PxSceneFlag::eSUPPRESS_EAGER_SCENE_QUERY_REFIT;
-	//sceneDesc.flags |= PxSceneFlag::eDISABLE_CONTACT_CACHE;
+	sceneDesc.flags |= PxSceneFlag::eDISABLE_CONTACT_CACHE;
 	sceneDesc.broadPhaseType = PxBroadPhaseType::eGPU;
 	sceneDesc.gpuMaxNumPartitions = gpuMaxNumPartitions;
 
-
-#ifdef USE_MBP
-	sceneDesc.broadPhaseType = PxBroadPhaseType::eMBP;
-#endif
 
 	//customizeSceneDesc(sceneDesc);
 
@@ -109,6 +106,7 @@ PhysXManager::PhysXManager() : pvd(nullptr), mStepSize(0.016666660f), fixedStepp
 #ifdef USE_MBP
 	setupMBP(*mScene);
 #endif
+	resourceManager = new PhysXResourceManager();
 }
 
 
@@ -160,7 +158,7 @@ void PhysXManager::PreRender()
 
 void PhysXManager::DrawGizmos(Camera* camera)
 {
-//	RenderData(camera, mScene->getRenderBuffer());
+	RenderData(camera, mScene->getRenderBuffer());
 }
 
 struct convert_vec3
@@ -348,25 +346,6 @@ PhysXActor::PhysXActor() : mMaterial(nullptr), actor(nullptr), rigidDynamic(null
 
 PhysXActor::~PhysXActor()
 {
-}
-
-void PhysXActor::CreateToBox()
-{
-	PxPhysics* physics = g_PhysXManager->GetPhysics();
-	PxScene* pxScene = g_PhysXManager->GetScene();
-	
-	mMaterial = physics->createMaterial(0.5f, 0.5f, 0.1f);
-	
-	PxSceneWriteLock scopedLock(*pxScene);
-	
-	PxVec3 worldPos = GetPxVec3FromGLMVec3(GetTransform()->GetWorldPosition());
-	rigidDynamic = PxCreateDynamic(*physics, PxTransform(worldPos), PxBoxGeometry(PxVec3(0, 1, 0)), *mMaterial, 20.0f);
-	PX_ASSERT(rigidDynamic);
-	
-	SetupDefaultRigidDynamic(*rigidDynamic);
-	pxScene->addActor(*rigidDynamic);
-	
-	rigidDynamic->setLinearVelocity(PxVec3(1, 1, 1));
 }
 
 void PhysXActor::Update()

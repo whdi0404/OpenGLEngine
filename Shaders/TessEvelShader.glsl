@@ -6,7 +6,6 @@ uniform mat4 matProj;
 uniform float heightScale;
 
 uniform sampler2D heightMap;
-uniform vec2 uvPlus;
 
 in CS_OUT
 {
@@ -41,7 +40,7 @@ void main()
 	vec4 p2 = mix(gl_in[2].gl_Position,gl_in[3].gl_Position, gl_TessCoord.x);
 	gl_Position = mix(p1, p2, gl_TessCoord.y);
 
-	gl_Position.y = texture2D(heightMap, es_out.uv + uvPlus).r * heightScale;
+	gl_Position.y = texture2D(heightMap, es_out.uv).r * heightScale;
 
 	gl_Position = matProj * matView * gl_Position;
 }

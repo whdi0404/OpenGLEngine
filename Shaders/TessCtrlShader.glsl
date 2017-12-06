@@ -30,7 +30,8 @@ vec2 screen_space(vec4 vertex){
 }
 
 float level(vec2 v0, vec2 v1){
-     return clamp(distance(v0, v1) * 0.125f, 1, dynamicTessFactor * tessellationCount);
+     //return 1;
+	 return clamp(distance(v0, v1) * 0.125f, 1, dynamicTessFactor * tessellationCount * 2);
  }
 
  bool offscreen(vec4 vertex){

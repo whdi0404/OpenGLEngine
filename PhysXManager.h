@@ -2,6 +2,7 @@
 #include "SampleStepper.h"
 
 using namespace physx;
+class PhysXResourceManager;
 class PhysXManager : public PxDeletionListener
 {
 private:
@@ -18,6 +19,8 @@ private:
 	PxMaterial* mMaterial;
 	GetMacro(PxScene*, Scene, mScene);
 	PxReal mStepSize;
+
+	GetMacro(PhysXResourceManager*, Resources, resourceManager);
 
 	int gpuMaxNumPartitions;
 	bool waitForResults;

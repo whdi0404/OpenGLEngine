@@ -3,6 +3,7 @@
 #include "TerrainSystem.h"
 #include "GameObject.h"
 #include "Camera.h"
+#include "PhysXResourceManager.h"
 
 void TerrainCollider::OnTriggerEnter(Collider * collider)
 {
@@ -45,7 +46,7 @@ void TerrainCollider::Update()
 
 void TerrainCollider::CreateCollider()
 {
-	pxMaterial = g_PhysXManager->GetPhysics()->createMaterial(0.5f, 0.5f, 0.1f);
+	pxMaterial = g_PhysXManager->GetResources()->GetResource<PxMaterial>("default_Material");
 
 	float precision = UINT16_MAX * 0.49f / terrain->GetHeightScale();
 	PxReal heightScale = 1.0f / precision;

@@ -8,7 +8,11 @@ public:
 	BoneScene();
 	~BoneScene();
 
+
+private:
 	void Initialize();
+	void InitResource();
+public:
 	void Update();
 	void OnDrawGizmos();
 

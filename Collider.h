@@ -16,7 +16,6 @@ public:
 	virtual void Update();
 
 	void SetStatic(bool isStatic);
-	void HeightField(TerrainSystem* terrain);
 
 protected:
 	PxMaterial* pxMaterial;

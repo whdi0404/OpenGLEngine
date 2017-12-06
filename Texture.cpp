@@ -72,10 +72,13 @@ Color Texture2D::GetPixelBilinear(glm::vec2 uv)
 	////return bilinear(tx, ty, GetPixel(x, y), GetPixel(x + 1, y), GetPixel(x, y + 1), GetPixel(x + 1, y + 1));
 	//return bilinear( ty, tx, GetPixel(x + 1, y + 1),GetPixel(x, y + 1), GetPixel(x + 1, y),  GetPixel(x, y));
 
-	uv.x = uv.x * width + 0.5f;
-	uv.y = uv.y * height + 0.5f;
+	uv.x = uv.x * width - 0.5f;
+	uv.y = uv.y * height - 0.5f;
 	int x = floor(uv.x);
 	int y = floor(uv.y);
+
+	//return  GetPixel(x, y);
+
 	double u_ratio = uv.x - x;
 	double v_ratio = uv.y - y;
 	double u_opposite = 1 - u_ratio;

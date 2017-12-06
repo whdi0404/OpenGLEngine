@@ -18,9 +18,5 @@ void Collider::Update()
 
 void Collider::SetStatic(bool isStatic)
 {
-	
-}
 
-void Collider::HeightField(TerrainSystem* terrain)
-{
 }

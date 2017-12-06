@@ -22,6 +22,7 @@ glm::vec4 VertexBuffer::GetVector(Element element, int index)
 	return vector;
 }
 
+
 void VertexBuffer::SetVector(Element element, int index, glm::vec4 vector)
 {
 	if (index >= bufferSize || attribute->HasElement(element) == false)

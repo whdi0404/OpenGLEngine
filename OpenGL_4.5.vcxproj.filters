@@ -123,9 +123,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>FrameWork\Object</Filter>
     </ClCompile>
-    <ClCompile Include="math.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>FrameWork</Filter>
     </ClCompile>
@@ -171,26 +168,8 @@
     <ClCompile Include="Gizmo.cpp">
       <Filter>FrameWork\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="KeyFrameAnimation.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Animator.cpp">
       <Filter>FrameWork\Object\Component\Animator</Filter>
-    </ClCompile>
-    <ClCompile Include="PhysXManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="SampleStepper.cpp">
-      <Filter>FrameWork\Physics\PhysX</Filter>
-    </ClCompile>
-    <ClCompile Include="SampleAllocator.cpp">
-      <Filter>FrameWork\Physics\PhysX</Filter>
-    </ClCompile>
-    <ClCompile Include="TestMoving.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="RigidBody.cpp">
-      <Filter>FrameWork\Object\Component</Filter>
     </ClCompile>
     <ClCompile Include="Collider.cpp">
       <Filter>FrameWork\Object\Component</Filter>
@@ -198,11 +177,29 @@
     <ClCompile Include="TerrainCollider.cpp">
       <Filter>FrameWork\Object\Component</Filter>
     </ClCompile>
-    <ClCompile Include="SphereCollider.cpp">
-      <Filter>FrameWork\Object\Component</Filter>
-    </ClCompile>
     <ClCompile Include="TextureUtil.cpp">
       <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyFrameAnimation.cpp">
+      <Filter>FrameWork\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXManager.cpp">
+      <Filter>FrameWork\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXResourceManager.cpp">
+      <Filter>FrameWork\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="math.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>FrameWork\Object\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="SampleAllocator.cpp">
+      <Filter>FrameWork\Physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="SampleStepper.cpp">
+      <Filter>FrameWork\Physics\PhysX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -263,9 +260,6 @@
     <ClInclude Include="Shader.h">
       <Filter>FrameWork\Object</Filter>
     </ClInclude>
-    <ClInclude Include="math.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>FrameWork</Filter>
     </ClInclude>
@@ -305,23 +299,8 @@
     <ClInclude Include="Gizmo.h">
       <Filter>FrameWork\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="KeyFrameAnimation.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Animator.h">
       <Filter>FrameWork\Object\Component\Animator</Filter>
-    </ClInclude>
-    <ClInclude Include="PhysXManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="SampleStepper.h">
-      <Filter>FrameWork\Physics\PhysX</Filter>
-    </ClInclude>
-    <ClInclude Include="SampleAllocatorSDKClasses.h">
-      <Filter>FrameWork\Physics\PhysX</Filter>
-    </ClInclude>
-    <ClInclude Include="SampleAllocator.h">
-      <Filter>FrameWork\Physics\PhysX</Filter>
     </ClInclude>
     <ClInclude Include="RendererMemoryMacros.h">
       <Filter>Util</Filter>
@@ -329,23 +308,38 @@
     <ClInclude Include="PxTkNamespaceMangle.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="TestMoving.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="RigidBody.h">
-      <Filter>FrameWork\Object\Component</Filter>
-    </ClInclude>
     <ClInclude Include="Collider.h">
       <Filter>FrameWork\Object\Component</Filter>
     </ClInclude>
     <ClInclude Include="TerrainCollider.h">
       <Filter>FrameWork\Object\Component</Filter>
     </ClInclude>
-    <ClInclude Include="SphereCollider.h">
-      <Filter>FrameWork\Object\Component</Filter>
-    </ClInclude>
     <ClInclude Include="TextureUtil.h">
       <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyFrameAnimation.h">
+      <Filter>FrameWork\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysXManager.h">
+      <Filter>FrameWork\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysXResourceManager.h">
+      <Filter>FrameWork\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="math.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>FrameWork\Object\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="SampleAllocator.h">
+      <Filter>FrameWork\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="SampleAllocatorSDKClasses.h">
+      <Filter>FrameWork\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="SampleStepper.h">
+      <Filter>FrameWork\Physics\PhysX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

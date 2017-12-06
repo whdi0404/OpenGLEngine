@@ -19,7 +19,7 @@ public:
 	~TerrainSystem();
 
 public:
-	void CreateMesh(Texture2D* texture, float tileSize, float heightScale);
+	void CreateMesh(Texture2D* texture, float tileSize, float heightScale, float tessellationCount);
 	float GetHeight(glm::vec2 uv);
 
 protected:
