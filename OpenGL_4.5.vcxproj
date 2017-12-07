@@ -172,7 +172,8 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Octree.cpp" />
     <ClCompile Include="PhysXManager.cpp" />
-    <ClCompile Include="PhysXResourceManager.cpp" />
+    <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="PhysXUtil.cpp" />
     <ClCompile Include="PracticalRenderObject.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderObject.cpp" />
@@ -218,7 +219,8 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="Octree.h" />
     <ClInclude Include="PhysXManager.h" />
-    <ClInclude Include="PhysXResourceManager.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="PhysXUtil.h" />
     <ClInclude Include="PracticalRenderObject.h" />
     <ClInclude Include="PxTkNamespaceMangle.h" />
     <ClInclude Include="Renderer.h" />

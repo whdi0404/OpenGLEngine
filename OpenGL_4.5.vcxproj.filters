@@ -186,9 +186,6 @@
     <ClCompile Include="PhysXManager.cpp">
       <Filter>FrameWork\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="PhysXResourceManager.cpp">
-      <Filter>FrameWork\Physics</Filter>
-    </ClCompile>
     <ClCompile Include="math.cpp">
       <Filter>Util</Filter>
     </ClCompile>
@@ -200,6 +197,12 @@
     </ClCompile>
     <ClCompile Include="SampleStepper.cpp">
       <Filter>FrameWork\Physics\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysXUtil.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>FrameWork</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -323,9 +326,6 @@
     <ClInclude Include="PhysXManager.h">
       <Filter>FrameWork\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="PhysXResourceManager.h">
-      <Filter>FrameWork\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="math.h">
       <Filter>Util</Filter>
     </ClInclude>
@@ -340,6 +340,12 @@
     </ClInclude>
     <ClInclude Include="SampleStepper.h">
       <Filter>FrameWork\Physics\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysXUtil.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>FrameWork</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

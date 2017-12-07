@@ -16,7 +16,7 @@
 #include "RigidBody.h"
 #include "TerrainSystem.h"
 #include "TerrainCollider.h"
-#include "PhysXResourceManager.h"
+#include "ResourceManager.h"
 
 BoneScene::BoneScene()
 {
@@ -158,12 +158,14 @@ void BoneScene::Initialize()
 void BoneScene::InitResource()
 {
 	PxMaterial* default_Material = g_PhysXManager->GetPhysics()->createMaterial(0.5f, 0.5f, 0.1f);
-	g_PhysXManager->GetResources()->AddResource("default_Material", default_Material);
+	ResourceManager::GetInstance().AddResource("default_Material", default_Material);
 	
 	Mesh* box_Mesh = (Mesh*)FBXHelper::GetResourcesFromFile("./Models/Box.fbx")[0];
-	g_PhysXManager->GetResources()->AddGeometryResource("box_Mesh", box_Mesh, PxVec3(0.01f, 0.01f, 0.01f));
+	ResourceManager::GetInstance().AddPxConvexMeshGeometryResource("box_Mesh", box_Mesh, PxVec3(0.01f, 0.01f, 0.01f));
 
-	g_PhysXManager->GetResources()->AddSphereGeomResource("default_Sphere", 0.5f);
+	ResourceManager::GetInstance().AddPxSphereGeometryResource("default_Sphere", 0.5f);
+	ResourceManager::GetInstance().AddPxCapsuleGeometryResource("default_Capsule", 0.5f, 0.5f);
+	ResourceManager::GetInstance().AddPxBoxGeometryResource("default_Box", glm::vec3(0.5f, 0.5f, 0.5f));
 }
 
 void BoneScene::Update()
@@ -239,14 +241,14 @@ void BoneScene::Update()
 	if (state == GLFW_PRESS && oldState == GLFW_RELEASE)
 	{
 		GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition(), 1);
-		obj->AddComponent<RigidBody>()->SetMesh("default_Sphere", false);
+		obj->AddComponent<RigidBody>()->SetGeometry("default_Capsule", false);
 	}
 
 	state = glfwGetMouseButton(g_Window, GLFW_MOUSE_BUTTON_RIGHT);
 	if (state == GLFW_PRESS && oldState == GLFW_RELEASE)
 	{
 		GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition(), 1);
-		obj->AddComponent<RigidBody>()->SetMesh("box_Mesh", true);
+		obj->AddComponent<RigidBody>()->SetGeometry("default_Box", false);
 	}
 	oldState = state;
 

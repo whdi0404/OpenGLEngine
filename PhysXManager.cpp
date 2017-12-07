@@ -2,7 +2,6 @@
 #include "PhysXManager.h"
 #include "Time.h"
 #include "Gizmo.h"
-#include "PhysXResourceManager.h"
 
 PhysXManager::PhysXManager() : pvd(nullptr), mStepSize(0.016666660f), fixedStepper(0.016666660f, 8), waitForResults(false), gpuMaxNumPartitions(32)
 {
@@ -106,7 +105,6 @@ PhysXManager::PhysXManager() : pvd(nullptr), mStepSize(0.016666660f), fixedStepp
 #ifdef USE_MBP
 	setupMBP(*mScene);
 #endif
-	resourceManager = new PhysXResourceManager();
 }
 
 

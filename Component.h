@@ -1,5 +1,6 @@
 #pragma once
 #include "Object.h"
+class Collider;
 class Component :
 	public Object
 {
@@ -13,6 +14,9 @@ protected:
 	virtual void Update() {}
 	virtual void OnDrawGizmo() {}
 	virtual void Release() {}
+
+	virtual void OnTriggerEnter(Collider* collider) {}
+	virtual void OnTriggerExit(Collider* collider) {}
 
 	template<class TComponent>
 	TComponent* GetComponent()

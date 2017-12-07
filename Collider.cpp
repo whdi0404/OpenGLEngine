@@ -15,8 +15,3 @@ void Collider::Update()
 	GetTransform()->SetPosition(GetGLMVec3FromPxVec3(transform.p));
 	GetTransform()->SetRotateWorld(glm::quat(transform.q.w, transform.q.x, transform.q.y, transform.q.z));
 }
-
-void Collider::SetStatic(bool isStatic)
-{
-
-}

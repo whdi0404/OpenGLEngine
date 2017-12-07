@@ -1,15 +1,14 @@
 #include "stdafx.h"
 #include "RigidBody.h"
 #include "Gizmo.h"
-#include "PhysXResourceManager.h"
+#include "ResourceManager.h"
 
-RigidBody * RigidBody::SetMesh(std::string meshKey, bool isStatic)
+RigidBody * RigidBody::SetGeometry(std::string geometryKey, bool isStatic)
 {
 	this->isStatic = isStatic;
-	auto& resourceManager = g_PhysXManager->GetResources();
-	geometry = resourceManager->GetResource<PxGeometry>(meshKey);
+	geometry = ResourceManager::GetInstance().GetResource<PxGeometry>(geometryKey);
 
-	pxMaterial = g_PhysXManager->GetResources()->GetResource<PxMaterial>("default_Material");
+	pxMaterial = ResourceManager::GetInstance().GetResource<PxMaterial>("default_Material");
 
 	if (isStatic)
 	{
@@ -35,16 +34,4 @@ RigidBody * RigidBody::SetMesh(std::string meshKey, bool isStatic)
 	g_PhysXManager->GetScene()->addActor(*pxRigidActor);
 
 	return this;
-}
-
-void RigidBody::Initialize()
-{
-}
-
-void RigidBody::OnTriggerEnter(Collider * collider)
-{
-}
-
-void RigidBody::OnTriggerExit(Collider * collider)
-{
 }

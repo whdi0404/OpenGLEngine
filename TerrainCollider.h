@@ -16,9 +16,6 @@ public:
 	TerrainCollider() {}
 	~TerrainCollider() {}
 
-	virtual void OnTriggerEnter(Collider * collider) override;
-	virtual void OnTriggerExit(Collider * collider) override;
-
 	virtual void Initialize() override;
 	virtual void Update() override;
 
