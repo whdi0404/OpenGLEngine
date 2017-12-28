@@ -93,6 +93,9 @@ PhysXManager::PhysXManager() : pvd(nullptr), mStepSize(0.016666660f), fixedStepp
 	PX_UNUSED(flag);
 	mScene->setVisualizationParameter(PxVisualizationParameter::eSCALE, 1.0f/*0.0f*/);
 	mScene->setVisualizationParameter(PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
+	mScene->setVisualizationParameter(PxVisualizationParameter::eJOINT_LOCAL_FRAMES, 1.0f);
+	mScene->setVisualizationParameter(PxVisualizationParameter::eJOINT_LIMITS, 1.0f);
+
 
 	PxPvdSceneClient* pvdClient = mScene->getScenePvdClient();
 	if (pvdClient)

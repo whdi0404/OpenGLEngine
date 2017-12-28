@@ -17,6 +17,7 @@ void TerrainCollider::Initialize()
 
 void TerrainCollider::Update()
 {
+	PxSceneReadLock readLock(*g_PhysXManager->GetScene());
 	for (auto& heightCollider : heightColliders)
 	{
 		auto pos = heightCollider->getGlobalPose().p;

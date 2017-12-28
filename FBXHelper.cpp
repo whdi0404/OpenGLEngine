@@ -47,8 +47,9 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 					{
 						case FbxNodeAttribute::eSkeleton:
 						{
-							FbxSkeleton* fbxSkeleton = (FbxSkeleton*)nodeAttributeFbx;
 							avatar->AddNode(node);
+							avatar->AddNode(node->GetParent());
+							//최상위 부모가 아닐 eSkeleton타입이 아닐 수 있음.
 						}
 						break;
 					}

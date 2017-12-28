@@ -17,8 +17,9 @@
 #include "TerrainSystem.h"
 #include "TerrainCollider.h"
 #include "ResourceManager.h"
+#include "PhysXUtil.h"
 
-BoneScene::BoneScene()
+BoneScene::BoneScene() : root(nullptr)
 {
 }
 
@@ -56,14 +57,14 @@ void BoneScene::Initialize()
 	camera = (new GameObject())->AddComponent<Camera>();
 
 	Shader* modelShader = new Shader("./Shaders/TestVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
-	//Shader* skinnedShader = new Shader("./Shaders/TestSkinnedVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
+	Shader* skinnedShader = new Shader("./Shaders/TestSkinnedVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
 	//
 	material = new Material(modelShader, 1);
-	//Material* skinnedMaterial = new Material(skinnedShader, 1);
+	skinnedMaterial = new Material(skinnedShader, 1);
 
 	Texture2D* modelTex = new Texture2D("./Models/UnityChanTexture/body_01.tga");
 	material->SetTexture(std::string("tex"), modelTex);
-	//skinnedMaterial->SetTexture(std::string("tex"), modelTex);
+	skinnedMaterial->SetTexture(std::string("tex"), modelTex);
 
 	glm::mat4x4 modelMatrix = glm::mat4x4();
 	//modelMatrix = glm::rotate(modelMatrix, -glm::radians(90.0f), glm::vec3(0, 1, 0));
@@ -71,23 +72,10 @@ void BoneScene::Initialize()
 	//std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/SIG.FBX", modelMatrix);
 	//TestObject((Mesh*)meshes[0], material, vec3(), 1);
 
-	//std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.fbx", modelMatrix);
+	meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.fbx", modelMatrix);
 	//std::vector<Object*> animations = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_RUN00_F.fbx", modelMatrix);//Unitychan Animation/unitychan_RUN00_F.fbx
 	gunMesh = FBXHelper::GetResourcesFromFile("./Models/Barrett.FBX", modelMatrix);
 	sphereMesh = FBXHelper::GetResourcesFromFile("./Models/Sphere.FBX", modelMatrix)[0];
-	//float scale = 0.1f;
-	//SkinnedMesh* skinnedMesh = nullptr;
-	//for (int i = 0; i < meshes.size(); ++i)
-	//{
-	//	Mesh* mesh = dynamic_cast<Mesh*>(meshes[i]);
-	//	if (mesh == nullptr)
-	//		continue;
-	//
-	//	if (dynamic_cast<SkinnedMesh*>(meshes[i]) != nullptr)
-	//		GameObject* obj = TestObject(skinnedMesh = (SkinnedMesh*)mesh, skinnedMaterial, glm::vec3(), scale);
-	//	else
-	//		GameObject* obj = TestObject(mesh, material, glm::vec3(), scale);
-	//}
 
 	//KeyFrameAnimation* keyFrameAnimation = (KeyFrameAnimation*)(*std::find_if(animations.begin(), animations.end(), [](Object* obj) -> bool
 	//{
@@ -104,12 +92,8 @@ void BoneScene::Initialize()
 	//animator->SetNowAnimation(keyFrameAnimation);
 
 	//testModel->GetTransform()->SetLocalScale(0.01f, 0.01f, 0.01f);
-	//root = nullptr;
-	//if (skinnedMesh != nullptr)
-	//{
-	//	root = skinnedMesh->GetAvatar()->GetRoot();
-	//	//root->SetLocalScale(scale, scale, scale);
-	//}
+
+	
 	{
 		GameObject* obj = new GameObject();
 		TerrainSystem* terrainSystem = obj->AddComponent<TerrainSystem>();
@@ -241,14 +225,57 @@ void BoneScene::Update()
 	if (state == GLFW_PRESS && oldState == GLFW_RELEASE)
 	{
 		GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition(), 1);
-		obj->AddComponent<RigidBody>()->SetGeometry("default_Capsule", false);
+		PxGeometry* geom = ResourceManager::GetInstance().GetResource<PxGeometry>("default_Capsule");
+		obj->AddComponent<RigidBody>()->SetGeometry(geom, false);
 	}
 
 	state = glfwGetMouseButton(g_Window, GLFW_MOUSE_BUTTON_RIGHT);
 	if (state == GLFW_PRESS && oldState == GLFW_RELEASE)
 	{
-		GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition(), 1);
-		obj->AddComponent<RigidBody>()->SetGeometry("default_Box", false);
+		/*GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition(), 1);
+		PxGeometry* geom = ResourceManager::GetInstance().GetResource<PxGeometry>("default_Box");
+		obj->AddComponent<RigidBody>()->SetGeometry(geom, false);*/
+
+		float scale = 1.0f;
+		SkinnedMesh* skinnedMesh = nullptr;
+		GameObject* rootObject = nullptr;
+
+		for (int i = 0; i < meshes.size(); ++i)
+		{
+			Mesh* mesh = dynamic_cast<Mesh*>(meshes[i]);
+			if (mesh == nullptr)
+				continue;
+
+			if (dynamic_cast<SkinnedMesh*>(meshes[i]) != nullptr)
+				rootObject = TestObject(skinnedMesh = (SkinnedMesh*)mesh, skinnedMaterial, Camera::GetMainCamera()->GetTransform()->GetWorldPosition(), scale);
+			else
+				GameObject* obj = TestObject(mesh, material, Camera::GetMainCamera()->GetTransform()->GetWorldPosition(), scale);
+		}
+
+		root = nullptr;
+		if (skinnedMesh != nullptr)
+		{
+			root = skinnedMesh->GetAvatar()->GetRoot();
+
+			PhysXUtil::RagdollInfo ragdoll;
+
+			root->SetWorldPosition(Camera::GetMainCamera()->GetTransform()->GetWorldPosition());
+			ragdoll.Head = root->GetChildFromName("Character1_Head");
+			ragdoll.LeftArm = root->GetChildFromName("Character1_LeftArm");
+			ragdoll.LeftElbow = root->GetChildFromName("Character1_LeftForeArm");
+			ragdoll.LeftFoot = root->GetChildFromName("Character1_LeftFoot");
+			ragdoll.LeftHips = root->GetChildFromName("Character1_LeftUpLeg");
+			ragdoll.LeftKnee = root->GetChildFromName("Character1_LeftLeg");
+			ragdoll.RightArm = root->GetChildFromName("Character1_RightArm");
+			ragdoll.RightElbow = root->GetChildFromName("Character1_RightForeArm");
+			ragdoll.RightFoot = root->GetChildFromName("Character1_RightFoot");
+			ragdoll.RightHips = root->GetChildFromName("Character1_RightUpLeg");
+			ragdoll.RightKnee = root->GetChildFromName("Character1_RightLeg");
+			ragdoll.MiddleSpine = root->GetChildFromName("Character1_Spine1");
+			ragdoll.Pelvis = root->GetChildFromName("Character1_Hips");
+			PhysXUtil::MakeRagdoll("TestRagdoll", ragdoll);
+			//생성되는 GameObject전부 모아서 어케 해야것네.(Avatar의 BoneTransform 제어)
+		}
 	}
 	oldState = state;
 
@@ -267,7 +294,7 @@ void BoneScene::OnDrawGizmos()
 {
 	if (root == nullptr)
 		return;
-	/*std::stack<Transform*> transStack = std::stack<Transform*>();
+	std::stack<Transform*> transStack = std::stack<Transform*>();
 	transStack.push(root);
 
 	while (transStack.empty() == false)
@@ -285,5 +312,7 @@ void BoneScene::OnDrawGizmos()
 			if (child->GetChildCount() > 0)
 				transStack.push(child);
 		}
-	}*/
+	}
+
+	Gizmo::SetColor(1,1,1);
 }

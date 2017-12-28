@@ -19,5 +19,5 @@ public:
 	RigidBody() {}
 	~RigidBody() {}
 
-	RigidBody* SetGeometry(std::string meshKey, bool isStatic);
+	RigidBody* SetGeometry(PxGeometry* geometry, bool isStatic);
 };

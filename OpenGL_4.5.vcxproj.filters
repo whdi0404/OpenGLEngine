@@ -204,6 +204,9 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>FrameWork</Filter>
     </ClCompile>
+    <ClCompile Include="PhysXJoint.cpp">
+      <Filter>FrameWork\Object\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -346,6 +349,9 @@
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>FrameWork</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysXJoint.h">
+      <Filter>FrameWork\Object\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

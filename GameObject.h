@@ -14,6 +14,7 @@ class GameObject :
 	friend class Transform;
 public:
 	GameObject();
+	GameObject(std::string name);
 	~GameObject();
 
 	template<typename TComponent>
@@ -22,6 +23,7 @@ public:
 	template<typename TComponent>
 	TComponent* GetComponent();
 private:
+	void Init();
 	//void Update();
 
 private:

@@ -37,7 +37,7 @@ void SceneGraph::Update()
 		updates[i]->Update();
 	updateTime = Time::GetInstance().GetNowTimeSinceStart();
 
-	for each (auto& trans in Transform::movedTransform)
+	for (auto& trans : Transform::movedTransform)
 	{
 		trans->RecalcuateBoundingSphere(); 
 		SceneGraph::GetInstance().octree->ReallocateObject(trans->gameObject);

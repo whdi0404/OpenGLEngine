@@ -13,5 +13,5 @@ public:
 
 protected:
 	PxMaterial* pxMaterial;
-	PxRigidActor* pxRigidActor;
+	GetMacroProtected(PxRigidActor*, PxRigidActor, pxRigidActor);
 };

@@ -249,7 +249,7 @@ Octree::Enum_Location Octree::GetLocalLocCodeFromDirection(glm::vec3 dir)
 void Octree::FindObject(std::string& objectName, std::vector<GameObject*>& objectList)
 {
 	for(auto& octreeNode : Nodes)
-		for each(auto obj in octreeNode.list_RenderObjects)
+		for(auto obj : octreeNode.list_RenderObjects)
 			if(objectName == obj->GetName())
 				objectList.emplace_back(obj);
 }

@@ -171,6 +171,7 @@
     <ClCompile Include="MyGLUtil.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Octree.cpp" />
+    <ClCompile Include="PhysXJoint.cpp" />
     <ClCompile Include="PhysXManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="PhysXUtil.cpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="MyGLUtil.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Octree.h" />
+    <ClInclude Include="PhysXJoint.h" />
     <ClInclude Include="PhysXManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="PhysXUtil.h" />

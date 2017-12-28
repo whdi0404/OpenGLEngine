@@ -22,7 +22,8 @@ private:
 
 private:
 	std::vector<Transform*> v_Children;
-	Transform* parent;
+
+	GetMacro(Transform*, Parent, parent);
 	GetMacro(GameObject*, GameObject, gameObject);
 
 private:
@@ -48,8 +49,8 @@ public:
 public:
 
 	//Translate
-	Transform& SetPosition(float x, float y, float z);
-	Transform& SetPosition(glm::vec3 pos);
+	Transform& SetWorldPosition(float x, float y, float z);
+	Transform& SetWorldPosition(glm::vec3 pos);
 
 	Transform& AddWorldPosition(float dx, float dy, float dz);
 	Transform& AddWorldPosition(glm::vec3 delta);
@@ -141,6 +142,8 @@ public:
 	size_t GetChildCount() { return v_Children.size(); }
 
 	Transform* GetRoot();
+
+	Transform* GetChildFromName(std::string name);
 
 private:
 	void RecalcuateBoundingSphere();

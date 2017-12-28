@@ -22,7 +22,7 @@ Transform::~Transform()
 {
 }
 
-Transform & Transform::SetPosition(float x, float y, float z)
+Transform & Transform::SetWorldPosition(float x, float y, float z)
 {
 	glm::mat4x4 newWorldmat = worldMatrix;
 	newWorldmat[3][0] = x;
@@ -32,9 +32,9 @@ Transform & Transform::SetPosition(float x, float y, float z)
 	return *this;
 }
 
-Transform & Transform::SetPosition(glm::vec3 pos)
+Transform & Transform::SetWorldPosition(glm::vec3 pos)
 {
-	SetPosition(pos.x, pos.y, pos.z);
+	SetWorldPosition(pos.x, pos.y, pos.z);
 	return *this;
 }
 
@@ -263,11 +263,11 @@ Transform & Transform::UpdateTransform()
 		lossyScale = localScale;
 	}
 
-	if (noRecalculateChild == false)
-	{
+	//if (noRecalculateChild == false)
+	//{
 		for (int i = 0; i < v_Children.size(); ++i)
 			v_Children[i]->UpdateTransform();
-	}
+	//}
 
 	if (gameObject == nullptr)
 		return *this;
@@ -394,6 +394,30 @@ Transform * Transform::GetRoot()
 	return transform;
 }
 
+Transform * Transform::GetChildFromName(std::string name)
+{
+	std::stack<Transform*> transformStack;
+
+	transformStack.push(this);
+	while(transformStack.empty() == false)
+	{
+		Transform* trans = transformStack.top();
+		transformStack.pop();
+
+		if (trans->GetName() == name)
+			return trans;
+
+		if (trans->v_Children.size() != 0)
+		{
+			for (auto& child : trans->v_Children)
+			{
+				transformStack.push(child);
+			}
+		}
+	}
+	return nullptr;
+}
+
 void Transform::RecalcuateBoundingSphere()
 {
 	if (gameObject->renderObject != nullptr)
@@ -428,5 +452,5 @@ glm::mat3x3 Transform::GetLocalRotateMatrix() const
 
 glm::quat Transform::GetWorldQuaternion() const
 {
-	return glm::quat();
+	return glm::toQuat(worldMatrix);
 }

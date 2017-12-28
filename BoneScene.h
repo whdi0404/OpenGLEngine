@@ -28,4 +28,7 @@ public:
 	Object* sphereMesh;
 
 	GameObject* stressTest;
+
+	std::vector<Object*> meshes;
+	Material* skinnedMaterial;
 };
