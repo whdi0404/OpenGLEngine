@@ -71,6 +71,27 @@ glm::vec4 GetGLMVec4FromPxVec4(physx::PxVec4 pxVec4)
 	return glm::vec4(pxVec4.x, pxVec4.y, pxVec4.z, pxVec4.w);
 }
 
+physx::PxMat44 GetPxMatrixFromGLMMatrix(glm::mat4x4 glMat44)
+{
+	glm::mat4x4 tranGlMat44 = glMat44;
+
+	
+	PxMat44 pxMat44;
+	memcpy_s(&pxMat44, sizeof(PxMat44), &tranGlMat44, sizeof(glm::mat4x4));
+	
+	return pxMat44;
+}
+
+glm::mat4x4 GetGLMMatrixFrom(PxMat44 pxMat44)
+{
+	PxMat44 transPxMat44 = pxMat44;
+
+	 glm::mat4x4 glmMat44;
+	memcpy_s(&glmMat44, sizeof(PxMat44), &transPxMat44, sizeof(glm::mat4x4));
+
+	return glmMat44;
+}
+
 GLuint CreateShader(const char* file_path, GLenum shaderType)
 {
 	GLuint shaderID = glCreateShader(shaderType);

@@ -23,5 +23,5 @@ public:
 public:
 	PhysXJoint();
 	~PhysXJoint();
-	void LinkActor(Type type, RigidBody* rigidBodyA, PxTransform localFrameA, RigidBody* rigidBodyB, PxTransform localFrameB);
+	void LinkActor(Type type, RigidBody* rigidBodyA, RigidBody* rigidBodyB, glm::mat4x4 localMatA, glm::mat4x4 localMatB);
 };

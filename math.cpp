@@ -41,7 +41,7 @@ void FrustumG::setCamDef(Transform& trans)
 	// compute the Z axis of camera
 	// this axis points in the opposite direction from
 	// the looking direction
-	Z = trans.GetBack();
+	Z = -trans.GetForward();
 
 	// X axis of camera with given "up" vector and Z axis
 	X = trans.GetRight();

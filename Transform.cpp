@@ -32,28 +32,25 @@ Transform & Transform::SetWorldPosition(float x, float y, float z)
 	return *this;
 }
 
-Transform & Transform::SetWorldPosition(glm::vec3 pos)
+Transform & Transform::SetWorldPosition(glm::vec3 delta)
 {
-	SetWorldPosition(pos.x, pos.y, pos.z);
+	if (parent != nullptr)
+	{
+		glm::mat3x3 invRotMat = glm::inverse(GetWorldRotateMatrix());
+		localPosition += delta * invRotMat;
+	}
+	else
+	{
+		localPosition += delta;
+	}
+
+	UpdateTransform();
 	return *this;
 }
 
 Transform & Transform::AddWorldPosition(float dx, float dy, float dz)
 {
-	if (parent != nullptr)
-	{
-		localPosition += dx * worldRightAxis;
-		localPosition += dy * worldUpAxis;
-		localPosition += dz * worldForwardAxis;
-	}
-	else
-	{
-		localPosition.x += dx;
-		localPosition.y += dy;
-		localPosition.z += dz;
-	}
-	
-	UpdateTransform();
+	SetWorldPosition(glm::vec3(dx, dy, dz));
 	return *this;
 }
 
@@ -118,12 +115,12 @@ Transform & Transform::SetLocalScale(glm::vec3 scale)
 
 Transform & Transform::SetRotateLocal(const glm::quat & quaternion)
 {
-	SetRotateLocal(toMat4(quaternion));
+	SetRotateLocal(toMat3(quaternion));
 
 	return *this;
 }
 
-Transform & Transform::SetRotateLocal(const glm::mat4x4 & matRotation)
+Transform & Transform::SetRotateLocal(const glm::mat3x3 & matRotation)
 {
 	right = normalize(glm::vec3(
 		matRotation[0][0],
@@ -147,14 +144,14 @@ Transform & Transform::SetRotateLocal(const glm::mat4x4 & matRotation)
 
 Transform& Transform::SetRotateWorld(const glm::quat& quaternion)
 {
-	SetRotateWorld(toMat4(quaternion));
+	SetRotateWorld(toMat3(quaternion));
 	return *this;
 }
 
-Transform& Transform::SetRotateWorld(const glm::mat4x4& matRotation)
+Transform& Transform::SetRotateWorld(const glm::mat3x3& matRotation)
 {
 	if(parent != nullptr)
-		SetRotateLocal(inverse(parent->GetWorldMatrix()) * matRotation);
+		SetRotateLocal(inverse(parent->GetWorldRotateMatrix()) * matRotation);
 	else
 		SetRotateLocal(matRotation);
 	return *this;
@@ -339,9 +336,9 @@ Transform & Transform::SetLocalMatrix(glm::mat4x4 mat)
 	return *this;
 }
 
-glm::vec3 Transform::GetBack(bool bNormalize) const
+glm::vec3 Transform::GetForward(bool bNormalize) const
 {
-	return glm::normalize(glm::vec3(worldMatrix[2]));
+	return glm::normalize(-glm::vec3(worldMatrix[2]));
 }
 
 glm::vec3 Transform::GetUp(bool bNormalize) const

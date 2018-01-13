@@ -99,6 +99,8 @@ glm::vec3 GetGLMVec3FromPxVec3(physx::PxVec3 pxVec3);
 
 glm::vec4 GetGLMVec4FromPxVec4(physx::PxVec4 pxVec4);
 
+physx::PxMat44 GetPxMatrixFromGLMMatrix(glm::mat4x4 glMat44);
+
 GLuint CreateShader(const char* file_path, GLenum shaderType);
 
 GLuint AttachShaderToProgram(GLuint programID, GLuint count, ...);

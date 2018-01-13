@@ -67,10 +67,10 @@ public:
 
 	//Rotate
 	Transform& SetRotateLocal(const glm::quat& quaternion);
-	Transform& SetRotateLocal(const glm::mat4x4& matRotation);
+	Transform& SetRotateLocal(const glm::mat3x3& matRotation);
 
 	Transform& SetRotateWorld(const glm::quat& quaternion);
-	Transform& SetRotateWorld(const glm::mat4x4& matRotation);
+	Transform& SetRotateWorld(const glm::mat3x3& matRotation);
 
 	Transform& SetRotateAxisX(const glm::vec3& axis);
 	Transform& SetRotateAxisY(const glm::vec3& axis);
@@ -116,7 +116,7 @@ public:
 	Transform& SetLocalMatrix(glm::mat4x4 mat);
 
 	//축을 얻는다. 
-	glm::vec3 GetBack(bool bNormalize = true) const;
+	glm::vec3 GetForward(bool bNormalize = true) const;
 	glm::vec3 GetUp(bool bNormalize = true) const;
 	glm::vec3 GetRight(bool bNormalize = true) const;
 	void GetScaledAxies(glm::vec3* pVecArr) const;

@@ -18,6 +18,7 @@
 #include "TerrainCollider.h"
 #include "ResourceManager.h"
 #include "PhysXUtil.h"
+#include "PhysXJoint.h"
 
 BoneScene::BoneScene() : root(nullptr)
 {
@@ -221,22 +222,31 @@ void BoneScene::Update()
 	}
 
 	state = glfwGetMouseButton(g_Window, GLFW_MOUSE_BUTTON_LEFT);
-	static int oldState = GLFW_RELEASE;
-	if (state == GLFW_PRESS && oldState == GLFW_RELEASE)
+	static int leftOld = GLFW_RELEASE;
+	if (state == GLFW_PRESS && leftOld == GLFW_RELEASE)
 	{
-		GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition(), 1);
-		PxGeometry* geom = ResourceManager::GetInstance().GetResource<PxGeometry>("default_Capsule");
-		obj->AddComponent<RigidBody>()->SetGeometry(geom, false);
+		PxSceneWriteLock lock(*g_PhysXManager->GetScene());
+
+		PxGeometry* geom = ResourceManager::GetInstance().GetResource<PxGeometry>("default_Sphere");
+
+		GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition() + camera->GetTransform()->GetForward() * 2, 1);
+		RigidBody* rb = obj->AddComponent<RigidBody>()->SetGeometry(geom, false);
+		PxRigidDynamic* rigidDynamic = ((PxRigidDynamic*)rb->GetPxRigidActor());
+		rigidDynamic->setMass(300);
+
+		rigidDynamic->setLinearVelocity(GetPxVec3FromGLMVec3(camera->GetTransform()->GetForward()) * 100);
 	}
+	leftOld = state;
 
 	state = glfwGetMouseButton(g_Window, GLFW_MOUSE_BUTTON_RIGHT);
-	if (state == GLFW_PRESS && oldState == GLFW_RELEASE)
+	static int rightOld = GLFW_RELEASE;
+	if (state == GLFW_PRESS && rightOld == GLFW_RELEASE)
 	{
 		/*GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition(), 1);
 		PxGeometry* geom = ResourceManager::GetInstance().GetResource<PxGeometry>("default_Box");
 		obj->AddComponent<RigidBody>()->SetGeometry(geom, false);*/
 
-		float scale = 1.0f;
+		float scale = 0.05f;
 		SkinnedMesh* skinnedMesh = nullptr;
 		GameObject* rootObject = nullptr;
 
@@ -256,10 +266,10 @@ void BoneScene::Update()
 		if (skinnedMesh != nullptr)
 		{
 			root = skinnedMesh->GetAvatar()->GetRoot();
+			root->SetLocalScale(glm::vec3(scale,scale,scale));
+			root->SetWorldPosition(Camera::GetMainCamera()->GetTransform()->GetWorldPosition());
 
 			PhysXUtil::RagdollInfo ragdoll;
-
-			root->SetWorldPosition(Camera::GetMainCamera()->GetTransform()->GetWorldPosition());
 			ragdoll.Head = root->GetChildFromName("Character1_Head");
 			ragdoll.LeftArm = root->GetChildFromName("Character1_LeftArm");
 			ragdoll.LeftElbow = root->GetChildFromName("Character1_LeftForeArm");
@@ -277,7 +287,7 @@ void BoneScene::Update()
 			//생성되는 GameObject전부 모아서 어케 해야것네.(Avatar의 BoneTransform 제어)
 		}
 	}
-	oldState = state;
+	rightOld = state;
 
 	state = glfwGetKey(g_Window, GLFW_KEY_T);
 	/*if (state == GLFW_PRESS)
@@ -297,6 +307,7 @@ void BoneScene::OnDrawGizmos()
 	std::stack<Transform*> transStack = std::stack<Transform*>();
 	transStack.push(root);
 
+	float maxDist = 0;
 	while (transStack.empty() == false)
 	{
 		auto parent = transStack.top();
@@ -309,6 +320,9 @@ void BoneScene::OnDrawGizmos()
 			Gizmo::SetColor(float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f);
 			Gizmo::DrawLine(camera, parent->GetWorldPosition(), child->GetWorldPosition());
 
+			float dist = glm::distance(parent->GetWorldPosition(), child->GetWorldPosition());
+
+			maxDist = glm::max(maxDist, dist);
 			if (child->GetChildCount() > 0)
 				transStack.push(child);
 		}

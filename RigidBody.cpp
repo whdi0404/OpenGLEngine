@@ -3,7 +3,7 @@
 #include "Gizmo.h"
 #include "ResourceManager.h"
 
-RigidBody * RigidBody::SetGeometry(PxGeometry* geom, bool isStatic)
+RigidBody * RigidBody::SetGeometry(PxGeometry* geom, bool isStatic, glm::mat4x4 localPose)
 {
 	this->isStatic = isStatic;
 	geometry = geom;
@@ -15,10 +15,14 @@ RigidBody * RigidBody::SetGeometry(PxGeometry* geom, bool isStatic)
 	glm::quat rot = GetTransform()->GetWorldQuaternion();
 	PxQuat pxRot = PxQuat(rot.x, rot.y, rot.z, rot.w);
 
+	PxTransform localTransform = PxTransform(GetPxMatrixFromGLMMatrix(localPose));
+
 	if (isStatic)
 	{
 		PxRigidStatic* pxRigidStatic = g_PhysXManager->GetPhysics()->createRigidStatic(PxTransform(pxPos, pxRot));
 		PxShape* shape = PxRigidActorExt::createExclusiveShape(*pxRigidStatic, *geometry, *pxMaterial);
+
+		shape->setLocalPose(localTransform);
 
 		pxRigidActor = pxRigidStatic;
 	}
@@ -26,6 +30,8 @@ RigidBody * RigidBody::SetGeometry(PxGeometry* geom, bool isStatic)
 	{
 		PxRigidDynamic* pxRigidDynamic = g_PhysXManager->GetPhysics()->createRigidDynamic(PxTransform(pxPos, pxRot));
 		PxShape* shape = PxRigidActorExt::createExclusiveShape(*pxRigidDynamic, *geometry, *pxMaterial);
+
+		shape->setLocalPose(localTransform);
 
 		pxRigidDynamic->setRigidBodyFlag(PxRigidBodyFlag::eENABLE_CCD, true);
 		PxFilterData fd = shape->getSimulationFilterData();

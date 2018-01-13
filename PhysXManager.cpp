@@ -174,7 +174,6 @@ void PhysXManager::RenderData(Camera* camera, const PxRenderBuffer & data)
 {
 	glLineWidth(1.0f);
 	glDisable(GL_LIGHTING);
-
 	//----------Render Points------------------
 	unsigned int NbPoints = data.getNbPoints();
 	if (NbPoints)
@@ -207,45 +206,23 @@ void PhysXManager::RenderData(Camera* camera, const PxRenderBuffer & data)
 	unsigned int NbLines = data.getNbLines();
 	if (NbLines)
 	{
-		//float* pVertList = new float[NbLines * 3 * 2];
-		//float* pColorList = new float[NbLines * 4 * 2];
 		int vertIndex = 0;
 		int colorIndex = 0;
 		const PxDebugLine* Lines = data.getLines();
 
 		
 		convert_vec3 converter;
-		static std::vector<glm::vec3> lines;
-		//startTime = timeInstance.GetNowTimeSinceStart();
+		glm::vec3* lines = new glm::vec3[NbLines * 2]{};
+		int idx = 0;
 		while (NbLines--)
 		{
-			lines.emplace_back(std::move(converter(Lines->pos0)));
-			lines.emplace_back(std::move(converter(Lines->pos1)));
-			//pVertList[vertIndex++] = Lines->pos0.x;
-			//pVertList[vertIndex++] = Lines->pos0.y;
-			//pVertList[vertIndex++] = Lines->pos0.z;
-			//pColorList[colorIndex++] = (float)((Lines->color0 >> 16) & 0xff) / 255.0f;
-			//pColorList[colorIndex++] = (float)((Lines->color0 >> 8) & 0xff) / 255.0f;
-			//pColorList[colorIndex++] = (float)(Lines->color0 & 0xff) / 255.0f;
-			//pColorList[colorIndex++] = 1.0f;
-			//
-			//pVertList[vertIndex++] = Lines->pos1.x;
-			//pVertList[vertIndex++] = Lines->pos1.y;
-			//pVertList[vertIndex++] = Lines->pos1.z;
-			//pColorList[colorIndex++] = (float)((Lines->color0 >> 16) & 0xff) / 255.0f;
-			//pColorList[colorIndex++] = (float)((Lines->color0 >> 8) & 0xff) / 255.0f;
-			//pColorList[colorIndex++] = (float)(Lines->color0 & 0xff) / 255.0f;
-			//pColorList[colorIndex++] = 1.0f;
+			lines[idx++] = converter(Lines->pos0);
+			lines[idx++] = converter(Lines->pos1);
 
 			Lines++;
 		}
-		Gizmo::DrawLines(camera, lines);
-		lines.clear();
-
-		//RenderBuffer(pVertList, pColorList, GL_LINES, data.getNbLines() * 2);
-
-		//delete[] pVertList;
-		//delete[] pColorList;
+		Gizmo::DrawLines(camera, lines, idx - 1);
+		delete[] lines;
 	}
 
 

@@ -64,6 +64,20 @@ public:
 		oldPointPos = points[points.size() - 1];
 	}
 
+	static void DrawLines(Camera* cam, glm::vec3*& points, int count)
+	{
+		glBegin(GL_LINES);
+
+		for (int i=0;i < count;++i)
+		{
+			glm::vec4 camPosFrom = GetPointFromCamera(cam, points[i]);
+			glVertex4f(camPosFrom.x, camPosFrom.y, camPosFrom.z, camPosFrom.w);
+		}
+		glEnd();
+
+		oldPointPos = points[count - 1];
+	}
+
 	static void DrawLineFromPrevDot(Camera* cam, glm::vec3 to)
 	{
 		glBegin(GL_LINES);

@@ -19,5 +19,5 @@ public:
 	RigidBody() {}
 	~RigidBody() {}
 
-	RigidBody* SetGeometry(PxGeometry* geometry, bool isStatic);
+	RigidBody* SetGeometry(PxGeometry* geometry, bool isStatic, glm::mat4x4 localPose = glm::mat4());
 };
