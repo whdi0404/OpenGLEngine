@@ -65,7 +65,16 @@ void Renderer::Render(Octree* octree)
 				(*renderObjects.renderobjects)[k]->Update();*/
 			
 			matrixBuffer.clear();
-			(*renderObjects.renderobjects)[0]->Render(*renderObjects.renderobjects, cam);
+
+			if((*renderObjects.renderobjects)[0]->GetIsInstancing() == true)
+				(*renderObjects.renderobjects)[0]->Render(*renderObjects.renderobjects, cam);
+			else
+			{
+				for (auto& renderer : *renderObjects.renderobjects)
+				{
+					renderer->Render(cam);
+				}
+			}
 		}
 
 	}

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "PracticalRenderObject.h"
 
-PracticalRenderObject::PracticalRenderObject() : mesh(nullptr), material(nullptr), hashCode(-1), rendererVector(nullptr)
+PracticalRenderObject::PracticalRenderObject() : mesh(nullptr), material(nullptr), hashCode(-1), rendererVector(nullptr), isInstancing(true)
 {
 }
 

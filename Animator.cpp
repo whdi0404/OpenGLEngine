@@ -20,7 +20,7 @@ void Animator::Update()
 	nowTime += time;
 	while(nowTime >= nowAnimation->GetAnimationTime())
 		nowTime -= nowAnimation->GetAnimationTime();
-	avatar->Update(nowAnimation, nowTime);
+	avatar->UpdateAnimation(nowAnimation, nowTime);
 }
 
 void Animator::SetNowAnimation(KeyFrameAnimation * keyFrameAnim)

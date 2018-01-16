@@ -165,6 +165,12 @@ void Octree::CollectAllRenderer(RendererObjectCollector* renderObjCollector, Cam
 				auto& cullSphere = obj->GetCullSphere();
 				if (camera->frustum.sphereInFrustum(cullSphere) != FrustumG::OUTSIDE)
 					((PracticalRenderObject*)node.list_RenderObjects[i]->renderObject)->AddToVector();
+				else
+				{
+					int a = 0;
+					a++;
+					//std::cout << "" << std::endl;
+				}
 			}
 		}
 	}

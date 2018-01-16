@@ -21,11 +21,12 @@ public:
 	float speed;
 	float rotSpeed;
 
-	Transform* root;
+	Transform* avatarRoot;
 	Material* material;
 	Material* terrainMaterial;
 	std::vector<Object*> gunMesh;
 	Object* sphereMesh;
+	Avatar* avatar;
 
 	GameObject* stressTest;
 

@@ -1,10 +1,11 @@
 #pragma once
 #include "Object.h"
 #include "KeyFrameAnimation.h"
-class SkinnedMesh;
+
 class Avatar :
 	public Object
 {
+
 private:
 	static std::map<FbxNode*, int> checkOverlapBuffer;
 
@@ -26,7 +27,8 @@ public:
 	void CalculateHierarchy();
 	int GetBoneIndexFromNode(FbxNode* fbxNode);
 
-	void Update(KeyFrameAnimation* animation, float time);
+	void UpdateAnimation(KeyFrameAnimation* animation, float time);
+	void Update();
 
 	glm::mat4x4* GetRenderMatrices()
 	{
@@ -42,4 +44,6 @@ public:
 	{
 		return FBXHelper::LoadNodeKeyframeAnimation(scene, avatar, checkOverlapBuffer);
 	}
+
+	static Avatar* DuplicateAvatar(Avatar* avatar);
 };

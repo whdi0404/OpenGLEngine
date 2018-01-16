@@ -159,7 +159,7 @@ void PhysXManager::PreRender()
 
 void PhysXManager::DrawGizmos(Camera* camera)
 {
-	RenderData(camera, mScene->getRenderBuffer());
+	//RenderData(camera, mScene->getRenderBuffer());
 }
 
 struct convert_vec3

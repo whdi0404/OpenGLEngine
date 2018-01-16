@@ -173,6 +173,7 @@
     <ClCompile Include="Octree.cpp" />
     <ClCompile Include="PhysXJoint.cpp" />
     <ClCompile Include="PhysXManager.cpp" />
+    <ClCompile Include="Ragdoll.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="PhysXUtil.cpp" />
     <ClCompile Include="PracticalRenderObject.cpp" />
@@ -221,6 +222,7 @@
     <ClInclude Include="Octree.h" />
     <ClInclude Include="PhysXJoint.h" />
     <ClInclude Include="PhysXManager.h" />
+    <ClInclude Include="Ragdoll.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="PhysXUtil.h" />
     <ClInclude Include="PracticalRenderObject.h" />

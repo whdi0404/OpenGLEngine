@@ -60,7 +60,6 @@ void Avatar::LoadMeshCluster(FbxScene* scene, FbxMesh* mesh, FbxSkin* skin)
 				FbxNodeAttribute *nodeAttributeFbx = node->GetNodeAttributeByIndex(0);
 				FbxNodeAttribute::EType attributeType = nodeAttributeFbx->GetAttributeType();
 
-				std::cout << "what the: " << node->GetName() << ", Attr: " << attributeType << std::endl;
 				notAdded.insert(node);
 			}
 		}
@@ -96,15 +95,48 @@ int Avatar::GetBoneIndexFromNode(FbxNode * node)
 		return iter->second;
 }
 
-void Avatar::Update(KeyFrameAnimation* animation, float time)
+void Avatar::UpdateAnimation(KeyFrameAnimation* animation, float time)
 {
-	//double startTime = Time::GetInstance().GetNowTimeSinceStart();
-
 	for (int i = 0; i < boneTransforms.size(); ++i)
 		boneTransforms[i]->SetWorldMatrix(animation->GetMatrices(0, i, time));
 
-	//std::cout << " Animate: " << (Time::GetInstance().GetNowTimeSinceStart() - startTime) * 1000 << std::endl;
+	Update();
+}
+
+void Avatar::Update()
+{
 	for (int i = 0; i < renderMatrices.size(); ++i)
 		renderMatrices[i] = boneTransforms[i]->GetWorldMatrix() * deformMatrices[i];
+}
 
+Avatar* Avatar::DuplicateAvatar(Avatar * avatar)
+{
+	Avatar* newAvatar = new Avatar();
+
+	newAvatar->boneTransforms.reserve(avatar->boneTransforms.capacity());
+	for (auto& transform : avatar->boneTransforms)
+	{
+		Transform* newTransform = new Transform();
+		newTransform->SetName(transform->GetName());
+		newTransform->SetWorldMatrix(transform->GetWorldMatrix());
+		newAvatar->boneTransforms.emplace_back(newTransform);
+
+		if (transform == avatar->root)
+			newAvatar->root = newTransform;
+	}
+
+	for (int i = 0; i < avatar->boneTransforms.size(); ++i)
+	{
+		auto& transform = avatar->boneTransforms[i];
+		if (transform->GetParent() != nullptr)
+		{
+			int parentIndex = std::find(avatar->boneTransforms.begin(), avatar->boneTransforms.end(), transform->GetParent()) - avatar->boneTransforms.begin();
+			newAvatar->boneTransforms[i]->SetParent(newAvatar->boneTransforms[parentIndex]);
+		}
+	}
+
+	newAvatar->deformMatrices = std::vector<glm::mat4x4>(avatar->deformMatrices);
+	newAvatar->renderMatrices = std::vector<glm::mat4x4>(avatar->renderMatrices);
+
+	return newAvatar;
 }

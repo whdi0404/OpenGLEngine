@@ -248,7 +248,6 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 	{
 		SkinnedMesh* newMesh = new SkinnedMesh();
 		newMesh->SetName(fbxNode->GetName());
-		newMesh->SetAvatar(avatar);
 
 		std::vector<glm::vec4> boneWeights;
 		std::vector<glm::vec4> boneIndices;

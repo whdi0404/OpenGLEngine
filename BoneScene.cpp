@@ -19,8 +19,9 @@
 #include "ResourceManager.h"
 #include "PhysXUtil.h"
 #include "PhysXJoint.h"
+#include "Ragdoll.h"
 
-BoneScene::BoneScene() : root(nullptr)
+BoneScene::BoneScene() : avatarRoot(nullptr)
 {
 }
 
@@ -28,14 +29,15 @@ BoneScene::~BoneScene()
 {
 }
 
-GameObject* TestObject(Mesh* mesh, Material* material, glm::vec3 offset, float scale)
+GameObject* TestObject(std::string name, Mesh* mesh, Avatar* avatar, Material* material, glm::vec3 offset, float scale)
 {
-	GameObject* obj = new GameObject();
+	GameObject* obj = new GameObject(name);
 	if (dynamic_cast<SkinnedMesh*>(mesh) != nullptr)
 	{
 		SkinnedMeshRenderObject* skinnedMeshRenderer = obj->AddComponent<SkinnedMeshRenderObject>();
 		skinnedMeshRenderer->SetMaterial(material);
 		skinnedMeshRenderer->SetMesh(mesh);
+		skinnedMeshRenderer->SetAvatar(avatar);
 	}
 	else
 	{
@@ -53,7 +55,7 @@ void BoneScene::Initialize()
 {
 	InitResource();
 
-	speed = 10.0f;
+	speed = 200.0f;
 	rotSpeed = 120.0f;
 	camera = (new GameObject())->AddComponent<Camera>();
 
@@ -74,6 +76,7 @@ void BoneScene::Initialize()
 	//TestObject((Mesh*)meshes[0], material, vec3(), 1);
 
 	meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.fbx", modelMatrix);
+	avatar = (Avatar*)*std::find_if(meshes.begin(), meshes.end(), [](Object* obj) {return dynamic_cast<Avatar*>(obj) != nullptr; });
 	//std::vector<Object*> animations = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_RUN00_F.fbx", modelMatrix);//Unitychan Animation/unitychan_RUN00_F.fbx
 	gunMesh = FBXHelper::GetResourcesFromFile("./Models/Barrett.FBX", modelMatrix);
 	sphereMesh = FBXHelper::GetResourcesFromFile("./Models/Sphere.FBX", modelMatrix)[0];
@@ -101,15 +104,14 @@ void BoneScene::Initialize()
 
 		Shader* tessellationShader = new Shader("./Shaders/TessVetexShader.glsl", "./Shaders/TessFragmentShader.glsl",
 			"./Shaders/TessCtrlShader.glsl", "./Shaders/TessEvelShader.glsl");
-		float heightScale = 20;
-		float tileScale = 1;
-
+		float heightScale = 100;
+		float tileScale = 10;
 
 		Texture2D* heightMap = new Texture2D("./Tex/terrain-heightmap.bmp"/*cDsYZ.jpg*/);
 		terrainMaterial = new Material(tessellationShader, 1);
 		terrainMaterial->SetTexture(std::string("heightMap"), heightMap);
 		terrainSystem->SetMaterial(terrainMaterial);
-		terrainSystem->CreateMesh(heightMap, /*0.03125f*/tileScale, heightScale, 4);
+		terrainSystem->CreateMesh(heightMap, /*0.03125f*/tileScale, heightScale, 8);
 
 		obj->AddComponent<TerrainCollider>();
 
@@ -148,7 +150,7 @@ void BoneScene::InitResource()
 	Mesh* box_Mesh = (Mesh*)FBXHelper::GetResourcesFromFile("./Models/Box.fbx")[0];
 	ResourceManager::GetInstance().AddPxConvexMeshGeometryResource("box_Mesh", box_Mesh, PxVec3(0.01f, 0.01f, 0.01f));
 
-	ResourceManager::GetInstance().AddPxSphereGeometryResource("default_Sphere", 0.5f);
+	ResourceManager::GetInstance().AddPxSphereGeometryResource("default_Sphere", 2.5f);
 	ResourceManager::GetInstance().AddPxCapsuleGeometryResource("default_Capsule", 0.5f, 0.5f);
 	ResourceManager::GetInstance().AddPxBoxGeometryResource("default_Box", glm::vec3(0.5f, 0.5f, 0.5f));
 }
@@ -227,14 +229,18 @@ void BoneScene::Update()
 	{
 		PxSceneWriteLock lock(*g_PhysXManager->GetScene());
 
+
+		GameObject* renderer = TestObject("renderer", (Mesh*)sphereMesh, nullptr, material, glm::vec3(0,0,0), 5);
+		GameObject* rigid = new GameObject("ball");
+		rigid->GetTransform()->AddChild(renderer->GetTransform(), false);
+		rigid->GetTransform()->SetWorldPosition(camera->GetTransform()->GetWorldPosition() + camera->GetTransform()->GetForward() * 2);
+		
 		PxGeometry* geom = ResourceManager::GetInstance().GetResource<PxGeometry>("default_Sphere");
-
-		GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition() + camera->GetTransform()->GetForward() * 2, 1);
-		RigidBody* rb = obj->AddComponent<RigidBody>()->SetGeometry(geom, false);
+		RigidBody* rb = rigid->AddComponent<RigidBody>()->SetGeometry(geom, false);
 		PxRigidDynamic* rigidDynamic = ((PxRigidDynamic*)rb->GetPxRigidActor());
-		rigidDynamic->setMass(300);
+		rigidDynamic->setMass(50);
 
-		rigidDynamic->setLinearVelocity(GetPxVec3FromGLMVec3(camera->GetTransform()->GetForward()) * 100);
+		rigidDynamic->setLinearVelocity(GetPxVec3FromGLMVec3(camera->GetTransform()->GetForward()) * 220);
 	}
 	leftOld = state;
 
@@ -242,50 +248,51 @@ void BoneScene::Update()
 	static int rightOld = GLFW_RELEASE;
 	if (state == GLFW_PRESS && rightOld == GLFW_RELEASE)
 	{
-		/*GameObject* obj = TestObject((Mesh*)sphereMesh, material, camera->GetTransform()->GetWorldPosition(), 1);
-		PxGeometry* geom = ResourceManager::GetInstance().GetResource<PxGeometry>("default_Box");
-		obj->AddComponent<RigidBody>()->SetGeometry(geom, false);*/
+		float scale = 0.1f;
+		GameObject* rootObject = new GameObject("char");
+		rootObject->GetTransform()->SetLocalPosition(Camera::GetMainCamera()->GetTransform()->GetWorldPosition());
+		rootObject->GetTransform()->SetLocalScale(glm::vec3(scale, scale, scale));
 
-		float scale = 0.05f;
-		SkinnedMesh* skinnedMesh = nullptr;
-		GameObject* rootObject = nullptr;
+		Avatar* dupAvatar = Avatar::DuplicateAvatar(avatar);
 
 		for (int i = 0; i < meshes.size(); ++i)
 		{
 			Mesh* mesh = dynamic_cast<Mesh*>(meshes[i]);
 			if (mesh == nullptr)
 				continue;
-
+			GameObject* obj = nullptr;
 			if (dynamic_cast<SkinnedMesh*>(meshes[i]) != nullptr)
-				rootObject = TestObject(skinnedMesh = (SkinnedMesh*)mesh, skinnedMaterial, Camera::GetMainCamera()->GetTransform()->GetWorldPosition(), scale);
+				obj = TestObject("bone", (SkinnedMesh*)mesh, dupAvatar, skinnedMaterial, glm::vec3(0,0,0), 1);
 			else
-				GameObject* obj = TestObject(mesh, material, Camera::GetMainCamera()->GetTransform()->GetWorldPosition(), scale);
-		}
+				obj = TestObject("boneMesh", mesh, nullptr, material, glm::vec3(0, 0, 0), 1);
 
-		root = nullptr;
-		if (skinnedMesh != nullptr)
-		{
-			root = skinnedMesh->GetAvatar()->GetRoot();
-			root->SetLocalScale(glm::vec3(scale,scale,scale));
-			root->SetWorldPosition(Camera::GetMainCamera()->GetTransform()->GetWorldPosition());
-
-			PhysXUtil::RagdollInfo ragdoll;
-			ragdoll.Head = root->GetChildFromName("Character1_Head");
-			ragdoll.LeftArm = root->GetChildFromName("Character1_LeftArm");
-			ragdoll.LeftElbow = root->GetChildFromName("Character1_LeftForeArm");
-			ragdoll.LeftFoot = root->GetChildFromName("Character1_LeftFoot");
-			ragdoll.LeftHips = root->GetChildFromName("Character1_LeftUpLeg");
-			ragdoll.LeftKnee = root->GetChildFromName("Character1_LeftLeg");
-			ragdoll.RightArm = root->GetChildFromName("Character1_RightArm");
-			ragdoll.RightElbow = root->GetChildFromName("Character1_RightForeArm");
-			ragdoll.RightFoot = root->GetChildFromName("Character1_RightFoot");
-			ragdoll.RightHips = root->GetChildFromName("Character1_RightUpLeg");
-			ragdoll.RightKnee = root->GetChildFromName("Character1_RightLeg");
-			ragdoll.MiddleSpine = root->GetChildFromName("Character1_Spine1");
-			ragdoll.Pelvis = root->GetChildFromName("Character1_Hips");
-			PhysXUtil::MakeRagdoll("TestRagdoll", ragdoll);
-			//생성되는 GameObject전부 모아서 어케 해야것네.(Avatar의 BoneTransform 제어)
+			rootObject->GetTransform()->AddChild(obj->GetTransform(), false);
 		}
+		rootObject->GetTransform()->SetWorldPosition(camera->GetTransform()->GetWorldPosition() + camera->GetTransform()->GetForward() * 30);
+		rootObject->GetTransform()->SetRotateWorld(camera->GetTransform()->GetWorldQuaternion());
+
+		Ragdoll* ragdoll = rootObject->AddComponent<Ragdoll>();
+		ragdoll->SetAvatar(dupAvatar);
+
+		avatarRoot = dupAvatar->GetRoot();
+		//root->SetWorldPosition(Camera::GetMainCamera()->GetTransform()->GetWorldPosition());
+
+		RagdollInfo ragdollInfo;
+		ragdollInfo.Head = avatarRoot->GetChildFromName("Character1_Head");
+		ragdollInfo.LeftArm = avatarRoot->GetChildFromName("Character1_LeftArm");
+		ragdollInfo.LeftElbow = avatarRoot->GetChildFromName("Character1_LeftForeArm");
+		ragdollInfo.LeftFoot = avatarRoot->GetChildFromName("Character1_LeftFoot");
+		ragdollInfo.LeftHips = avatarRoot->GetChildFromName("Character1_LeftUpLeg");
+		ragdollInfo.LeftKnee = avatarRoot->GetChildFromName("Character1_LeftLeg");
+		ragdollInfo.RightArm = avatarRoot->GetChildFromName("Character1_RightArm");
+		ragdollInfo.RightElbow = avatarRoot->GetChildFromName("Character1_RightForeArm");
+		ragdollInfo.RightFoot = avatarRoot->GetChildFromName("Character1_RightFoot");
+		ragdollInfo.RightHips = avatarRoot->GetChildFromName("Character1_RightUpLeg");
+		ragdollInfo.RightKnee = avatarRoot->GetChildFromName("Character1_RightLeg");
+		ragdollInfo.MiddleSpine = avatarRoot->GetChildFromName("Character1_Spine1");
+		ragdollInfo.Pelvis = avatarRoot->GetChildFromName("Character1_Hips");
+		ragdoll->MakeRagdoll("TestRagdoll", ragdollInfo);
+		//생성되는 GameObject전부 모아서 어케 해야것네.(Avatar의 BoneTransform 제어)
 	}
 	rightOld = state;
 
@@ -302,10 +309,10 @@ void BoneScene::Update()
 
 void BoneScene::OnDrawGizmos()
 {
-	if (root == nullptr)
+	if (avatarRoot == nullptr)
 		return;
 	std::stack<Transform*> transStack = std::stack<Transform*>();
-	transStack.push(root);
+	transStack.push(avatarRoot);
 
 	float maxDist = 0;
 	while (transStack.empty() == false)

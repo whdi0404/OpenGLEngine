@@ -6,20 +6,17 @@
 
 SkinnedMeshRenderObject::SkinnedMeshRenderObject()
 {
+	isInstancing = false;
 }
-
 
 SkinnedMeshRenderObject::~SkinnedMeshRenderObject()
 {
 }
 
-void SkinnedMeshRenderObject::Render(std::vector<PracticalRenderObject*>& renderObjects, Camera*& camera)
+void SkinnedMeshRenderObject::Render(Camera*& camera)
 {
-	for (int i = 0; i < renderObjects.size(); ++i)
-	{
-		g_Renderer->matrixBuffer.emplace_back(renderObjects[i]->GetTransform()->GetWorldMatrix());
-	}
 	Material* mtrl = GetMaterial();
+	
 	if (g_Renderer->prevMtrl != mtrl)
 	{
 		g_Renderer->prevMtrl = mtrl;
@@ -27,13 +24,9 @@ void SkinnedMeshRenderObject::Render(std::vector<PracticalRenderObject*>& render
 		mtrl->SetCameraMatrix(camera);
 	}
 
-	SkinnedMesh* skinnedMesh = dynamic_cast<SkinnedMesh*>(mesh);
-	if (skinnedMesh != nullptr)
-	{
-		int boneCount = skinnedMesh->GetAvatar()->GetBoneCount();
-		mtrl->SetMatrix4x4(std::string("matBones"), skinnedMesh->GetAvatar()->GetRenderMatrices(), boneCount);
-	}
-
+	mtrl->SetMatrix4x4(std::string("matWorld"), &(GetTransform()->GetWorldMatrix()), 1);
+	mtrl->SetMatrix4x4(std::string("matBones"), avatar->GetRenderMatrices(), avatar->GetBoneCount());
 	mtrl->BindUniformValue();
-	GetMesh()->DrawInstance(g_Renderer->matrixBuffer.data(), g_Renderer->matrixBuffer.size());
+
+	GetMesh()->Draw();
 }

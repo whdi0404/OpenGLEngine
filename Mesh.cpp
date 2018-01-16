@@ -80,3 +80,21 @@ void Mesh::DrawInstance(glm::mat4x4* pMat, int count)
 
 	glBindVertexArray(0);
 }
+
+void Mesh::Draw()
+{
+	glBindVertexArray(vertexArrayID);
+
+	//BindMatrix
+	glBindBuffer(GL_ARRAY_BUFFER, matrixBufferID);
+
+	//Draw
+	glDrawElements(
+		drawMode,      // mode
+		indices.size(),    // count
+		GL_UNSIGNED_INT,   // type
+		(void*)0
+	);
+
+	glBindVertexArray(0);
+}

@@ -9,7 +9,7 @@ void TerrainCollider::Initialize()
 {
 	terrain = GetComponent<TerrainSystem>();
 	tessellationFactor = 2;
-	clusterCellCount = 128;
+	clusterCellCount = 4;
 	clusterScale = terrain->GetTileScale() / tessellationFactor * clusterCellCount;
 
 	CreateCollider();
@@ -25,7 +25,7 @@ void TerrainCollider::Update()
 
 		float len = glm::length(glm::vec2(camPos.x, camPos.z) - (glm::vec2(pos.x, pos.z) + clusterScale * 0.5f));
 
-		if (len < 64)
+		if (len < 48 * terrain->GetTileScale())
 		{
 			if(heightCollider->getScene() == nullptr)
 				g_PhysXManager->GetScene()->addActor(*heightCollider);

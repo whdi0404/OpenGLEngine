@@ -24,6 +24,7 @@ public:
 public:
 	virtual void SetMeshData(VertexBuffer* vertexBuffer, std::vector<int>& indices);
 	virtual void DrawInstance(glm::mat4x4* pMat, int count);
+	virtual void Draw();
 
 protected:
 	GetSetMacroProtected(VertexBuffer*, VertexBuffer, vertexBuffer);

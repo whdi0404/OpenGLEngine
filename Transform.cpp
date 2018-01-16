@@ -32,16 +32,16 @@ Transform & Transform::SetWorldPosition(float x, float y, float z)
 	return *this;
 }
 
-Transform & Transform::SetWorldPosition(glm::vec3 delta)
+Transform & Transform::SetWorldPosition(glm::vec3 pos)
 {
 	if (parent != nullptr)
 	{
 		glm::mat3x3 invRotMat = glm::inverse(GetWorldRotateMatrix());
-		localPosition += delta * invRotMat;
+		localPosition = pos * invRotMat;
 	}
 	else
 	{
-		localPosition += delta;
+		localPosition = pos;
 	}
 
 	UpdateTransform();
@@ -50,7 +50,7 @@ Transform & Transform::SetWorldPosition(glm::vec3 delta)
 
 Transform & Transform::AddWorldPosition(float dx, float dy, float dz)
 {
-	SetWorldPosition(glm::vec3(dx, dy, dz));
+	SetWorldPosition(worldPosition + glm::vec3(dx, dy, dz));
 	return *this;
 }
 

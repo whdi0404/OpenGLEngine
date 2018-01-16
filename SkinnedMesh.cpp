@@ -10,8 +10,3 @@ SkinnedMesh::SkinnedMesh()
 SkinnedMesh::~SkinnedMesh()
 {
 }
-
-void SkinnedMesh::SetAvatar(Avatar * avatar)
-{
-	this->avatar = avatar;
-}

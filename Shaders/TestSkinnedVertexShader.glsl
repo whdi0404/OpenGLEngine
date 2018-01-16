@@ -6,6 +6,7 @@ layout(location = 2) in vec4 boneWeights;
 layout(location = 3) in vec4 boneIndices;
 layout(location = 4) in mat4 matModel;
 
+uniform mat4 matWorld;
 uniform mat4 matView;
 uniform mat4 matProj;
 uniform sampler2D heightMap;
@@ -32,8 +33,6 @@ void main()
     index = int(round(boneIndices.w));
 	newMat += matBones[index] * boneWeights.w;
 
-	vec4 newVertex = newMat * pos;
-
-	gl_Position = matProj * matView * matModel * newVertex;
+	gl_Position = matProj * matView * matWorld * newMat * pos;
 	vs_out.uv = vertexUV;
 }

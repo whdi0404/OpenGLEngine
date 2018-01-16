@@ -46,12 +46,10 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileScale, float heigh
 			
 			glm::vec3 pos = glm::vec3(x * tileScale * tessellateCount, GetHeight(glm::vec2((float)x / width, (float)y / height)), y * tileScale * tessellateCount);
 
-			//1.0078125
-			//1.00390625
-			float a = ((texW + tessellateCount) / texW);
-			a = 1 + ((a - 1.0f) * (tessellateCount - 1.0f) / tessellateCount);
+			float tessError = ((texW + tessellateCount) / texW);
+			tessError = 1 + ((tessError - 1.0f) * (tessellateCount - 1.0f) / tessellateCount);
 			newVertexBuffer->SetVector(Element::Position, arrayIdx, glm::vec4(pos.x, pos.y, pos.z, 0));
-			newVertexBuffer->SetVector(Element::Texcoord0, arrayIdx, glm::vec4((float(x)) / (width) * a, (float(y)) / (height) * a, 0, 0));
+			newVertexBuffer->SetVector(Element::Texcoord0, arrayIdx, glm::vec4((float(x)) / (width) * tessError, (float(y)) / (height) * tessError, 0, 0));
 		}
 	}
 
