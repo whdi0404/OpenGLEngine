@@ -77,14 +77,14 @@ void BoneScene::Initialize()
 
 	meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.fbx", modelMatrix);
 	avatar = (Avatar*)*std::find_if(meshes.begin(), meshes.end(), [](Object* obj) {return dynamic_cast<Avatar*>(obj) != nullptr; });
-	//std::vector<Object*> animations = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_RUN00_F.fbx", modelMatrix);//Unitychan Animation/unitychan_RUN00_F.fbx
+	std::vector<Object*> animations = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_RUN00_F.fbx", modelMatrix);//Unitychan Animation/unitychan_RUN00_F.fbx
 	gunMesh = FBXHelper::GetResourcesFromFile("./Models/Barrett.FBX", modelMatrix);
 	sphereMesh = FBXHelper::GetResourcesFromFile("./Models/Sphere.FBX", modelMatrix)[0];
 
-	//KeyFrameAnimation* keyFrameAnimation = (KeyFrameAnimation*)(*std::find_if(animations.begin(), animations.end(), [](Object* obj) -> bool
-	//{
-	//	return dynamic_cast<KeyFrameAnimation*>(obj) != nullptr;
-	//}));
+	keyFrameAnimation = (KeyFrameAnimation*)(*std::find_if(animations.begin(), animations.end(), [](Object* obj) -> bool
+	{
+		return dynamic_cast<KeyFrameAnimation*>(obj) != nullptr;
+	}));
 	//
 	//Avatar* avatar = (Avatar*)(*std::find_if(meshes.begin(), meshes.end(), [](Object* obj) -> bool
 	//{
@@ -227,11 +227,10 @@ void BoneScene::Update()
 	static int leftOld = GLFW_RELEASE;
 	if (state == GLFW_PRESS && leftOld == GLFW_RELEASE)
 	{
-		PxSceneWriteLock lock(*g_PhysXManager->GetScene());
+		//PxSceneWriteLock lock(*g_PhysXManager->GetScene());
 
-
-		GameObject* renderer = TestObject("renderer", (Mesh*)sphereMesh, nullptr, material, glm::vec3(0,0,0), 5);
-		GameObject* rigid = new GameObject("ball");
+		GameObject* renderer = TestObject("renderer", (Mesh*)sphereMesh, nullptr, material, /*glm::vec3(0,0,0)*/camera->GetTransform()->GetWorldPosition() + camera->GetTransform()->GetForward() * 2, 5);
+		/*GameObject* rigid = new GameObject("ball");
 		rigid->GetTransform()->AddChild(renderer->GetTransform(), false);
 		rigid->GetTransform()->SetWorldPosition(camera->GetTransform()->GetWorldPosition() + camera->GetTransform()->GetForward() * 2);
 		
@@ -240,7 +239,7 @@ void BoneScene::Update()
 		PxRigidDynamic* rigidDynamic = ((PxRigidDynamic*)rb->GetPxRigidActor());
 		rigidDynamic->setMass(50);
 
-		rigidDynamic->setLinearVelocity(GetPxVec3FromGLMVec3(camera->GetTransform()->GetForward()) * 220);
+		rigidDynamic->setLinearVelocity(GetPxVec3FromGLMVec3(camera->GetTransform()->GetForward()) * 220);*/
 	}
 	leftOld = state;
 
@@ -262,7 +261,7 @@ void BoneScene::Update()
 				continue;
 			GameObject* obj = nullptr;
 			if (dynamic_cast<SkinnedMesh*>(meshes[i]) != nullptr)
-				obj = TestObject("bone", (SkinnedMesh*)mesh, dupAvatar, skinnedMaterial, glm::vec3(0,0,0), 1);
+				obj = TestObject("bone", (SkinnedMesh*)mesh, dupAvatar, skinnedMaterial, glm::vec3(0, 0, 0), 1);
 			else
 				obj = TestObject("boneMesh", mesh, nullptr, material, glm::vec3(0, 0, 0), 1);
 
@@ -271,27 +270,31 @@ void BoneScene::Update()
 		rootObject->GetTransform()->SetWorldPosition(camera->GetTransform()->GetWorldPosition() + camera->GetTransform()->GetForward() * 30);
 		rootObject->GetTransform()->SetRotateWorld(camera->GetTransform()->GetWorldQuaternion());
 
-		Ragdoll* ragdoll = rootObject->AddComponent<Ragdoll>();
-		ragdoll->SetAvatar(dupAvatar);
+		/*Animator* animator = rootObject->AddComponent<Animator>();
+		animator->SetAvatar(dupAvatar);
+		animator->SetNowAnimation(keyFrameAnimation);*/
 
-		avatarRoot = dupAvatar->GetRoot();
-		//root->SetWorldPosition(Camera::GetMainCamera()->GetTransform()->GetWorldPosition());
-
-		RagdollInfo ragdollInfo;
-		ragdollInfo.Head = avatarRoot->GetChildFromName("Character1_Head");
-		ragdollInfo.LeftArm = avatarRoot->GetChildFromName("Character1_LeftArm");
-		ragdollInfo.LeftElbow = avatarRoot->GetChildFromName("Character1_LeftForeArm");
-		ragdollInfo.LeftFoot = avatarRoot->GetChildFromName("Character1_LeftFoot");
-		ragdollInfo.LeftHips = avatarRoot->GetChildFromName("Character1_LeftUpLeg");
-		ragdollInfo.LeftKnee = avatarRoot->GetChildFromName("Character1_LeftLeg");
-		ragdollInfo.RightArm = avatarRoot->GetChildFromName("Character1_RightArm");
-		ragdollInfo.RightElbow = avatarRoot->GetChildFromName("Character1_RightForeArm");
-		ragdollInfo.RightFoot = avatarRoot->GetChildFromName("Character1_RightFoot");
-		ragdollInfo.RightHips = avatarRoot->GetChildFromName("Character1_RightUpLeg");
-		ragdollInfo.RightKnee = avatarRoot->GetChildFromName("Character1_RightLeg");
-		ragdollInfo.MiddleSpine = avatarRoot->GetChildFromName("Character1_Spine1");
-		ragdollInfo.Pelvis = avatarRoot->GetChildFromName("Character1_Hips");
-		ragdoll->MakeRagdoll("TestRagdoll", ragdollInfo);
+		//Ragdoll* ragdoll = rootObject->AddComponent<Ragdoll>();
+		//ragdoll->SetAvatar(dupAvatar);
+		//
+		//avatarRoot = dupAvatar->GetRoot();
+		////root->SetWorldPosition(Camera::GetMainCamera()->GetTransform()->GetWorldPosition());
+		//
+		//RagdollInfo ragdollInfo;
+		//ragdollInfo.Head = avatarRoot->GetChildFromName("Character1_Head");
+		//ragdollInfo.LeftArm = avatarRoot->GetChildFromName("Character1_LeftArm");
+		//ragdollInfo.LeftElbow = avatarRoot->GetChildFromName("Character1_LeftForeArm");
+		//ragdollInfo.LeftFoot = avatarRoot->GetChildFromName("Character1_LeftFoot");
+		//ragdollInfo.LeftHips = avatarRoot->GetChildFromName("Character1_LeftUpLeg");
+		//ragdollInfo.LeftKnee = avatarRoot->GetChildFromName("Character1_LeftLeg");
+		//ragdollInfo.RightArm = avatarRoot->GetChildFromName("Character1_RightArm");
+		//ragdollInfo.RightElbow = avatarRoot->GetChildFromName("Character1_RightForeArm");
+		//ragdollInfo.RightFoot = avatarRoot->GetChildFromName("Character1_RightFoot");
+		//ragdollInfo.RightHips = avatarRoot->GetChildFromName("Character1_RightUpLeg");
+		//ragdollInfo.RightKnee = avatarRoot->GetChildFromName("Character1_RightLeg");
+		//ragdollInfo.MiddleSpine = avatarRoot->GetChildFromName("Character1_Spine1");
+		//ragdollInfo.Pelvis = avatarRoot->GetChildFromName("Character1_Hips");
+		//ragdoll->MakeRagdoll("TestRagdoll", ragdollInfo);
 		//생성되는 GameObject전부 모아서 어케 해야것네.(Avatar의 BoneTransform 제어)
 	}
 	rightOld = state;
@@ -305,35 +308,4 @@ void BoneScene::Update()
 			macMove500(stressTest);
 		std::cout << "CalcTransform: " << (TimeManager.GetNowTimeSinceStart() - startTime) * 1000 << "ms" << std::endl;
 	}*/
-}
-
-void BoneScene::OnDrawGizmos()
-{
-	if (avatarRoot == nullptr)
-		return;
-	std::stack<Transform*> transStack = std::stack<Transform*>();
-	transStack.push(avatarRoot);
-
-	float maxDist = 0;
-	while (transStack.empty() == false)
-	{
-		auto parent = transStack.top();
-		transStack.pop();
-
-		for (int i = 0; i < parent->GetChildCount(); ++i)
-		{
-			auto child = parent->GetChild(i);
-
-			Gizmo::SetColor(float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f, float((rand() % 255)) / 255.0f);
-			Gizmo::DrawLine(camera, parent->GetWorldPosition(), child->GetWorldPosition());
-
-			float dist = glm::distance(parent->GetWorldPosition(), child->GetWorldPosition());
-
-			maxDist = glm::max(maxDist, dist);
-			if (child->GetChildCount() > 0)
-				transStack.push(child);
-		}
-	}
-
-	Gizmo::SetColor(1,1,1);
 }

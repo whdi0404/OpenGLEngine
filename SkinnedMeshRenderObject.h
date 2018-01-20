@@ -5,11 +5,13 @@ class SkinnedMeshRenderObject :
 {
 private:
 	GetSetMacro(Avatar*, Avatar, avatar);
+	static glm::mat4x4* skinnedMatrixBuffer;
+	static int bufferSize;
 
 public:
 	SkinnedMeshRenderObject();
 	~SkinnedMeshRenderObject();
 
-	void Render(Camera*& camera);
+	void Render(std::vector<PracticalRenderObject*>& renderObjects, Camera*& camera);
 };
 

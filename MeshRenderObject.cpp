@@ -24,7 +24,5 @@ void MeshRenderObject::Render(std::vector<PracticalRenderObject*>& renderObjects
 		mtrl->BindShader();
 		mtrl->SetCameraMatrix(camera);
 	}
-
-	mtrl->BindUniformValue();
 	mesh->DrawInstance(g_Renderer->matrixBuffer.data(), g_Renderer->matrixBuffer.size());
 }

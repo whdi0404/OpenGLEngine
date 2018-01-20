@@ -1,4 +1,4 @@
-#version 410 core
+#version 430 core
 
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec2 vertexUV;
@@ -6,11 +6,15 @@ layout(location = 2) in vec4 boneWeights;
 layout(location = 3) in vec4 boneIndices;
 layout(location = 4) in mat4 matModel;
 
-uniform mat4 matWorld;
 uniform mat4 matView;
 uniform mat4 matProj;
 uniform sampler2D heightMap;
-uniform mat4 matBones[200];
+uniform int boneCount;
+
+layout(std430, binding = 1) readonly buffer ssbo1
+{
+    mat4 matBones[];
+}bones;
 
 out VS_OUT
 {
@@ -22,17 +26,17 @@ void main()
 	vec4 pos = vec4(vertexPosition_modelspace, 1);
 
 	int index = int(round(boneIndices.x));
-	mat4x4 newMat = matBones[index] * boneWeights.x;
+	mat4x4 newMat = bones.matBones[boneCount * gl_InstanceID + index] * boneWeights.x;
        
     index = int(round(boneIndices.y));
-	newMat += matBones[index] * boneWeights.y;
+	newMat += bones.matBones[boneCount * gl_InstanceID + index] * boneWeights.y;
 	
     index = int(round(boneIndices.z));
-	newMat += matBones[index] * boneWeights.z;
+	newMat += bones.matBones[boneCount * gl_InstanceID + index] * boneWeights.z;
 	
     index = int(round(boneIndices.w));
-	newMat += matBones[index] * boneWeights.w;
+	newMat += bones.matBones[boneCount * gl_InstanceID + index] * boneWeights.w;
 
-	gl_Position = matProj * matView * matWorld * newMat * pos;
+	gl_Position = matProj * matView * matModel * newMat * pos;
 	vs_out.uv = vertexUV;
 }

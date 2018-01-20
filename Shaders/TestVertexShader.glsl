@@ -15,6 +15,5 @@ out VS_OUT
 void main()
 {
 	gl_Position = matProj * matView * matModel * vec4(vertexPosition_modelspace, 1);
-
 	vs_out.uv = vertexUV;
 }

@@ -91,7 +91,6 @@ Transform & Transform::AddLocalPosition(float dx, float dy, float dz)
 Transform & Transform::AddLocalPosition(glm::vec3 delta)
 {
 	AddLocalPosition(delta.x, delta.y, delta.z);
-
 	return *this;
 }
 

@@ -113,7 +113,6 @@ void TerrainSystem::Render(std::vector<PracticalRenderObject*>& renderObjects, C
 		mtrl->BindShader();
 		mtrl->SetCameraMatrix(camera);
 	}
-	mtrl->BindUniformValue();
 
 #ifdef Tessellation
 

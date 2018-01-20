@@ -3,14 +3,20 @@
 #include "SkinnedMeshRenderObject.h"
 #include "Avatar.h"
 #include "Time.h"
+#include "GameObject.h"
+#include "Camera.h"
 
-Animator::Animator()
+Animator::Animator() : avatar(nullptr)
 {
 	nowTime = 0;
 }
 
 
 Animator::~Animator()
+{
+}
+
+void Animator::Initialize()
 {
 }
 

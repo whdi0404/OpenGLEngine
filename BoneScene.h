@@ -14,7 +14,6 @@ private:
 	void InitResource();
 public:
 	void Update();
-	void OnDrawGizmos();
 
 	Camera* camera;
 
@@ -30,6 +29,7 @@ public:
 
 	GameObject* stressTest;
 
+	KeyFrameAnimation* keyFrameAnimation;
 	std::vector<Object*> meshes;
 	Material* skinnedMaterial;
 };
