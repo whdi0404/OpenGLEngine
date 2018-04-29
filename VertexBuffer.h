@@ -21,7 +21,7 @@ public:
 	}
 
 	template<> 
-	std::vector<glm::vec2> VertexBuffer::GetVectorList(Element element)
+	std::vector<glm::vec2> GetVectorList(Element element)
 	{
 		std::vector<glm::vec2> retVal;
 		for (int i = 0; i < vertexCount; ++i)
@@ -37,7 +37,7 @@ public:
 	}
 
 	template<> 
-	std::vector<glm::vec3> VertexBuffer::GetVectorList(Element element)
+	std::vector<glm::vec3> GetVectorList(Element element)
 	{
 		std::vector<glm::vec3> retVal;
 		for (int i = 0; i < vertexCount; ++i)
@@ -48,6 +48,18 @@ public:
 			newVec.y = v.y;
 			newVec.z = v.z;
 			retVal.push_back(newVec);
+		}
+
+		return retVal;
+	}
+
+	template<>
+	std::vector<glm::vec4> GetVectorList(Element element)
+	{
+		std::vector<glm::vec4> retVal;
+		for (int i = 0; i < vertexCount; ++i)
+		{
+			retVal.push_back(GetVector(element, i));
 		}
 
 		return retVal;

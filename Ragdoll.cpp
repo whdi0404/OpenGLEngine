@@ -34,7 +34,7 @@ void Ragdoll::MakeRagdoll(std::string id, RagdollInfo ragdollInfo)
 	avatar->GetRoot()->SetLocalScale(GetTransform()->GetLocalScale());
 	PxSceneWriteLock lock(*g_PhysXManager->GetScene());
 
-	auto* resources = ResourceManager::GetInstance().GetResource<std::unordered_map<std::string, PxGeometry*>>(id);
+	std::unordered_map<std::string, PxGeometry*>* resources = ResourceManager::GetInstance().GetResource<std::unordered_map<std::string, PxGeometry*>>(id);
 
 	glm::vec3 middleSpinePos = ragdollInfo.MiddleSpine->GetWorldPosition();
 	glm::vec3 leftHipsPos = ragdollInfo.LeftHips->GetWorldPosition();
@@ -108,7 +108,7 @@ void Ragdoll::MakeRagdoll(std::string id, RagdollInfo ragdollInfo)
 		PxCapsuleGeometry* headGeom = new PxCapsuleGeometry(margin * 2, upperBodyToHead / 2);
 		resources->insert(std::make_pair("head", headGeom));
 
-		ResourceManager::GetInstance().AddResource(id, resources);
+		//ResourceManager::GetInstance().AddResource(id, resources);
 	}
 	//¸öÅë
 	GameObject* pelvisGO = (new GameObject("pelvis"))->GetTransform()->SetWorldPosition(pelvisPos).GetGameObject();

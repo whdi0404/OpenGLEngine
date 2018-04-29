@@ -33,6 +33,7 @@ public:
 
 public:
 	Texture2D(std::string filename);
+	Texture2D(int width, int height, DataType dataType, Format format);
 	~Texture2D();
 
 	GetMacro(GLuint, TextureID, textureID)
@@ -50,4 +51,56 @@ public:
 
 	Color GetPixel(int x, int y);
 	Color GetPixelBilinear(glm::vec2 uv);
+
+	void SetPixel(int x, int y, Color color);
+
+	void ApplyChange();
+
+	static Texture2D* CreateNormalTexture(Texture2D* heightmap, float tileSize, float scale);
+
+	static size_t FormatElemCountPerPixel(Format format)
+	{
+		switch (format)
+		{
+		case ColorIndex:
+		case Alpha:
+		case Luminance://확실하지 않음
+			return 1;
+		case LuminanceAlpha://확실하지 않음
+			return 2;
+		case RGB:
+		case BGR:
+			return 3;
+		case RGBA:
+		case BGRA:
+			return 4;
+		}
+	}
+
+	static size_t DataTypeBytePerPixel(DataType dataType)
+	{
+		switch (dataType)
+		{
+		case Byte:
+		case Unsigned_Byte:
+			return 1;
+		case Half:
+		case Short:
+		case Unsigned_Short:
+			return 2;
+		case Int:
+		case Unsigned_Int:
+		case Float:
+			return 4;
+		case Double:
+			return 8;
+		}
+	}
+	size_t GetBytePerPixel(DataType dataType, Format format)
+	{
+		return FormatElemCountPerPixel(format) * DataTypeBytePerPixel(dataType);
+	}
+
+	
+
 };

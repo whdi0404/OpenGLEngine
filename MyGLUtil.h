@@ -105,7 +105,7 @@ GLuint CreateShader(const char* file_path, GLenum shaderType);
 
 GLuint AttachShaderToProgram(GLuint programID, GLuint count, ...);
 
-GLuint LoadDefaultShaders(const char * vertex_file_path, const char * fragment_file_path, const char * tessellation_control_file_path = nullptr, const char * tessellation_evaluate_file_path = nullptr);
+GLuint LoadDefaultShaders(const char * vertex_file_path, const char * fragment_file_path, const char * tessellation_control_file_path = nullptr, const char * tessellation_evaluate_file_path = nullptr, const char * geometry_file_path = nullptr);
 
 template<typename T>
 

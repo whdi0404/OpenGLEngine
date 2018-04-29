@@ -39,7 +39,7 @@ void TerrainCollider::Update()
 
 void TerrainCollider::CreateCollider()
 {
-	pxMaterial = ResourceManager::GetInstance().GetResource<PxMaterial>("default_Material");
+	pxMaterial = g_PhysXManager->GetPhysics()->createMaterial(0.5f, 0.5f, 0.1f);
 
 	float precision = UINT16_MAX * 0.49f / terrain->GetHeightScale();
 	PxReal heightScale = 1.0f / precision;

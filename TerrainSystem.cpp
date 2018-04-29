@@ -6,6 +6,7 @@
 #include "Gizmo.h"
 #include "math.h"
 
+//#define Quads
 #define Tessellation
 
 TerrainSystem::TerrainSystem()
@@ -53,9 +54,7 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileScale, float heigh
 		}
 	}
 
-#ifdef Tessellation
-	terrainMesh->SetDrawMode(GL_PATCHES);
-
+#ifdef Quads
 	for (int y = 0; y < height - 1; ++y)
 	{
 		for (int x = 0; x < width - 1; ++x)
@@ -68,15 +67,14 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileScale, float heigh
 
 		}
 	}
-	terrainMesh->SetDrawMode(GL_PATCHES);
 #else
 	for (int y = 0; y < height - 1; ++y)
 	{
 		for (int x = 0; x < width - 1; ++x)
 		{
-			indices.push_back((y + 1) * width + x);
 			indices.push_back((y + 1) * width + x + 1);
 			indices.push_back(y * width + x + 1);
+			indices.push_back((y + 1) * width + x);
 
 			indices.push_back((y + 1) * width + x);
 			indices.push_back(y * width + x + 1);
@@ -84,9 +82,8 @@ void TerrainSystem::CreateMesh(Texture2D * texture, float tileScale, float heigh
 		}
 	}
 #endif
+	terrainMesh->SetDrawMode(GL_PATCHES);
 	terrainMesh->SetMeshData(newVertexBuffer, indices);
-
-	auto& sphere = terrainMesh->GetBoundingSphere();
 
 	GetMaterial()->SetFloat(std::string("heightScale"), &heightScale, 1);
 	GetMaterial()->SetFloat(std::string("tessellationCount"), &tessellateCount, 1);
@@ -119,7 +116,7 @@ void TerrainSystem::Render(std::vector<PracticalRenderObject*>& renderObjects, C
 	//GLint MaxPatchVertices = 0;
 	//glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
 	//printf("Max supported patch vertices %d\n", MaxPatchVertices);
-	glPatchParameteri(GL_PATCH_VERTICES, 4);
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
 #endif
 	mesh->DrawInstance(g_Renderer->matrixBuffer.data(), g_Renderer->matrixBuffer.size());
 }

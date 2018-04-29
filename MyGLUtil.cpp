@@ -166,7 +166,7 @@ GLuint AttachShaderToProgram(GLuint programID, GLuint count, ...)
 	return programID;
 }
 
-GLuint LoadDefaultShaders(const char * vertex_file_path, const char * fragment_file_path, const char * tessellation_control_file_path, const char * tessellation_evaluate_file_path) {
+GLuint LoadDefaultShaders(const char * vertex_file_path, const char * fragment_file_path, const char * tessellation_control_file_path, const char * tessellation_evaluate_file_path, const char * geometry_file_path) {
 
 	// Create the shaders
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -179,6 +179,10 @@ GLuint LoadDefaultShaders(const char * vertex_file_path, const char * fragment_f
 	if (tessellation_evaluate_file_path != nullptr)
 		TessEvelShaderID = glCreateShader(GL_TESS_EVALUATION_SHADER);
 
+	GLuint GeomShaderID = -1;
+	if (geometry_file_path != nullptr)
+		GeomShaderID = glCreateShader(GL_GEOMETRY_SHADER);
+	
 	// Read the Vertex Shader code from the file
 	std::string VertexShaderCode;
 	std::ifstream VertexShaderStream(vertex_file_path, std::ios::in);
@@ -227,6 +231,18 @@ GLuint LoadDefaultShaders(const char * vertex_file_path, const char * fragment_f
 			while (getline(TessEvelShaderStream, Line))
 				TessEvelShaderCode += "\n" + Line;
 			TessEvelShaderStream.close();
+		}
+	}
+
+	std::string GeomShaderCode;
+	if (GeomShaderID != -1)
+	{
+		std::ifstream GeomShaderStream(geometry_file_path, std::ios::in);
+		if (GeomShaderStream.is_open()) {
+			std::string Line = "";
+			while (getline(GeomShaderStream, Line))
+				GeomShaderCode += "\n" + Line;
+			GeomShaderStream.close();
 		}
 	}
 
@@ -303,6 +319,24 @@ GLuint LoadDefaultShaders(const char * vertex_file_path, const char * fragment_f
 		}
 	}
 
+	if (GeomShaderID != -1)
+	{
+		// Compile Fragment Shader
+		printf("Compiling shader : %s\n", geometry_file_path);
+		char const * TessEvelSourcePointer = GeomShaderCode.c_str();
+		glShaderSource(GeomShaderID, 1, &TessEvelSourcePointer, NULL);
+		glCompileShader(GeomShaderID);
+
+		// Check Fragment Shader
+		glGetShaderiv(GeomShaderID, GL_COMPILE_STATUS, &Result);
+		glGetShaderiv(GeomShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+		if (InfoLogLength > 0) {
+			std::vector<char> GeomShaderErrorMessage(InfoLogLength + 1);
+			glGetShaderInfoLog(GeomShaderID, InfoLogLength, NULL, &GeomShaderErrorMessage[0]);
+			printf("%s\n", &GeomShaderErrorMessage[0]);
+		}
+	}
+
 	// Link the program
 	printf("Linking program\n");
 	GLuint ProgramID = glCreateProgram();
@@ -315,6 +349,10 @@ GLuint LoadDefaultShaders(const char * vertex_file_path, const char * fragment_f
 	if (TessEvelShaderID != -1)
 	{
 		glAttachShader(ProgramID, TessEvelShaderID);
+	}
+	if (GeomShaderID != -1)
+	{
+		glAttachShader(ProgramID, GeomShaderID);
 	}
 	glLinkProgram(ProgramID);
 
@@ -338,7 +376,10 @@ GLuint LoadDefaultShaders(const char * vertex_file_path, const char * fragment_f
 	{
 		glDetachShader(ProgramID, TessEvelShaderID);
 	}
-	
+	if (GeomShaderID != -1)
+	{
+		glDetachShader(ProgramID, GeomShaderID);
+	}
 
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
@@ -349,6 +390,10 @@ GLuint LoadDefaultShaders(const char * vertex_file_path, const char * fragment_f
 	if (TessEvelShaderID != -1)
 	{
 		glDeleteShader(TessEvelShaderID);
+	}
+	if (GeomShaderID != -1)
+	{
+		glDeleteShader(GeomShaderID);
 	}
 
 	return ProgramID;

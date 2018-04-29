@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cmath>
+#include <functional>
 //#include <MMSystem.h>
 #include <Windows.h>
 
@@ -48,6 +49,7 @@
 #include <stack>
 #include <unordered_map>
 #include <unordered_set>
+#include <filesystem>
 
 #include <stdlib.h>
 
@@ -75,6 +77,9 @@ inline Output horrible_cast(const Input input) {
 #pragma comment(lib, "glfw3dll.lib")
 #pragma comment(lib, "libfbxsdk.lib")
 #pragma comment(lib, "DevIL.lib")
+
+using namespace std::experimental;
+using namespace std::experimental::filesystem;
 
 extern GLFWwindow* g_Window;
 extern Renderer* g_Renderer;

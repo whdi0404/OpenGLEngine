@@ -70,6 +70,9 @@
     <Filter Include="TestGame">
       <UniqueIdentifier>{afe309e7-f5a4-4418-9144-276ba251557c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="FrameWork\ResourceManager">
+      <UniqueIdentifier>{00b7a23f-2ec8-4259-bb1d-9a62bdd23231}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -201,14 +204,14 @@
     <ClCompile Include="PhysXUtil.cpp">
       <Filter>Util</Filter>
     </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>FrameWork</Filter>
-    </ClCompile>
     <ClCompile Include="PhysXJoint.cpp">
       <Filter>FrameWork\Object\Component</Filter>
     </ClCompile>
     <ClCompile Include="Ragdoll.cpp">
       <Filter>FrameWork\Object\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>FrameWork\ResourceManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -350,37 +353,40 @@
     <ClInclude Include="PhysXUtil.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>FrameWork</Filter>
-    </ClInclude>
     <ClInclude Include="PhysXJoint.h">
       <Filter>FrameWork\Object\Component</Filter>
     </ClInclude>
     <ClInclude Include="Ragdoll.h">
       <Filter>FrameWork\Object\Component</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>FrameWork\ResourceManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
-    <None Include="Shaders\TessCtrlShader.glsl">
+    <None Include="Resources\Shaders\TessCtrlShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
-    <None Include="Shaders\TessEvelShader.glsl">
+    <None Include="Resources\Shaders\TessEvelShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
-    <None Include="Shaders\TestFragmentShader.glsl">
+    <None Include="Resources\Shaders\TessFragmentShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
-    <None Include="Shaders\TestVertexShader.glsl">
+    <None Include="Resources\Shaders\TessVetexShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
-    <None Include="Shaders\TessFragmentShader.glsl">
+    <None Include="Resources\Shaders\TestFragmentShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
-    <None Include="Shaders\TessVetexShader.glsl">
+    <None Include="Resources\Shaders\TestSkinnedVertexShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
-    <None Include="Shaders\TestSkinnedVertexShader.glsl">
+    <None Include="Resources\Shaders\TestVertexShader.glsl">
+      <Filter>리소스 파일\Shader</Filter>
+    </None>
+    <None Include="Resources\Shaders\TessGeomShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
   </ItemGroup>

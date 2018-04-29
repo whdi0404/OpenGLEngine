@@ -4,7 +4,7 @@
 class Shader : Object
 {
 public:
-	Shader(std::string vertexShaderPath, std::string pixelShaderPath, std::string tessCtrlShaderPath = "", std::string tessEvelShaderPath = "");
+	Shader(std::string vertexShaderPath, std::string pixelShaderPath, std::string tessCtrlShaderPath = "", std::string tessEvelShaderPath = "", std::string geomShaderPath = "");
 	Shader();
 	~Shader();
 

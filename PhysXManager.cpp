@@ -328,11 +328,4 @@ PhysXActor::~PhysXActor()
 
 void PhysXActor::Update()
 {
-	PxScene* pxScene = g_PhysXManager->GetScene();
-	PxSceneWriteLock scopedLock(*pxScene);
-	if (rigidDynamic == nullptr)
-		return;
-	PxTransform globalPose = rigidDynamic->getGlobalPose();
-	this->GetTransform()->SetRotateLocal(glm::quat(globalPose.q.w, globalPose.q.x, globalPose.q.y, globalPose.q.z));
-	this->GetTransform()->SetLocalPosition(globalPose.p.x, globalPose.p.y, globalPose.p.z);
 }

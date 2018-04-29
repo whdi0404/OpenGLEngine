@@ -66,6 +66,5 @@ public:
 	~PhysXActor();
 
 public:
-	void CreateToBox();
 	virtual void Update();
 };

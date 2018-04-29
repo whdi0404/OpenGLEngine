@@ -53,38 +53,39 @@ GameObject* TestObject(std::string name, Mesh* mesh, Avatar* avatar, Material* m
 
 void BoneScene::Initialize()
 {
+	ResourceManager::GetInstance().SearchResources();
 	InitResource();
 
 	speed = 200.0f;
 	rotSpeed = 120.0f;
 	camera = (new GameObject())->AddComponent<Camera>();
 
-	Shader* modelShader = new Shader("./Shaders/TestVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
-	Shader* skinnedShader = new Shader("./Shaders/TestSkinnedVertexShader.glsl", "./Shaders/TestFragmentShader.glsl");
+	//Shader* modelShader = new Shader("./Resources/Shaders/TestVertexShader.glsl", "./Resources/Shaders/TestFragmentShader.glsl");
+	//Shader* skinnedShader = new Shader("./Resources/Shaders/TestSkinnedVertexShader.glsl", "./Resources/Shaders/TestFragmentShader.glsl");
 	//
-	material = new Material(modelShader, 1);
-	skinnedMaterial = new Material(skinnedShader, 1);
+	//material = new Material(modelShader, 1);
+	//skinnedMaterial = new Material(skinnedShader, 1);
 
-	Texture2D* modelTex = new Texture2D("./Models/UnityChanTexture/body_01.tga");
-	material->SetTexture(std::string("tex"), modelTex);
-	skinnedMaterial->SetTexture(std::string("tex"), modelTex);
-
-	glm::mat4x4 modelMatrix = glm::mat4x4();
+	//Texture2D* modelTex = ResourceManager::GetInstance().GetResource<Texture2D>("Models/UnityChanTexture/body_01");
+	//material->SetTexture(std::string("tex"), modelTex);
+	//skinnedMaterial->SetTexture(std::string("tex"), modelTex);
+	//
+	//glm::mat4x4 modelMatrix = glm::mat4x4() * glm::axisAngleMatrix(glm::vec3(1, 0, 0), glm::radians(-90.0f));
 	//modelMatrix = glm::rotate(modelMatrix, -glm::radians(90.0f), glm::vec3(0, 1, 0));
 
 	//std::vector<Object*> meshes = FBXHelper::GetResourcesFromFile("./Models/SIG.FBX", modelMatrix);
 	//TestObject((Mesh*)meshes[0], material, vec3(), 1);
 
-	meshes = FBXHelper::GetResourcesFromFile("./Models/unitychan.fbx", modelMatrix);
-	avatar = (Avatar*)*std::find_if(meshes.begin(), meshes.end(), [](Object* obj) {return dynamic_cast<Avatar*>(obj) != nullptr; });
-	std::vector<Object*> animations = FBXHelper::GetResourcesFromFile("./Models/Unitychan Animation/unitychan_RUN00_F.fbx", modelMatrix);//Unitychan Animation/unitychan_RUN00_F.fbx
-	gunMesh = FBXHelper::GetResourcesFromFile("./Models/Barrett.FBX", modelMatrix);
-	sphereMesh = FBXHelper::GetResourcesFromFile("./Models/Sphere.FBX", modelMatrix)[0];
+	//meshes = ResourceManager::GetInstance().GetResourceAll<Object>(/*"./Models/unitychan.fbx"*/"Models/Maskboy");
+	//avatar = (Avatar*)*std::find_if(meshes.begin(), meshes.end(), [](Object* obj) {return dynamic_cast<Avatar*>(obj) != nullptr; });
+	//std::vector<Object*> animations = FBXHelper::GetResourcesFromFile("Models/Unitychan Animation/unitychan_RUN00_F.fbx", modelMatrix);//Unitychan Animation/unitychan_RUN00_F.fbx
+	//gunMesh = ResourceManager::GetInstance().GetResourceAll<Object>("Models/Barrett.FBX");
+	//sphereMesh = ResourceManager::GetInstance().GetResourceAll<Object>("Models/Sphere.FBX")[0];
 
-	keyFrameAnimation = (KeyFrameAnimation*)(*std::find_if(animations.begin(), animations.end(), [](Object* obj) -> bool
-	{
-		return dynamic_cast<KeyFrameAnimation*>(obj) != nullptr;
-	}));
+	//keyFrameAnimation = (KeyFrameAnimation*)(*std::find_if(animations.begin(), animations.end(), [](Object* obj) -> bool
+	//{
+	//	return dynamic_cast<KeyFrameAnimation*>(obj) != nullptr;
+	//}));
 	//
 	//Avatar* avatar = (Avatar*)(*std::find_if(meshes.begin(), meshes.end(), [](Object* obj) -> bool
 	//{
@@ -102,18 +103,22 @@ void BoneScene::Initialize()
 		GameObject* obj = new GameObject();
 		TerrainSystem* terrainSystem = obj->AddComponent<TerrainSystem>();
 
-		Shader* tessellationShader = new Shader("./Shaders/TessVetexShader.glsl", "./Shaders/TessFragmentShader.glsl",
-			"./Shaders/TessCtrlShader.glsl", "./Shaders/TessEvelShader.glsl");
-		float heightScale = 100;
-		float tileScale = 10;
+		Shader* tessellationShader = new Shader("./Resources/Shaders/TessVetexShader.glsl", "./Resources/Shaders/TessFragmentShader.glsl",
+			"./Resources/Shaders/TessCtrlShader.glsl", "./Resources/Shaders/TessEvelShader.glsl", "./Resources/Shaders/TessGeomShader.glsl");
+		float heightScale = 300.0f;
+		float tileScale = 5.0f;
 
-		Texture2D* heightMap = new Texture2D("./Tex/terrain-heightmap.bmp"/*cDsYZ.jpg*/);
+		Texture2D* heightMap = ResourceManager::GetInstance().GetResource<Texture2D>("Tex/DinoIsland06.bmp"/**//*cDsYZ.jpg*/);
+		Texture2D* normalMap = heightMap->CreateNormalTexture(heightMap, tileScale, heightScale);
+		//new Texture2D(heightMap->GetWidth(), heightMap->GetHeight(), Texture2D::DataType::Unsigned_Byte, Texture2D::Format::RGBA);
 		terrainMaterial = new Material(tessellationShader, 1);
 		terrainMaterial->SetTexture(std::string("heightMap"), heightMap);
-		terrainSystem->SetMaterial(terrainMaterial);
-		terrainSystem->CreateMesh(heightMap, /*0.03125f*/tileScale, heightScale, 8);
+		terrainMaterial->SetTexture(std::string("normalMap"), normalMap);
 
-		obj->AddComponent<TerrainCollider>();
+		terrainSystem->SetMaterial(terrainMaterial);
+		terrainSystem->CreateMesh(heightMap, /*0.03125f*/tileScale, heightScale, 32);
+
+		//obj->AddComponent<TerrainCollider>();
 
 		//GameObject* obj2 = new GameObject();
 		//TerrainSystem* terrainSystem2 = obj2->AddComponent<TerrainSystem>();
@@ -145,14 +150,14 @@ void BoneScene::Initialize()
 void BoneScene::InitResource()
 {
 	PxMaterial* default_Material = g_PhysXManager->GetPhysics()->createMaterial(0.5f, 0.5f, 0.1f);
-	ResourceManager::GetInstance().AddResource("default_Material", default_Material);
-	
-	Mesh* box_Mesh = (Mesh*)FBXHelper::GetResourcesFromFile("./Models/Box.fbx")[0];
-	ResourceManager::GetInstance().AddPxConvexMeshGeometryResource("box_Mesh", box_Mesh, PxVec3(0.01f, 0.01f, 0.01f));
+	//ResourceManager::GetInstance().AddResource("default_Material", default_Material);
+	//
+	//Mesh* box_Mesh = (Mesh*)FBXHelper::GetResourcesFromFile("./Models/Box.fbx")[0];
+	//ResourceManager::GetInstance().AddPxConvexMeshGeometryResource("box_Mesh", box_Mesh, PxVec3(0.01f, 0.01f, 0.01f));
 
-	ResourceManager::GetInstance().AddPxSphereGeometryResource("default_Sphere", 2.5f);
-	ResourceManager::GetInstance().AddPxCapsuleGeometryResource("default_Capsule", 0.5f, 0.5f);
-	ResourceManager::GetInstance().AddPxBoxGeometryResource("default_Box", glm::vec3(0.5f, 0.5f, 0.5f));
+	//ResourceManager::GetInstance().AddPxSphereGeometryResource("default_Sphere", 2.5f);
+	//ResourceManager::GetInstance().AddPxCapsuleGeometryResource("default_Capsule", 0.5f, 0.5f);
+	//ResourceManager::GetInstance().AddPxBoxGeometryResource("default_Box", glm::vec3(0.5f, 0.5f, 0.5f));
 }
 
 void BoneScene::Update()
@@ -222,7 +227,7 @@ void BoneScene::Update()
 		camera->GetTransform()->RotateAxisLocal(-rotSpeed * dt, 0, 0);
 		camChanged = true;
 	}
-
+	return;
 	state = glfwGetMouseButton(g_Window, GLFW_MOUSE_BUTTON_LEFT);
 	static int leftOld = GLFW_RELEASE;
 	if (state == GLFW_PRESS && leftOld == GLFW_RELEASE)

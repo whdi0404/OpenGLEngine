@@ -6,6 +6,8 @@
 #include "MeshVertexAttribute.h"
 #include "Avatar.h"
 #include "KeyFrameAnimation.h"
+#include "Texture.h"
+#include "ResourceManager.h"
 
 std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::mat4x4 modelTransform)
 {
@@ -35,6 +37,7 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 			while (stack.empty() == false)
 			{
 				FbxNode* node = stack.top();
+
 				stack.pop();
 
 				int numAttributes = node->GetNodeAttributeCount();
@@ -49,7 +52,7 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 						{
 							avatar->AddNode(node);
 							avatar->AddNode(node->GetParent());
-							//최상위 부모가 아닐 eSkeleton타입이 아닐 수 있음.
+							//최상위 부모가 eSkeleton타입이 아닐 수 있음.
 						}
 						break;
 					}
@@ -86,10 +89,55 @@ std::vector<Object*> FBXHelper::GetResourcesFromFile(std::string filePath, glm::
 					case FbxNodeAttribute::eMesh:
 					{
 						FbxMesh* fbxMesh = (FbxMesh*)nodeAttributeFbx;
-
 						Mesh* mesh = LoadMeshData(pFbxScene, (FbxMesh*)nodeAttributeFbx, modelTransform, avatar);
 						if (mesh == nullptr)
 							continue;
+
+						int materialCount = node->GetSrcObjectCount<FbxSurfaceMaterial>();
+						for (int index = 0; index < materialCount; index++)
+						{
+							FbxSurfaceMaterial* material = (FbxSurfaceMaterial*)node->GetSrcObject<FbxSurfaceMaterial>(index);
+
+							if (material != nullptr)
+							{
+								FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
+
+								// Check if it's layeredtextures
+								int layeredTextureCount = prop.GetSrcObjectCount<FbxLayeredTexture>();
+
+								if (layeredTextureCount > 0)
+								{
+									for (int j = 0; j < layeredTextureCount; j++)
+									{
+										FbxLayeredTexture* layered_texture = FbxCast<FbxLayeredTexture>(prop.GetSrcObject<FbxLayeredTexture>(j));
+										int lcount = layered_texture->GetSrcObjectCount<fbxsdk::FbxFileTexture>();
+
+										for (int k = 0; k < lcount; k++)
+										{
+											fbxsdk::FbxFileTexture* texture = FbxCast<fbxsdk::FbxFileTexture>(layered_texture->GetSrcObject<fbxsdk::FbxFileTexture>(k));
+
+											std::string texPath = path(filePath).parent_path().string() + "\\" + texture->GetRelativeFileName();
+											Texture2D* tex = ResourceManager::GetInstance().GetResource<Texture2D>(texPath);
+											if (tex != nullptr)
+												mesh->AddTexture(tex);
+										}
+									}
+								}
+								else
+								{
+									int textureCount = prop.GetSrcObjectCount<fbxsdk::FbxFileTexture>();
+									for (int j = 0; j < textureCount; j++)
+									{
+										fbxsdk::FbxFileTexture* texture = FbxCast<fbxsdk::FbxFileTexture>(prop.GetSrcObject<fbxsdk::FbxFileTexture>(j));
+
+										std::string texPath = path(filePath).parent_path().string() + "\\" + texture->GetRelativeFileName();
+										Texture2D* tex = ResourceManager::GetInstance().GetResource<Texture2D>(texPath);
+										if (tex != nullptr)
+											mesh->AddTexture(tex);
+									}
+								}
+							}
+						}
 
 						returnObject.push_back(mesh);
 					}
@@ -152,6 +200,8 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 		vertex.y = (float)pVertices[j].mData[1];
 		vertex.z = (float)pVertices[j].mData[2];
 
+		vertex = glm::vec3(modelTransform * glm::vec4(vertex, 1));
+
 		position.push_back(vertex);
 
 		if (mappingMode == FbxLayerElement::eByControlPoint)
@@ -165,15 +215,14 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 			uvs[uvIndex].y = (*pTexUvs)[uvIndex].mData[1];
 		}
 	}
-
+	//int polyCount = fbxMesh->GetPolygonSize(0);
 	int polygonCount = fbxMesh->GetPolygonCount();
 	for (int j = 0; j < polygonCount; j++)
 	{
 		int iNumVertices = fbxMesh->GetPolygonSize(j);
 
-		bool duplicated = false;
 		std::vector<int> realIndices;
-		if (mappingMode == FbxLayerElement::eByPolygonVertex)
+		//if (mappingMode == FbxLayerElement::eByPolygonVertex)
 		{
 			for (int k = 0; k < iNumVertices; k++)
 			{
@@ -201,7 +250,6 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 					position.push_back(position[iControlPointIndex]);
 					uvs.push_back(uv);
 					realIndices.push_back(newVertexIndex);
-					duplicated = true;
 				}
 			}
 		}
@@ -323,6 +371,10 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 			vertexBuffer->SetVector(Element::BoneIndices, i, boneIndices[i]);
 		}
 		newMesh->SetMeshData(vertexBuffer, indices);
+		/*if (polyCount == 3)
+			newMesh->SetDrawMode(GL_TRIANGLES);
+		else if (polyCount == 4)
+			newMesh->SetDrawMode(GL_QUADS);*/
 		return newMesh;
 	}
 	else
@@ -337,6 +389,10 @@ Mesh* FBXHelper::LoadMeshData(FbxScene* fbxScene, FbxMesh *fbxMesh, glm::mat4x4 
 		Mesh* newMesh = new Mesh();
 		newMesh->SetName(fbxNode->GetName());
 		newMesh->SetMeshData(vertexBuffer, indices);
+		/*if(polyCount == 3)
+			newMesh->SetDrawMode(GL_TRIANGLES);
+		else if(polyCount == 4)
+			newMesh->SetDrawMode(GL_QUADS);*/
 		return newMesh;
 	}
 
@@ -368,6 +424,7 @@ FbxAMatrix FBXHelper::ComputeClusterDeformation(FbxMesh* pMesh, FbxCluster* pClu
 		return FbxAMatrix();
 	}
 }
+
 FbxAMatrix FBXHelper::GetAnimationMatrix(FbxCluster* pCluster, FbxTime pTime, FbxPose* pPose)
 {
 	FbxCluster::ELinkMode lClusterMode = pCluster->GetLinkMode();
