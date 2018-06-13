@@ -1,5 +1,9 @@
 #include "stdafx.h"
 #include "Texture.h"
+#include "FBM.h"
+#include "MemoryUtil.h"
+
+using namespace FractalUtil;
 
 Texture2D::Texture2D(std::string filename) :
 	width(0), height(0), bytePerPixel(0)
@@ -61,7 +65,7 @@ Texture2D::Texture2D(int width, int height, DataType dataType, Format format)
 	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
 
 	byte* data = new byte[width * height * GetBytePerPixel(dataType, format)];
-	for(int i=0; i < width * height * GetBytePerPixel(dataType, format);++i)
+	for (int i = 0; i < width * height * GetBytePerPixel(dataType, format); ++i)
 	{
 		data[i] = (byte)0xff;
 	}
@@ -77,7 +81,7 @@ Texture2D::Texture2D(int width, int height, DataType dataType, Format format)
 
 	this->width = width;
 	this->height = width;
-	bytePerPixel = GetBytePerPixel(dataType, format);
+	bytePerPixel = ilGetInteger(IL_IMAGE_BYTES_PER_PIXEL);
 	this->format = format;
 	this->dataType = dataType;
 
@@ -149,6 +153,8 @@ void Texture2D::SetPixel(int x, int y, Color color)
 
 	size_t dataTypeSize = DataTypeBytePerPixel(dataType);
 
+	byte f2B[4]{ 0,0,0,0 };
+
 	Color pixelColor;
 	if (format == Format::RGBA)
 	{
@@ -160,12 +166,31 @@ void Texture2D::SetPixel(int x, int y, Color color)
 			pixelData[dataTypeSize * 3] = (byte)(color.a * 255.0f);
 		}
 
-		if (dataType == DataType::Float || dataType == DataType::Half || dataType == DataType::Double)
+		if (dataType == DataType::Float)
 		{
-			pixelData[dataTypeSize * 0] = color.r;
-			pixelData[dataTypeSize * 1] = color.g;
-			pixelData[dataTypeSize * 2] = color.b;
-			pixelData[dataTypeSize * 3] = color.a;
+			MemoryUtil::float2Bytes(color.r, f2B);
+			pixelData[0] = f2B[0];
+			pixelData[1] = f2B[1];
+			pixelData[2] = f2B[2];
+			pixelData[3] = f2B[3];
+
+			MemoryUtil::float2Bytes(color.g, f2B);
+			pixelData[4] = f2B[0];
+			pixelData[5] = f2B[1];
+			pixelData[6] = f2B[2];
+			pixelData[7] = f2B[3];
+
+			MemoryUtil::float2Bytes(color.b, f2B);
+			pixelData[8] = f2B[0];
+			pixelData[9] = f2B[1];
+			pixelData[10] = f2B[2];
+			pixelData[11] = f2B[3];
+
+			MemoryUtil::float2Bytes(color.a, f2B);
+			pixelData[12] = f2B[0];
+			pixelData[13] = f2B[1];
+			pixelData[14] = f2B[2];
+			pixelData[15] = f2B[3];
 		}
 
 		if (dataType == DataType::Byte)
@@ -194,12 +219,31 @@ void Texture2D::SetPixel(int x, int y, Color color)
 			pixelData[dataTypeSize * 3] = (byte)(color.a * 255.0f);
 		}
 
-		if (dataType == DataType::Float || dataType == DataType::Half || dataType == DataType::Double)
+		if (dataType == DataType::Float)
 		{
-			pixelData[dataTypeSize * 0] = color.b;
-			pixelData[dataTypeSize * 1] = color.g;
-			pixelData[dataTypeSize * 2] = color.r;
-			pixelData[dataTypeSize * 3] = color.a;
+			MemoryUtil::float2Bytes(color.b, f2B);
+			pixelData[0] = f2B[0];
+			pixelData[1] = f2B[1];
+			pixelData[2] = f2B[2];
+			pixelData[3] = f2B[3];
+
+			MemoryUtil::float2Bytes(color.g, f2B);
+			pixelData[4] = f2B[0];
+			pixelData[5] = f2B[1];
+			pixelData[6] = f2B[2];
+			pixelData[7] = f2B[3];
+
+			MemoryUtil::float2Bytes(color.r, f2B);
+			pixelData[8] = f2B[0];
+			pixelData[9] = f2B[1];
+			pixelData[10] = f2B[2];
+			pixelData[11] = f2B[3];
+
+			MemoryUtil::float2Bytes(color.a, f2B);
+			pixelData[12] = f2B[0];
+			pixelData[13] = f2B[1];
+			pixelData[14] = f2B[2];
+			pixelData[15] = f2B[3];
 		}
 
 		if (dataType == DataType::Byte)
@@ -227,11 +271,25 @@ void Texture2D::SetPixel(int x, int y, Color color)
 			pixelData[dataTypeSize * 2] = (byte)(color.b * 255.0f);
 		}
 
-		if (dataType == DataType::Float || dataType == DataType::Half || dataType == DataType::Double)
+		if (dataType == DataType::Float)
 		{
-			pixelData[dataTypeSize * 0] = color.r;
-			pixelData[dataTypeSize * 1] = color.g;
-			pixelData[dataTypeSize * 2] = color.b;
+			MemoryUtil::float2Bytes(color.r, f2B);
+			pixelData[0] = f2B[0];
+			pixelData[1] = f2B[1];
+			pixelData[2] = f2B[2];
+			pixelData[3] = f2B[3];
+
+			MemoryUtil::float2Bytes(color.g, f2B);
+			pixelData[4] = f2B[0];
+			pixelData[5] = f2B[1];
+			pixelData[6] = f2B[2];
+			pixelData[7] = f2B[3];
+
+			MemoryUtil::float2Bytes(color.b, f2B);
+			pixelData[8] = f2B[0];
+			pixelData[9] = f2B[1];
+			pixelData[10] = f2B[2];
+			pixelData[11] = f2B[3];
 		}
 
 		if (dataType == DataType::Byte)
@@ -257,11 +315,30 @@ void Texture2D::SetPixel(int x, int y, Color color)
 			pixelData[dataTypeSize * 2] = (byte)(color.r * 255.0f);
 		}
 
-		if (dataType == DataType::Float || dataType == DataType::Half || dataType == DataType::Double)
+		if (dataType == DataType::Float)
 		{
 			pixelData[dataTypeSize * 0] = color.b;
 			pixelData[dataTypeSize * 1] = color.g;
 			pixelData[dataTypeSize * 2] = color.r;
+
+
+			MemoryUtil::float2Bytes(color.b, f2B);
+			pixelData[0] = f2B[0];
+			pixelData[1] = f2B[1];
+			pixelData[2] = f2B[2];
+			pixelData[3] = f2B[3];
+
+			MemoryUtil::float2Bytes(color.g, f2B);
+			pixelData[4] = f2B[0];
+			pixelData[5] = f2B[1];
+			pixelData[6] = f2B[2];
+			pixelData[7] = f2B[3];
+
+			MemoryUtil::float2Bytes(color.r, f2B);
+			pixelData[8] = f2B[0];
+			pixelData[9] = f2B[1];
+			pixelData[10] = f2B[2];
+			pixelData[11] = f2B[3];
 		}
 
 		if (dataType == DataType::Byte)
@@ -285,9 +362,15 @@ void Texture2D::SetPixel(int x, int y, Color color)
 			pixelData[dataTypeSize * 0] = (byte)(color.r * 255.0f);
 		}
 
-		if (dataType == DataType::Float || dataType == DataType::Half || dataType == DataType::Double)
+		if (dataType == DataType::Float)
 		{
 			pixelData[dataTypeSize * 0] = color.r;
+
+			MemoryUtil::float2Bytes(color.r, f2B);
+			pixelData[0] = f2B[0];
+			pixelData[1] = f2B[1];
+			pixelData[2] = f2B[2];
+			pixelData[3] = f2B[3];
 		}
 
 		if (dataType == DataType::Byte)
@@ -307,7 +390,7 @@ void Texture2D::SetPixel(int x, int y, Color color)
 	}
 
 	ilSetPixels(x, y, 0, 1, 1, 0, format, dataType, pixelData);
-	
+
 	free(pixelData);
 }
 
@@ -320,6 +403,172 @@ void Texture2D::ApplyChange()
 		height,
 		0, format, dataType,
 		ilGetData());
+}
+//heightSeed: 개략적인 높이를 구성함, surfaceSeed: 개략적인 표면의 종류(풀, 흙 등)를 결정
+Texture2D * Texture2D::CreateRandomHeightmap(int width, int height, int detail, float H, Texture2D* heightSeed, Texture2D* surfaceSeed, bool isFractal)
+{
+	Texture2D* texture = new Texture2D(width, height, DataType::Float, Format::RGBA);
+
+	float* pixels = new float[width * height];
+
+	float sam;
+
+	Texture2D* smoothHeightSeed = TextureUtil::GaussianSmoothing(heightSeed, 20, 0.1f);
+
+	for (int x = 0; x < width; ++x)
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			float uvX = (float)x / width;
+			float uvY = (float)y / height;
+			float h = smoothHeightSeed->GetPixelBilinear(glm::vec2(uvX, uvY)).r;
+			pixels[y * width + x] = h * H * detail * 0.2f;
+		}
+	}
+
+	float min = FLT_MAX;
+	float max = FLT_MIN;
+
+	for (int x = 0; x < width; ++x)
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			min = glm::min(min, pixels[y * width + x]);
+			max = glm::max(max, pixels[y * width + x]);
+		}
+	}
+	std::cout << "min: " << min << std::endl;
+	std::cout << "max: " << max << std::endl;
+
+
+	int maxPow = pow(2, detail * 2);
+	if (detail > 0)
+	{
+		for (int d = detail; d > glm::max(0, detail - 3); --d)
+		{
+			int lerp = d;
+
+			int pow2d = pow(2, lerp);
+
+			int randSeed = rand() % 10000;
+			int w = width / pow2d;
+			int h = height / pow2d;
+			//d: 낮을수록 디테일해짐
+
+			Texture2D* tex = new Texture2D(w, h, DataType::Float, Format::RGBA);
+			float smallH = H * d / detail * 0.4f;
+
+			for (int x = 0; x < w; ++x)
+			{
+				for (int y = 0; y < h; ++y)
+				{
+					float uvX = (float)x / width;
+					float uvY = (float)y / height;
+					float weight = smoothHeightSeed->GetPixelBilinear(glm::vec2(uvX, uvY)).g;
+					float c;
+					if (isFractal)
+					{
+						c = Multi_fractal(randSeed + (float)x / w, randSeed + (float)y / h, 3, smallH * weight, (w + h) / 2, 1.0f, 1.0f);
+					}
+					else
+					{
+						c = FBM(randSeed + (float)x / w, randSeed + (float)y / h, 3, smallH * weight, (w + h) / 2, 1.0f);
+					}
+					tex->SetPixel(x, y, Color(c, c, c));
+					Color color = tex->GetPixel(x - 1, y - 1);
+					color.r = 0;
+				}
+			}
+			tex->ApplyChange();
+
+			for (int x = 0; x < width; ++x)
+			{
+				for (int y = 0; y < height; ++y)
+				{
+					float uvX = (float)x / width;
+					float uvY = (float)y / height;
+					float h = tex->GetPixelBilinear(glm::vec2(uvX, uvY)).r;
+
+					pixels[y * width + x] += h;
+				}
+			}
+			delete tex;
+		}
+	}
+
+	delete smoothHeightSeed;
+
+
+	min = FLT_MAX;
+	max = FLT_MIN;
+	for (int x = 0; x < width; ++x)
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			min = glm::min(min, pixels[y * width + x]);
+			max = glm::max(max, pixels[y * width + x]);
+		}
+	}
+
+	std::cout << "min: " << min << std::endl;
+	std::cout << "max: " << max << std::endl;
+
+	for (int x = 0; x < width; ++x)
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			float v = pixels[y * width + x];
+			texture->SetPixel(x, y, Color(v, v, v));
+		}
+	}
+
+	min = FLT_MAX;
+	max = FLT_MIN;
+	for (int x = 0; x < width; ++x)
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			min = glm::min(min, texture->GetPixel(x, y).r);
+			max = glm::max(max, texture->GetPixel(x, y).r);
+		}
+	}
+	std::cout << "min: " << min << std::endl;
+	std::cout << "max: " << max << std::endl;
+
+	if (isFractal)
+	{
+		Texture2D* tex = texture;
+		texture = TextureUtil::GaussianSmoothing(texture, 5, 1.0f); 
+		delete tex;
+	}
+
+	min = FLT_MAX;
+	max = FLT_MIN;
+
+	for (int x = 0; x < width; ++x)
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			min = glm::min(min, texture->GetPixel(x, y).r);
+			max = glm::max(max, texture->GetPixel(x, y).r);
+		}
+	}
+	std::cout << "min: " << min << std::endl;
+	std::cout << "max: " << max << std::endl;
+
+	for (int x = 0; x < width; ++x)
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			float p = texture->GetPixel(x, y).r;
+			float v = inverseLerp(min, max, p);
+			texture->SetPixel(x, y, Color(v, v, v));
+		}
+	}
+
+	texture->ApplyChange();
+
+	return texture;
 }
 
 Color Texture2D::GetPixel(int x, int y)
@@ -397,47 +646,79 @@ Color Texture2D::GetPixel(int x, int y)
 	return pixelColor;
 }
 
-Texture2D * Texture2D::CreateNormalTexture(Texture2D* heightmap, float tileScale, float heightScale)
+Texture2D * Texture2D::CreateNormalTexture(Texture2D* heightmap, int width, int height, float tileScale, float heightScale)
 {
-	int w = heightmap->width;
-	int h = heightmap->height;
+	double w = width;
+	double h = height;
 
-	Texture2D* normalTexture = new Texture2D(w, h, DataType::Unsigned_Byte, Format::RGBA);
+	double scaling = w / heightmap->GetWidth();
+
+	glm::dvec2 pixelHalf = glm::dvec2(1.0 / w * 0.5f, 1.0 / h * 0.5f);
+
+	Texture2D* normalTexture = new Texture2D(w, h, DataType::Float, Format::RGBA);
+
+	static double max = FLT_MIN;
+	for (int x = 0; x < w; ++x)
+	{
+		for (int y = 0; y < h; ++y)
+		{
+			//겹치는 버텍스들 보간해야함.
+			//ex) 2,3정점의 노멀은 1,2,4,5사각형의 노멀과 2,3,5,6노멀에 똑같이 영향받아야함.
+			//1-----------2-----------3
+			///           /			  /
+			/// 		  /			  /
+			//4-----------5-----------6
+			double height = heightmap->GetPixelBilinear(glm::dvec2((double)x / w, (double)y / h) + pixelHalf).r * heightScale;
+
+			double right = height;
+			double down = height;
+			double up = height;
+			double left = height;
+			if (x + 1 < w)
+			{
+				right = heightmap->GetPixelBilinear(glm::dvec2((double)(x + 1) / w, (double)y / h) + pixelHalf).r * heightScale;
+			}
+			/*if (x - 1 >= 0)
+			{
+			left = heightmap->GetPixel(x - 1, y).r * heightScale;
+			}
+			*/
+			if (y + 1 < h)
+			{
+				up = heightmap->GetPixelBilinear(glm::dvec2((double)x / w, (double)(y + 1) / h) + pixelHalf).r * heightScale;
+			}
+			/*if (y - 1 >= 0)
+			{
+				down = heightmap->GetPixelBilinear(glm::dvec2((double)x / w, (double)(y - 1) / h)).r * heightScale;
+			}*/
+			glm::dvec3 normal = glm::normalize(glm::cross(
+				glm::dvec3(0, height, 0) - glm::dvec3(0, up, tileScale / scaling)
+				, glm::dvec3(0, height, 0) - glm::dvec3(tileScale / scaling, right, 0)));
+			normalTexture->SetPixel(x, y, Color(normal.r, normal.g, normal.b));
+		}
+	}
+	normalTexture->ApplyChange();
+
+	return normalTexture;
+}
+
+Texture2D * Texture2D::ResizeTexture(Texture2D * heightmap, int width, int height)
+{
+	int w = width;
+	int h = height;
+
+	Texture2D* resizeTexture = new Texture2D(w, h, DataType::Float, Format::RGBA);
 
 	static float max = FLT_MIN;
 	for (int x = 0; x < w; ++x)
 	{
 		for (int y = 0; y < h; ++y)
 		{
-			float height = heightmap->GetPixelBilinear(glm::vec2((float)x / w, (float)y / h)).r * heightScale;
-
-			float right = height;
-			float down = height;
-			if (x + 1 < w)
-			{
-				right = heightmap->GetPixelBilinear(glm::vec2((float)(x + 1) / w, (float)y / h)).r * heightScale;
-			}
-			/*if (x - 1 >= 0)
-			{
-			left = heightmap->GetPixel(x - 1, y).r * heightScale;
-			}
-			if (y + 1 < h)
-			{
-			up = heightmap->GetPixel(x, y + 1).r * heightScale;
-			}*/
-			if (y - 1 >= 0)
-			{
-				down = heightmap->GetPixelBilinear(glm::vec2((float)x / w, (float)(y - 1) / h)).r * heightScale;
-			}
-			glm::vec3 normal = -glm::normalize(glm::cross(glm::vec3(0, height, 0) - glm::vec3(0, down, -tileScale), glm::vec3(0, height, 0) - glm::vec3(tileScale, right, 0)));
-			normal = (normal + 1.0f) * 0.5f;
-			Color c = Color(normal.x, normal.y, normal.z);
-			normalTexture->SetPixel(x, y, c);
-			max = glm::max(max, (float)x);
+			Color c = heightmap->GetPixelBilinear(glm::vec2((float)x / w, (float)y / h));
+			resizeTexture->SetPixel(x, y, c);
 		}
 	}
-	normalTexture->ApplyChange();
-	std::cout << "max: " << max << std::endl;
+	resizeTexture->ApplyChange();
 
-	return normalTexture;
+	return resizeTexture;
 }

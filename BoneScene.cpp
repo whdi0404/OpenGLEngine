@@ -60,6 +60,13 @@ void BoneScene::Initialize()
 	rotSpeed = 120.0f;
 	camera = (new GameObject())->AddComponent<Camera>();
 
+	xyWeight = 1;
+	octaves = 1;
+	amplitude = 1;
+	frequency = 1;
+	h = 1;
+	isFractal = false;
+
 	//Shader* modelShader = new Shader("./Resources/Shaders/TestVertexShader.glsl", "./Resources/Shaders/TestFragmentShader.glsl");
 	//Shader* skinnedShader = new Shader("./Resources/Shaders/TestSkinnedVertexShader.glsl", "./Resources/Shaders/TestFragmentShader.glsl");
 	//
@@ -105,18 +112,23 @@ void BoneScene::Initialize()
 
 		Shader* tessellationShader = new Shader("./Resources/Shaders/TessVetexShader.glsl", "./Resources/Shaders/TessFragmentShader.glsl",
 			"./Resources/Shaders/TessCtrlShader.glsl", "./Resources/Shaders/TessEvelShader.glsl", "./Resources/Shaders/TessGeomShader.glsl");
-		float heightScale = 300.0f;
-		float tileScale = 5.0f;
+		float heightScale = 400.0f;
+		float tileScale = 2.0f;
 
-		Texture2D* heightMap = ResourceManager::GetInstance().GetResource<Texture2D>("Tex/DinoIsland06.bmp"/**//*cDsYZ.jpg*/);
-		Texture2D* normalMap = heightMap->CreateNormalTexture(heightMap, tileScale, heightScale);
+		//heightMap = ResourceManager::GetInstance().GetResource<Texture2D>("Tex/DinoIsland06.bmp"/**//*cDsYZ.jpg*/);
+		heightSeed = ResourceManager::GetInstance().GetResource<Texture2D>("Tex/heighSeed.bmp");
+		//Texture2D* normalMap = heightMap->CreateNormalTexture(heightMap, tileScale, heightScale);
+		heightMap = Texture2D::CreateRandomHeightmap(2048, 2048, 6, 256.0f, heightSeed, nullptr, true);
+		//Texture2D* normalMap = Texture2D::CreateNormalTexture(heightMap, 512, 512, tileScale, heightScale);
+		resizeTexture = Texture2D::CreateNormalTexture(heightMap, 2048, 2048, tileScale, heightScale);
 		//new Texture2D(heightMap->GetWidth(), heightMap->GetHeight(), Texture2D::DataType::Unsigned_Byte, Texture2D::Format::RGBA);
 		terrainMaterial = new Material(tessellationShader, 1);
 		terrainMaterial->SetTexture(std::string("heightMap"), heightMap);
-		terrainMaterial->SetTexture(std::string("normalMap"), normalMap);
+		terrainMaterial->SetTexture(std::string("normalMap"), resizeTexture);
+		//terrainMaterial->SetTexture(std::string("albedoMap"), albedoMap);
 
 		terrainSystem->SetMaterial(terrainMaterial);
-		terrainSystem->CreateMesh(heightMap, /*0.03125f*/tileScale, heightScale, 32);
+		terrainSystem->CreateMesh(heightMap, /*0.03125f*/tileScale, heightScale, 8);
 
 		//obj->AddComponent<TerrainCollider>();
 
@@ -227,6 +239,107 @@ void BoneScene::Update()
 		camera->GetTransform()->RotateAxisLocal(-rotSpeed * dt, 0, 0);
 		camChanged = true;
 	}
+
+	bool refresh = false;
+	state = glfwGetKey(g_Window, GLFW_KEY_KP_7);
+	if (state == GLFW_PRESS)
+	{
+		float time = Time::GetInstance().GetDeltaTime();
+		xyWeight -= 1.0f * time;
+		refresh = true;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_KP_8);
+	if (state == GLFW_PRESS)
+	{
+		float time = Time::GetInstance().GetDeltaTime();
+		xyWeight += 1.0f * time;
+		refresh = true;
+	}
+	state = glfwGetKey(g_Window, GLFW_KEY_KP_4);
+	if (state == GLFW_PRESS)
+	{
+		float time = Time::GetInstance().GetDeltaTime();
+		octaves -= 1.0f * time;
+		refresh = true;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_KP_5);
+	if (state == GLFW_PRESS)
+	{
+		float time = Time::GetInstance().GetDeltaTime();
+		octaves += 1.0f * time;
+		refresh = true;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_KP_1);
+	if (state == GLFW_PRESS)
+	{
+		float time = Time::GetInstance().GetDeltaTime();
+		amplitude -= 1.0f * time;
+		refresh = true;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_KP_2);
+	if (state == GLFW_PRESS)
+	{
+		float time = Time::GetInstance().GetDeltaTime();
+		amplitude += 1.0f * time;
+		refresh = true;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_KP_6);
+	if (state == GLFW_PRESS)
+	{
+		float time = Time::GetInstance().GetDeltaTime();
+		frequency -= 1.0f * time;
+		refresh = true;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_KP_9);
+	if (state == GLFW_PRESS)
+	{
+		float time = Time::GetInstance().GetDeltaTime();
+		frequency += 1.0f * time;
+		refresh = true;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_KP_DIVIDE);
+	if (state == GLFW_PRESS)
+	{
+		float time = Time::GetInstance().GetDeltaTime();
+		h -= 1.0f * time;
+		refresh = true;
+	}
+
+	state = glfwGetKey(g_Window, GLFW_KEY_KP_MULTIPLY);
+	if (state == GLFW_PRESS)
+	{
+		float time = Time::GetInstance().GetDeltaTime();
+		h += 1.0f * time;
+		refresh = true;
+	}
+
+
+	state = glfwGetKey(g_Window, GLFW_KEY_T);
+	if (state == GLFW_PRESS)
+	{
+		isFractal = !isFractal;
+		refresh = true;
+	} 
+
+
+	if (refresh == true)
+	{
+		if (heightMap != nullptr)
+		{
+			delete heightMap;
+			heightMap = nullptr;
+		}
+		heightMap = Texture2D::CreateRandomHeightmap(1024, 1024, 3, 100.0f, heightSeed, nullptr, isFractal);
+		terrainMaterial->SetTexture(std::string("heightMap"), heightMap);
+	}
+
 	return;
 	state = glfwGetMouseButton(g_Window, GLFW_MOUSE_BUTTON_LEFT);
 	static int leftOld = GLFW_RELEASE;
@@ -303,8 +416,6 @@ void BoneScene::Update()
 		//생성되는 GameObject전부 모아서 어케 해야것네.(Avatar의 BoneTransform 제어)
 	}
 	rightOld = state;
-
-	state = glfwGetKey(g_Window, GLFW_KEY_T);
 	/*if (state == GLFW_PRESS)
 	{
 		auto& TimeManager = Time::GetInstance();

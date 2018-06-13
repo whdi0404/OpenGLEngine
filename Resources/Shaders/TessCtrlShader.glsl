@@ -46,10 +46,7 @@ float level(vec2 v0, vec2 v1){
     if(vertex.z < -0.5){
         return true;
     }
-    return any(
-        lessThan(vertex.xy, vec2(-2.5)) ||
-        greaterThan(vertex.xy, vec2(2.5))
-    );  
+	return false;
 }
 
 void main(void)
@@ -61,11 +58,18 @@ void main(void)
 		vec4 v1 = project(gl_in[1].gl_Position);
 		vec4 v2 = project(gl_in[2].gl_Position);
 
-		if(all(bvec3(
+
+		bool culling = all(bvec3(
              offscreen(v0),
              offscreen(v1),
              offscreen(v2)
-        ))){
+        )) || 
+		(all(bvec3(v0.x < -1.5f , v1.x < -1.5f , v2.x < -1.5f)) ||
+		all(bvec3(v0.x > 1.5f , v1.x > 1.5f , v2.x > 1.5f)) ||
+		all(bvec3(v0.y < -1.5f , v1.y < -1.5f , v2.y < -1.5f)) ||
+		all(bvec3(v0.y > 1.5f , v1.y > 1.5f , v2.y > 1.5f))
+		);
+		if(false){
              gl_TessLevelInner[0] = 0;
              gl_TessLevelOuter[0] = 0;
              gl_TessLevelOuter[1] = 0;

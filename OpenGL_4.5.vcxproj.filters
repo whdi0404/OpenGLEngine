@@ -73,6 +73,9 @@
     <Filter Include="FrameWork\ResourceManager">
       <UniqueIdentifier>{00b7a23f-2ec8-4259-bb1d-9a62bdd23231}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CUDA">
+      <UniqueIdentifier>{371874ca-e3ec-42bf-b031-09b1aeaf4d10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -212,6 +215,12 @@
     </ClCompile>
     <ClCompile Include="ResourceManager.cpp">
       <Filter>FrameWork\ResourceManager</Filter>
+    </ClCompile>
+    <ClCompile Include="FBM.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryUtil.cpp">
+      <Filter>Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -362,6 +371,15 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>FrameWork\ResourceManager</Filter>
     </ClInclude>
+    <ClInclude Include="FBM.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryUtil.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="kernel.cuh">
+      <Filter>CUDA</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
@@ -389,5 +407,12 @@
     <None Include="Resources\Shaders\TessGeomShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
+    <None Include="TextureCreate.cu" />
+    <None Include="TextureCreate.cuh" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="kernel.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

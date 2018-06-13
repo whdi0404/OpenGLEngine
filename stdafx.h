@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <time.h>
-#include <cmath>
+//#include <cmath.h>
 #include <functional>
 //#include <MMSystem.h>
 #include <Windows.h>

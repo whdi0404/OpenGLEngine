@@ -11,6 +11,7 @@ in GS_OUT
 
 uniform sampler2D heightMap;
 uniform sampler2D normalMap;
+uniform sampler2D albedoMap;
 uniform float heightScale;
 
 void main(){
@@ -29,9 +30,9 @@ void main(){
 
 	//vec3 normal = normalize(cross(fs_in.d1, fs_in.d2));
 
-	vec3 light = normalize(vec3(1.0f,0.66f,0));
+	vec3 light = normalize(vec3(0.0f,1.0f,0));
 	//color = texture( normalMap, fs_in.uv).rgb;
 
-	float l = dot(normalize(texture( normalMap, fs_in.uv).rgb * 2.0f - 1.0f), light);
-	color = vec3(l,l,l);//fs_in.normal;
+	float l = dot(texture( normalMap, fs_in.uv).rgb, light);
+	color = vec3(l,l,l);//texture( normalMap, fs_in.uv).rgb;//fs_in.normal;//texture( albedoMap, fs_in.uv).rgb;//
 }

@@ -32,4 +32,14 @@ public:
 	KeyFrameAnimation* keyFrameAnimation;
 	std::vector<Object*> meshes;
 	Material* skinnedMaterial;
+
+	Texture2D* heightMap;
+	Texture2D* heightSeed;
+	Texture2D* resizeTexture;
+	float xyWeight;
+	float octaves;
+	float amplitude; 
+	float frequency; 
+	float h;
+	bool isFractal;
 };

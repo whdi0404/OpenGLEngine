@@ -55,8 +55,11 @@ public:
 	void SetPixel(int x, int y, Color color);
 
 	void ApplyChange();
+	static Texture2D* CreateRandomHeightmap(int width, int height, int fractal, float h, Texture2D* heightSeed, Texture2D* surfaceSeed, bool isFractal);
 
-	static Texture2D* CreateNormalTexture(Texture2D* heightmap, float tileSize, float scale);
+	static Texture2D* CreateNormalTexture(Texture2D* heightmap, int width, int height, float tileSize, float scale);
+
+	static Texture2D* ResizeTexture(Texture2D* heightmap, int width, int height);
 
 	static size_t FormatElemCountPerPixel(Format format)
 	{
@@ -96,6 +99,7 @@ public:
 			return 8;
 		}
 	}
+
 	size_t GetBytePerPixel(DataType dataType, Format format)
 	{
 		return FormatElemCountPerPixel(format) * DataTypeBytePerPixel(dataType);
