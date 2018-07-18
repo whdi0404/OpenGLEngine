@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -24,43 +16,22 @@
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 9.2.props" />
-  </ImportGroup>
-  <ImportGroup Label="Shared">
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -69,14 +40,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.1\lib\vs2015\x64\release;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.1\lib\vs2015\x64\release;$(LibraryPath)</LibraryPath>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.1\include;$(IncludePath)</IncludePath>
@@ -87,21 +50,13 @@
     <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.1\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files\Autodesk\FBX\FBX SDK\2016.1.1\lib\vs2015\x64\release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StringPooling>true</StringPooling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -109,20 +64,30 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4062 /wd4100 /wd4130 /wd4201 /wd4242 /wd4244 /wd4245 /wd4265 /wd4266 /wd4324 /wd4389 /wd4365 /wd4371 /wd4447 /wd4189 /wd4191 /wd4350 /wd4505 /wd4512 /wd4548 /wd4571 /wd4625 /wd4626 /wd4668 /wd4619 /wd4701 /wd4702 /wd4706 /wd4710 /wd4711 /wd4640 /wd4061 /wd4826 /wd4946 /wd4917 /wd4986 /wd4987 /wd4456 /wd4457 /wd4458 /wd4459 /wd4774 /wd4777 /wd5027 /wd5029 /wd4464 /d2Zi+</AdditionalOptions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\assimp;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\anttweakbar;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\include\nvsimplemesh;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\include\nvidiautils;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\simpleopt;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\effects11;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\dxut\Optional;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\dxut\Core;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\directxtex;E:\Programming\PhysXSDK\APEX_1.4shared\general\RenderDebug\public;E:\Programming\PhysXSDK\APEX_1.4shared\general\shared;E:\Programming\PhysXSDK\APEX_1.4shared\external\include;E:\Programming\PhysXSDK\PhysX_3.4\Include;E:\Programming\PhysXSDK\APEX_1.4include\pxparticleios;E:\Programming\PhysXSDK\APEX_1.4include\iofx;E:\Programming\PhysXSDK\APEX_1.4include\particles;E:\Programming\PhysXSDK\APEX_1.4include\emitter;E:\Programming\PhysXSDK\APEX_1.4include\destructible;E:\Programming\PhysXSDK\APEX_1.4include\clothing;E:\Programming\PhysXSDK\APEX_1.4include\basicios;E:\Programming\PhysXSDK\APEX_1.4include\PhysX3;E:\Programming\PhysXSDK\APEX_1.4include;E:\Programming\PhysXSDK\PxShared\src\pvd\include;E:\Programming\PhysXSDK\PxShared\src\fastxml\include;E:\Programming\PhysXSDK\PxShared\src\filebuf\include;E:\Programming\PhysXSDK\PxShared\src\foundation\include;E:\Programming\PhysXSDK\PxShared\include\pvd;E:\Programming\PhysXSDK\PxShared\include\cudamanager;E:\Programming\PhysXSDK\PxShared\include\task;E:\Programming\PhysXSDK\PxShared\include\foundation;E:\Programming\PhysXSDK\PxShared\include\filebuf;E:\Programming\PhysXSDK\PxShared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\whdi0\OneDrive\문서\GitHub\OpenGLEngine\cudacommon\inc;$(CudaToolkitDir)/include;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\assimp;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\anttweakbar;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\include\nvsimplemesh;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\include\nvidiautils;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\simpleopt;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\effects11;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\dxut\Optional;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\dxut\Core;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\directxtex;E:\Programming\PhysXSDK\APEX_1.4shared\general\RenderDebug\public;E:\Programming\PhysXSDK\APEX_1.4shared\general\shared;E:\Programming\PhysXSDK\APEX_1.4shared\external\include;E:\Programming\PhysXSDK\PhysX_3.4\Include;E:\Programming\PhysXSDK\APEX_1.4include\pxparticleios;E:\Programming\PhysXSDK\APEX_1.4include\iofx;E:\Programming\PhysXSDK\APEX_1.4include\particles;E:\Programming\PhysXSDK\APEX_1.4include\emitter;E:\Programming\PhysXSDK\APEX_1.4include\destructible;E:\Programming\PhysXSDK\APEX_1.4include\clothing;E:\Programming\PhysXSDK\APEX_1.4include\basicios;E:\Programming\PhysXSDK\APEX_1.4include\PhysX3;E:\Programming\PhysXSDK\APEX_1.4include;E:\Programming\PhysXSDK\PxShared\src\pvd\include;E:\Programming\PhysXSDK\PxShared\src\fastxml\include;E:\Programming\PhysXSDK\PxShared\src\filebuf\include;E:\Programming\PhysXSDK\PxShared\src\foundation\include;E:\Programming\PhysXSDK\PxShared\include\pvd;E:\Programming\PhysXSDK\PxShared\include\cudamanager;E:\Programming\PhysXSDK\PxShared\include\task;E:\Programming\PhysXSDK\PxShared\include\foundation;E:\Programming\PhysXSDK\PxShared\include\filebuf;E:\Programming\PhysXSDK\PxShared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
       <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>E:\Programming\PhysXSDK\PhysX_3.4\Lib\vc14WIN64;E:\Programming\PhysXSDK\APEX_1.4\lib\vc14WIN64-PhysX_3.4;E:\Programming\PhysXSDK\PxShared\lib\vc14win64;E:\Programming\PhysXSDK\APEX_1.4\externals\extensions\lib\WIN64;E:\Programming\PhysXSDK\APEX_1.4\externals\extensions\externals\lib\win64;E:\Programming\PhysXSDK\PxShared\lib\vc14WIN64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
-      <AdditionalOptions>Winmm.lib /INCREMENTAL:NO PhysX3Common_x64.lib PhysX3_x64.lib PhysX3Cooking_x64.lib PhysX3CharacterKinematic_x64.lib PhysX3Extensions.lib PhysX3Vehicle.lib PxPvdSDK_x64.lib PxTask_x64.lib PxCudaContextManager_x64.lib PxFoundation_x64.lib PsFastXml_x64.lib</AdditionalOptions>
+      <AdditionalOptions>Winmm.lib /INCREMENTAL:NO PhysX3CommonDEBUG_x64.lib PhysX3DEBUG_x64.lib PhysX3CookingDEBUG_x64.lib PhysX3CharacterKinematicDEBUG_x64.lib PhysX3ExtensionsDEBUG.lib PhysX3VehicleDEBUG.lib PxPvdSDKDEBUG_x64.lib PxTaskDEBUG_x64.lib PxCudaContextManagerDEBUG_x64.lib PxFoundationDEBUG_x64.lib PsFastXmlDEBUG_x64.lib</AdditionalOptions>
     </Link>
+    <CudaCompile>
+      <CodeGeneration>compute_30,sm_30;compute_35,sm_35;compute_37,sm_37;compute_50,sm_50;compute_52,sm_52;compute_60,sm_60;compute_61,sm_61;compute_70,sm_70;</CodeGeneration>
+      <AdditionalOptions>-Xcompiler "/wd 4819" %(AdditionalOptions)</AdditionalOptions>
+      <Include>./cudacommon/inc</Include>
+      <Defines>WIN32</Defines>
+      <GenerateRelocatableDeviceCode>false</GenerateRelocatableDeviceCode>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
@@ -130,9 +95,10 @@
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
+      <OptimizeReferences>Default</OptimizeReferences>
     </Link>
     <CudaCompile>
+      <Runtime>MTd</Runtime>
       <TargetMachinePlatform>64</TargetMachinePlatform>
     </CudaCompile>
   </ItemDefinitionGroup>
@@ -142,22 +108,26 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\assimp;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\anttweakbar;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\include\nvsimplemesh;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\include\nvidiautils;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\simpleopt;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\effects11;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\dxut\Optional;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\dxut\Core;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\directxtex;E:\Programming\PhysXSDK\APEX_1.4shared\general\RenderDebug\public;E:\Programming\PhysXSDK\APEX_1.4shared\general\shared;E:\Programming\PhysXSDK\APEX_1.4shared\external\include;E:\Programming\PhysXSDK\PhysX_3.4\Include;E:\Programming\PhysXSDK\APEX_1.4include\pxparticleios;E:\Programming\PhysXSDK\APEX_1.4include\iofx;E:\Programming\PhysXSDK\APEX_1.4include\particles;E:\Programming\PhysXSDK\APEX_1.4include\emitter;E:\Programming\PhysXSDK\APEX_1.4include\destructible;E:\Programming\PhysXSDK\APEX_1.4include\clothing;E:\Programming\PhysXSDK\APEX_1.4include\basicios;E:\Programming\PhysXSDK\APEX_1.4include\PhysX3;E:\Programming\PhysXSDK\APEX_1.4include;E:\Programming\PhysXSDK\PxShared\src\pvd\include;E:\Programming\PhysXSDK\PxShared\src\fastxml\include;E:\Programming\PhysXSDK\PxShared\src\filebuf\include;E:\Programming\PhysXSDK\PxShared\src\foundation\include;E:\Programming\PhysXSDK\PxShared\include\pvd;E:\Programming\PhysXSDK\PxShared\include\cudamanager;E:\Programming\PhysXSDK\PxShared\include\task;E:\Programming\PhysXSDK\PxShared\include\foundation;E:\Programming\PhysXSDK\PxShared\include\filebuf;E:\Programming\PhysXSDK\PxShared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\whdi0\OneDrive\문서\GitHub\OpenGLEngine\cudacommon\inc;$(CudaToolkitDir)/include;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\assimp;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\anttweakbar;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\include\nvsimplemesh;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\include\nvidiautils;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\simpleopt;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\effects11;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\dxut\Optional;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\dxut\Core;E:\Programming\PhysXSDK\APEX_1.4externals\extensions\externals\include\directxtex;E:\Programming\PhysXSDK\APEX_1.4shared\general\RenderDebug\public;E:\Programming\PhysXSDK\APEX_1.4shared\general\shared;E:\Programming\PhysXSDK\APEX_1.4shared\external\include;E:\Programming\PhysXSDK\PhysX_3.4\Include;E:\Programming\PhysXSDK\APEX_1.4include\pxparticleios;E:\Programming\PhysXSDK\APEX_1.4include\iofx;E:\Programming\PhysXSDK\APEX_1.4include\particles;E:\Programming\PhysXSDK\APEX_1.4include\emitter;E:\Programming\PhysXSDK\APEX_1.4include\destructible;E:\Programming\PhysXSDK\APEX_1.4include\clothing;E:\Programming\PhysXSDK\APEX_1.4include\basicios;E:\Programming\PhysXSDK\APEX_1.4include\PhysX3;E:\Programming\PhysXSDK\APEX_1.4include;E:\Programming\PhysXSDK\PxShared\src\pvd\include;E:\Programming\PhysXSDK\PxShared\src\fastxml\include;E:\Programming\PhysXSDK\PxShared\src\filebuf\include;E:\Programming\PhysXSDK\PxShared\src\foundation\include;E:\Programming\PhysXSDK\PxShared\include\pvd;E:\Programming\PhysXSDK\PxShared\include\cudamanager;E:\Programming\PhysXSDK\PxShared\include\task;E:\Programming\PhysXSDK\PxShared\include\foundation;E:\Programming\PhysXSDK\PxShared\include\filebuf;E:\Programming\PhysXSDK\PxShared\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/MP /Wall /wd4514 /wd4820 /wd4062 /wd4100 /wd4130 /wd4201 /wd4242 /wd4244 /wd4245 /wd4265 /wd4266 /wd4324 /wd4389 /wd4365 /wd4371 /wd4447 /wd4189 /wd4191 /wd4350 /wd4505 /wd4512 /wd4548 /wd4571 /wd4625 /wd4626 /wd4668 /wd4619 /wd4701 /wd4702 /wd4706 /wd4710 /wd4711 /wd4640 /wd4061 /wd4826 /wd4946 /wd4917 /wd4986 /wd4987 /wd4456 /wd4457 /wd4458 /wd4459 /wd4774 /wd4777 /wd5027 /wd5029 /wd4464 /d2Zi+</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
       <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>E:\Programming\PhysXSDK\PhysX_3.4\Lib\vc14WIN64;E:\Programming\PhysXSDK\APEX_1.4\lib\vc14WIN64-PhysX_3.4;E:\Programming\PhysXSDK\PxShared\lib\vc14win64;E:\Programming\PhysXSDK\APEX_1.4\externals\extensions\lib\WIN64;E:\Programming\PhysXSDK\APEX_1.4\externals\extensions\externals\lib\win64;E:\Programming\PhysXSDK\PxShared\lib\vc14WIN64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>Winmm.lib /INCREMENTAL:NO PhysX3Common_x64.lib PhysX3_x64.lib PhysX3Cooking_x64.lib PhysX3CharacterKinematic_x64.lib PhysX3Extensions.lib PhysX3Vehicle.lib PxPvdSDK_x64.lib PxTask_x64.lib PxCudaContextManager_x64.lib PxFoundation_x64.lib PsFastXml_x64.lib</AdditionalOptions>
     </Link>
     <CudaCompile>
+      <Runtime>MT</Runtime>
       <TargetMachinePlatform>64</TargetMachinePlatform>
     </CudaCompile>
   </ItemDefinitionGroup>
@@ -168,6 +138,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
+    <ClCompile Include="CudaUtil.cpp" />
     <ClCompile Include="Delegate.cpp" />
     <ClCompile Include="FBM.cpp" />
     <ClCompile Include="FBXHelper.cpp" />
@@ -221,11 +192,11 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Component.h" />
+    <ClInclude Include="CudaUtil.h" />
     <ClInclude Include="FBM.h" />
     <ClInclude Include="FBXHelper.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Gizmo.h" />
-    <ClInclude Include="kernel.cuh" />
     <ClInclude Include="KeyFrameAnimation.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="math.h" />
@@ -253,6 +224,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneGraph.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="simpleTexture.cuh" />
     <ClInclude Include="SingletonBase.h" />
     <ClInclude Include="SkinnedMesh.h" />
     <ClInclude Include="SkinnedMeshRenderObject.h" />
@@ -278,11 +250,9 @@
     <None Include="Resources\Shaders\TestFragmentShader.glsl" />
     <None Include="Resources\Shaders\TestSkinnedVertexShader.glsl" />
     <None Include="Resources\Shaders\TestVertexShader.glsl" />
-    <None Include="TextureCreate.cu" />
-    <None Include="TextureCreate.cuh" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="simpleTexture.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -20,6 +20,7 @@
 #include "PhysXUtil.h"
 #include "PhysXJoint.h"
 #include "Ragdoll.h"
+#include "CudaUtil.h"
 
 BoneScene::BoneScene() : avatarRoot(nullptr)
 {
@@ -116,15 +117,20 @@ void BoneScene::Initialize()
 		float tileScale = 2.0f;
 
 		//heightMap = ResourceManager::GetInstance().GetResource<Texture2D>("Tex/DinoIsland06.bmp"/**//*cDsYZ.jpg*/);
-		heightSeed = ResourceManager::GetInstance().GetResource<Texture2D>("Tex/heighSeed.bmp");
+		/*heightSeed*/heightMap = ResourceManager::GetInstance().GetResource<Texture2D>("Tex/heighSeed.bmp");
+
+		dim3 blockSize(16, 16);
+		dim3 gridSize(heightMap->GetWidth() / blockSize.x, heightMap->GetHeight() / blockSize.y);
+		uchar4* data = new uchar4[heightMap->GetWidth() * heightMap->GetHeight()];
+
 		//Texture2D* normalMap = heightMap->CreateNormalTexture(heightMap, tileScale, heightScale);
-		heightMap = Texture2D::CreateRandomHeightmap(2048, 2048, 6, 256.0f, heightSeed, nullptr, true);
+		//heightMap = Texture2D::CreateRandomHeightmap(2048, 2048, 6, 256.0f, heightSeed, nullptr, true);
 		//Texture2D* normalMap = Texture2D::CreateNormalTexture(heightMap, 512, 512, tileScale, heightScale);
-		resizeTexture = Texture2D::CreateNormalTexture(heightMap, 2048, 2048, tileScale, heightScale);
+		//resizeTexture = Texture2D::CreateNormalTexture(heightMap, 2048, 2048, tileScale, heightScale);
 		//new Texture2D(heightMap->GetWidth(), heightMap->GetHeight(), Texture2D::DataType::Unsigned_Byte, Texture2D::Format::RGBA);
 		terrainMaterial = new Material(tessellationShader, 1);
 		terrainMaterial->SetTexture(std::string("heightMap"), heightMap);
-		terrainMaterial->SetTexture(std::string("normalMap"), resizeTexture);
+		//terrainMaterial->SetTexture(std::string("normalMap"), resizeTexture);
 		//terrainMaterial->SetTexture(std::string("albedoMap"), albedoMap);
 
 		terrainSystem->SetMaterial(terrainMaterial);
@@ -161,7 +167,7 @@ void BoneScene::Initialize()
 
 void BoneScene::InitResource()
 {
-	PxMaterial* default_Material = g_PhysXManager->GetPhysics()->createMaterial(0.5f, 0.5f, 0.1f);
+	//PxMaterial* default_Material = g_PhysXManager->GetPhysics()->createMaterial(0.5f, 0.5f, 0.1f);
 	//ResourceManager::GetInstance().AddResource("default_Material", default_Material);
 	//
 	//Mesh* box_Mesh = (Mesh*)FBXHelper::GetResourcesFromFile("./Models/Box.fbx")[0];
@@ -174,6 +180,7 @@ void BoneScene::InitResource()
 
 void BoneScene::Update()
 {
+	//runTest(heightMap->GetData(), heightMap->GetWidth(), heightMap->GetHeight(), heightMap->GetBytePerPixel() * heightMap->GetWidth() * heightMap->GetHeight());
 	bool camChanged = false;
 
 	float dt = Time::GetInstance().GetDeltaTime();

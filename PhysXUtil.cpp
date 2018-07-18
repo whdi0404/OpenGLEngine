@@ -42,7 +42,7 @@ PxGeometry* PhysXUtil::MeshToPxGeometry(Mesh* renderMesh, PxVec3 sc, PxQuat rot)
 
 #ifdef _DEBUG
 	// mesh should be validated before cooked without the mesh cleaning
-	bool res = theCooking->validateTriangleMesh(meshDesc);
+	bool res = cooking.validateTriangleMesh(meshDesc);
 	PX_ASSERT(res);
 #endif
 	PxTriangleMesh* mesh = cooking.createTriangleMesh(meshDesc, physics.getPhysicsInsertionCallback());

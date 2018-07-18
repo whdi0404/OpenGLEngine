@@ -222,6 +222,9 @@
     <ClCompile Include="MemoryUtil.cpp">
       <Filter>Util</Filter>
     </ClCompile>
+    <ClCompile Include="CudaUtil.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -377,7 +380,10 @@
     <ClInclude Include="MemoryUtil.h">
       <Filter>Util</Filter>
     </ClInclude>
-    <ClInclude Include="kernel.cuh">
+    <ClInclude Include="CudaUtil.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="simpleTexture.cuh">
       <Filter>CUDA</Filter>
     </ClInclude>
   </ItemGroup>
@@ -407,11 +413,9 @@
     <None Include="Resources\Shaders\TessGeomShader.glsl">
       <Filter>리소스 파일\Shader</Filter>
     </None>
-    <None Include="TextureCreate.cu" />
-    <None Include="TextureCreate.cuh" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu">
+    <CudaCompile Include="simpleTexture.cu">
       <Filter>CUDA</Filter>
     </CudaCompile>
   </ItemGroup>

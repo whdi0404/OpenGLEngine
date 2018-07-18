@@ -18,7 +18,6 @@
 #define KFBX_DLLINFO
 #define FBXSDK_NEW_API
 #define FBXSDK_SHARED
-#define NDEBUG 1
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 

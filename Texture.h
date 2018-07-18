@@ -105,6 +105,6 @@ public:
 		return FormatElemCountPerPixel(format) * DataTypeBytePerPixel(dataType);
 	}
 
-	
+	void* GetData();
 
 };

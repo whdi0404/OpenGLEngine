@@ -59,7 +59,7 @@ public: \
 		return varName;\
 	}
 
-#define Execute(instanceName) (instanceName.target.*instanceName.func)
+//#define Execute(instanceName) (instanceName.target.*instanceName.func)
 template <class Class, typename Func>
 class Delegate
 {

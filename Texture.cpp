@@ -722,3 +722,11 @@ Texture2D * Texture2D::ResizeTexture(Texture2D * heightmap, int width, int heigh
 
 	return resizeTexture;
 }
+
+void* Texture2D::GetData()
+{
+	ilBindImage(ilTextureID);
+	void* data = ilGetData();
+	ilBindImage(0);
+	return data;
+}
